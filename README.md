@@ -18,7 +18,7 @@
 
 ### Vulkan执行流程
 
-![](https://note.youdao.com/yws/public/resource/6d157ee8d79597540ad2ef4a25b2da2b/xmlnote/WEBRESOURCE1d4fcba486df8761beb89dbf97d5d888/508)
+![](./DeeperVulkan.png)
 
 ### 附录
 
