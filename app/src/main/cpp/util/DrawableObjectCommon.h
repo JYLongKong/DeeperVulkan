@@ -24,6 +24,15 @@ class DrawableObjectCommon {
   VkDeviceMemory indexDataMem;                  // 索引数据所需设备内存
   VkDescriptorBufferInfo indexDataBufferInfo;   // 索引数据缓冲描述信息
 
+  /// Sample4_15 ************************************************* start
+  int indirectDrawCount;                        // 间接绘制信息数据组的数量
+  int drawCmdbufbytes;                          // 间接绘制信息数据所占总字节数
+  VkBuffer drawCmdbuf;                          // 间接绘制信息数据缓冲
+  VkDeviceMemory drawCmdMem;                    // 间接绘制信息数据缓冲对应设备内存
+  void initDrawCmdbuf(                          // 用于创建间接绘制信息数据缓冲的方法
+      VkDevice &device, VkPhysicalDeviceMemoryProperties &memoryroperties);
+  /// Sample4_15 *************************************************** end
+
   DrawableObjectCommon(
       float *vdataIn,
       int dataByteCount,

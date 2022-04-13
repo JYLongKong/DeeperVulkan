@@ -81,6 +81,10 @@ DrawableObjectCommon::DrawableObjectCommon(
 //  createVertexBuffer(dataByteCount, device, memoryroperties);       // 调用方法创建顶点数据缓冲
 //  createIndexBuffer(indexByteCount, device, memoryroperties);       // 调用方法创建索引数据缓冲
   /// Sample4_10 *************************************************** end
+
+  /// Sample4_15 ************************************************* start
+  initDrawCmdbuf(device, memoryroperties);
+  /// Sample4_15 *************************************************** end
 }
 
 /**
@@ -208,6 +212,68 @@ void DrawableObjectCommon::createIndexBuffer(int indexByteCount,
   indexDataBufferInfo.range = index_mem_reqs.size;
 }
 
+/**
+ * Sample4_15
+ * 用于创建间接绘制信息数据缓冲的方法
+ */
+void DrawableObjectCommon::initDrawCmdbuf(VkDevice &device, VkPhysicalDeviceMemoryProperties &memoryroperties) {
+  indirectDrawCount = 1;                                                  // 间接绘制信息数据组的数量
+  drawCmdbufbytes = indirectDrawCount * sizeof(VkDrawIndirectCommand);    // 信息数据所占总字节数
+
+  VkBufferCreateInfo buf_info = {};                                       // 构建缓冲创建信息结构体实例
+  buf_info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+  buf_info.pNext = nullptr;
+  buf_info.usage = VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT;                   // 设置缓冲用途为间接绘制信息数据缓冲
+  buf_info.size = drawCmdbufbytes;                                        // 设置数据总字节数
+  buf_info.queueFamilyIndexCount = 0;                                     // 队列家族数量
+  buf_info.pQueueFamilyIndices = nullptr;                                 // 队列家族列表
+  buf_info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;                       // 共享模式
+  buf_info.flags = 0;                                                     // 标志
+
+  VkResult result = vk::vkCreateBuffer(device, &buf_info, nullptr, &drawCmdbuf);  // 创建缓冲
+  assert(result == VK_SUCCESS);
+
+  VkMemoryRequirements mem_reqs;                                          // 缓冲内存需求
+  vk::vkGetBufferMemoryRequirements(device, drawCmdbuf, &mem_reqs);       // 获取缓冲内存需求
+  assert(drawCmdbufbytes <= mem_reqs.size);                               // 检查内存需求获取是否正确
+
+  VkMemoryAllocateInfo alloc_info = {};                                   // 构建内存分配信息结构体实例
+  alloc_info.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+  alloc_info.pNext = nullptr;
+  alloc_info.memoryTypeIndex = 0;                                         // 内存类型索引
+  alloc_info.allocationSize = mem_reqs.size;                              // 内存总字节数
+
+  VkFlags requirements_mask = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT         // 需要的内存类型掩码
+      | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+  bool flag = memoryTypeFromProperties(                                   // 获取所需内存类型索引
+      memoryroperties, mem_reqs.memoryTypeBits, requirements_mask, &alloc_info.memoryTypeIndex);
+  if (flag) {
+    LOGI("Determining memory type succeeded, alloc_info.memoryTypeIndex=%d", alloc_info.memoryTypeIndex);
+  } else {
+    LOGE("Determining memory type failed!");
+  }
+
+  result = vk::vkAllocateMemory(device, &alloc_info, nullptr, &drawCmdMem); // 为缓冲分配内存
+  assert(result == VK_SUCCESS);
+
+  uint8_t *pData;                                                         // CPU访问时的辅助指针
+  result = vk::vkMapMemory(device, drawCmdMem, 0, mem_reqs.size, 0, (void **) &pData); // 将设备内存映射为CPU可访问
+  assert(result == VK_SUCCESS);
+
+  // VkDrawIndirectCommand的参数含义与vk::vkCmdDraw方法参数含义相同
+  VkDrawIndirectCommand dic;                                              // 构建间接绘制信息结构体实例
+  dic.vertexCount = vCount;                                               // 顶点数量
+  dic.firstInstance = 0;                                                  // 第一个绘制的实例序号
+  dic.firstVertex = 0;                                                    // 第一个绘制用的顶点索引
+  dic.instanceCount = 1;                                                  // 需要绘制的实例数量
+
+  memcpy(pData, &dic, drawCmdbufbytes);                                   // 将数据拷贝进设备内存
+  vk::vkUnmapMemory(device, vertexDataMem);                               // 解除内存映射
+
+  result = vk::vkBindBufferMemory(device, drawCmdbuf, drawCmdMem, 0);     // 绑定内存与缓冲
+  assert(result == VK_SUCCESS);
+}
+
 DrawableObjectCommon::~DrawableObjectCommon() {
   delete[] vdata;                                                         // 释放顶点数据内存
   vk::vkDestroyBuffer(*devicePointer, vertexDatabuf, nullptr);            // 销毁顶点数据缓冲
@@ -218,6 +284,11 @@ DrawableObjectCommon::~DrawableObjectCommon() {
 //  vk::vkDestroyBuffer(*devicePointer, indexDatabuf, nullptr);             // 销毁索引数据缓冲
 //  vk::vkFreeMemory(*devicePointer, indexDataMem, nullptr);                // 释放索引数据缓冲对应设备内存
   /// Sample4_10 *************************************************** end
+
+  /// Sample4_15 ************************************************* start
+  vk::vkDestroyBuffer(*devicePointer, drawCmdbuf, nullptr);
+  vk::vkFreeMemory(*devicePointer, drawCmdMem, nullptr);
+  /// Sample4_15 *************************************************** end
 }
 
 /**
@@ -253,7 +324,8 @@ void DrawableObjectCommon::drawSelf(
                          VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(float) * 16, pushConstantData);
   /// Sample4_2 **************************************************** end
 
-  vk::vkCmdDraw(cmd, vCount, 1, 0, 0);                                    // 执行绘制
+//  vk::vkCmdDraw(cmd, vCount, 1, 0, 0);                                    // 执行绘制
+
   /// Sample4_10 ************************************************* start
 //  vk::vkCmdBindIndexBuffer(                                               // 将索引数据与当前使用的命令缓冲绑定
 //      cmd,                                                                // 当前使用的命令缓冲
@@ -270,4 +342,13 @@ void DrawableObjectCommon::drawSelf(
 //      0                                                                   // 需要绘制的第1个实例的索引
 //  );
   /// Sample4_10 *************************************************** end
+
+  /// Sample4_15 ************************************************* start
+  vk::vkCmdDrawIndirect(
+      cmd,                                                                // 当前使用的命令缓冲
+      drawCmdbuf,                                                         // 间接绘制信息数据缓冲
+      0,                                                                  // 绘制信息数据的起始偏移量
+      indirectDrawCount,                                                  // 此次绘制使用的间接绘制信息组的数量
+      sizeof(VkDrawIndirectCommand));                                     // 每组绘制信息数据所占字节数
+  /// Sample4_15 *************************************************** end
 }

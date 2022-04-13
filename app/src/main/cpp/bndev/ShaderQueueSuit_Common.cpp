@@ -116,20 +116,20 @@ void ShaderQueueSuit_Common::create_pipeline_layout(VkDevice &device) {
   assert(result == VK_SUCCESS);                                           // 检查描述集布局创建是否成功
 
   /// Sample4_2 ************************************************** start
-//  const unsigned push_constant_range_count = 1;                           // 推送常量块数量
-//  VkPushConstantRange push_constant_ranges[push_constant_range_count] = {}; // 推送常量范围列表
-//  push_constant_ranges[0].stageFlags = VK_SHADER_STAGE_VERTEX_BIT;        // 对应着色器阶段
-//  push_constant_ranges[0].offset = 0;                                     // 推送常量数据起始偏移量
-//  push_constant_ranges[0].size = sizeof(float) * 16;                      // 推送常量数据总字节数
+  const unsigned push_constant_range_count = 1;                           // 推送常量块数量
+  VkPushConstantRange push_constant_ranges[push_constant_range_count] = {}; // 推送常量范围列表
+  push_constant_ranges[0].stageFlags = VK_SHADER_STAGE_VERTEX_BIT;        // 对应着色器阶段
+  push_constant_ranges[0].offset = 0;                                     // 推送常量数据起始偏移量
+  push_constant_ranges[0].size = sizeof(float) * 16;                      // 推送常量数据总字节数
   /// Sample4_2 **************************************************** end
 
   VkPipelineLayoutCreateInfo pPipelineLayoutCreateInfo = {};              // 构建管线布局创建信息结构体实例
   pPipelineLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
   pPipelineLayoutCreateInfo.pNext = nullptr;
-  pPipelineLayoutCreateInfo.pushConstantRangeCount = 0;                   // 推送常量范围的数量
-  pPipelineLayoutCreateInfo.pPushConstantRanges = nullptr;                // 推送常量范围的列表
-//  pPipelineLayoutCreateInfo.pushConstantRangeCount = push_constant_range_count; // Sample4_2-推送常量范围数量
-//  pPipelineLayoutCreateInfo.pPushConstantRanges = push_constant_ranges;   // Sample4_2-推送常量范围列表
+//  pPipelineLayoutCreateInfo.pushConstantRangeCount = 0;                   // 推送常量范围的数量
+//  pPipelineLayoutCreateInfo.pPushConstantRanges = nullptr;                // 推送常量范围的列表
+  pPipelineLayoutCreateInfo.pushConstantRangeCount = push_constant_range_count; // Sample4_2-推送常量范围数量
+  pPipelineLayoutCreateInfo.pPushConstantRanges = push_constant_ranges;   // Sample4_2-推送常量范围列表
   pPipelineLayoutCreateInfo.setLayoutCount = NUM_DESCRIPTOR_SETS;         // 描述集布局的数量
   pPipelineLayoutCreateInfo.pSetLayouts = descLayouts.data();             // 描述集布局列表
 
@@ -338,8 +338,8 @@ void ShaderQueueSuit_Common::create_pipe_line(VkDevice &device, VkRenderPass &re
   rs.pNext = nullptr;
   rs.flags = 0;
   rs.polygonMode = VK_POLYGON_MODE_FILL;                                  // 绘制方式为填充
-//  rs.cullMode = VK_CULL_MODE_NONE;                                        // 不使用背面剪裁
-  rs.cullMode = VK_CULL_MODE_BACK_BIT;                                    // Sample4_14-开启背面剪裁
+  rs.cullMode = VK_CULL_MODE_NONE;                                        // 不使用背面剪裁
+//  rs.cullMode = VK_CULL_MODE_BACK_BIT;                                    // Sample4_14-开启背面剪裁
   rs.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;                         // 卷绕方向为逆时针
   rs.depthClampEnable = VK_TRUE;                                          // 深度截取
   rs.rasterizerDiscardEnable = VK_FALSE;                                  // 启用光栅化操作(若为TRUE则光栅化不产生任何片元)

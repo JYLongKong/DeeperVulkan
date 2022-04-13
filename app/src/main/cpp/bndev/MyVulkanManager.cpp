@@ -74,8 +74,8 @@ DrawableObjectCommon *MyVulkanManager::triForDraw;
 /// Sample4_1 **************************************************** end
 
 /// Sample4_2 ************************************************** start
-//float MyVulkanManager::yAngle = 0;
-//DrawableObjectCommon *MyVulkanManager::objForDraw;
+float MyVulkanManager::yAngle = 0;
+DrawableObjectCommon *MyVulkanManager::objForDraw;
 /// Sample4_2 **************************************************** end
 
 /// Sample4_7
@@ -101,7 +101,7 @@ DrawableObjectCommon *MyVulkanManager::colorRectG;
 DrawableObjectCommon *MyVulkanManager::colorRectY;
 
 /// Sample4_14
-float MyVulkanManager::yAngle = 0;
+//float MyVulkanManager::yAngle = 0;
 
 /**
  * 创建Vulkan实例的方法
@@ -736,9 +736,9 @@ void MyVulkanManager::destroy_frame_buffer() {
  */
 void MyVulkanManager::createDrawableObject() {
   /// Sample4_1、Sample4_14 ************************************** start
-  TriangleData::genVertexData();                                        // 生成3色三角形顶点数据和颜色数据
-  triForDraw = new DrawableObjectCommon(                                // 创建绘制用三色三角形对象
-      TriangleData::vdata, TriangleData::dataByteCount, TriangleData::vCount, device, memoryroperties);
+//  TriangleData::genVertexData();                                        // 生成3色三角形顶点数据和颜色数据
+//  triForDraw = new DrawableObjectCommon(                                // 创建绘制用三色三角形对象
+//      TriangleData::vdata, TriangleData::dataByteCount, TriangleData::vCount, device, memoryroperties);
   /// Sample4_1、Sample4_14 **************************************** end
 
   /// Sample4_2 ************************************************** start
@@ -748,9 +748,9 @@ void MyVulkanManager::createDrawableObject() {
   /// Sample4_2 **************************************************** end
 
   /// Sample4_4 ************************************************** start
-//  CubeData::genBallData();
-//  objForDraw = new DrawableObjectCommon(
-//      CubeData::vdata, CubeData::dataByteCount, CubeData::vCount, device, memoryroperties);
+  CubeData::genBallData();
+  objForDraw = new DrawableObjectCommon(
+      CubeData::vdata, CubeData::dataByteCount, CubeData::vCount, device, memoryroperties);
   /// Sample4_4 **************************************************** end
 
   /// Sample4_7 ************************************************** start
@@ -805,10 +805,10 @@ void MyVulkanManager::createDrawableObject() {
  */
 void MyVulkanManager::destroyDrawableObject() {
   /// Sample4_1、Sample4_14
-  delete triForDraw;
+//  delete triForDraw;
 
   /// Sample4_2
-//  delete objForDraw;
+  delete objForDraw;
 
   /// Sample4_8
 //  delete triForDraw;
@@ -864,16 +864,16 @@ void MyVulkanManager::initPresentInfo() {
  * 初始化基本变换矩阵、摄像机矩阵和投影矩阵
  */
 void MyVulkanManager::initMatrix() {
-  MatrixState3D::setCamera(0, 0, 200, 0, 0, 0, 0, 1, 0); // 初始化摄像机、Sample4_14-卷绕和背面剪裁
+//  MatrixState3D::setCamera(0, 0, 200, 0, 0, 0, 0, 1, 0); // 初始化摄像机、Sample4_14-卷绕和背面剪裁
 //  MatrixState3D::setCamera(0, 0, 2, 0, 0, 0, 0, 1, 0); // Sample4_2-初始化摄像机
-//  MatrixState3D::setCamera(-16, 8, 45, 0, 0, 0, 0, 1.0, 0.0); // Sample4_4-CubeData
+  MatrixState3D::setCamera(-16, 8, 45, 0, 0, 0, 0, 1.0, 0.0); // Sample4_4-CubeData
 //  MatrixState3D::setCamera(0, 0, 200, 0, 0, 0, 0, 1, 0); // Sample4_7
   MatrixState3D::setInitStack();                                          // 初始化基本变换矩阵
   float ratio = (float) screenWidth / (float) screenHeight;               // 求屏幕宽高比
-  MatrixState3D::setProjectFrustum(-ratio, ratio, -1, 1, 1.5f, 1000); // 设置投影参数、Sample4_14-卷绕和背面剪裁
+//  MatrixState3D::setProjectFrustum(-ratio, ratio, -1, 1, 1.5f, 1000); // 设置投影参数、Sample4_14-卷绕和背面剪裁
 //  MatrixState3D::setProjectOrtho(-ratio, ratio, -1, 1, 1.0f, 20); // Sample4_2-设置正交投影参数
 //  MatrixState3D::setProjectFrustum(-ratio * 0.4, ratio * 0.4, -1 * 0.4, 1 * 0.4, 1.0f, 20); // Sample4_3-设置透视投影参数
-//  MatrixState3D::setProjectFrustum(-ratio * 0.8f, ratio * 1.2f, -1, 1, 20, 100); // Sample4_4-CubeData
+  MatrixState3D::setProjectFrustum(-ratio * 0.8f, ratio * 1.2f, -1, 1, 20, 100); // Sample4_4-CubeData
 //  MatrixState3D::setProjectFrustum(-ratio, ratio, -1, 1, 1.5f, 1000); // Sample4_7
 
   /// Sample4_11 ************************************************* start
@@ -919,22 +919,22 @@ void MyVulkanManager::flushUniformBuffer() {
 //  MatrixState3D::popMatrix();                                             // 恢复现场
 
   /// Sample4_14 ************************************************* start
-  if (xAngle >= 360) {
-    xAngle = 0;
-  }
-  if (yAngle >= 360) {
-    yAngle = 0;
-  }
-  MatrixState3D::pushMatrix();
-  MatrixState3D::rotate(xAngle, 1, 0, 0);
-  MatrixState3D::rotate(yAngle, 0, 1, 0);
+//  if (xAngle >= 360) {
+//    xAngle = 0;
+//  }
+//  if (yAngle >= 360) {
+//    yAngle = 0;
+//  }
+//  MatrixState3D::pushMatrix();
+//  MatrixState3D::rotate(xAngle, 1, 0, 0);
+//  MatrixState3D::rotate(yAngle, 0, 1, 0);
   /// Sample4_14 *************************************************** end
 
   /// Sample4_2
   float *vertexUniformData = MatrixState3D::getFinalMatrix();
 
   /// Sample4_14
-  MatrixState3D::popMatrix();
+//  MatrixState3D::popMatrix();
 
   uint8_t *pData;                                                         // CPU访问设备内存时的辅助指针
   VkResult result = vk::vkMapMemory(                                      // 将设备内存映射为CPU可访问
@@ -1011,21 +1011,21 @@ void MyVulkanManager::drawObject() {
     /// Sample4_2 **************************************************** end
 
     /// Sample4_4 ************************************************** start
-//    MatrixState3D::pushMatrix();
-//    MatrixState3D::rotate(xAngle, 1, 0, 0);
-//    MatrixState3D::rotate(yAngle, 0, 1, 0);
-//    MatrixState3D::pushMatrix();
-//    objForDraw->drawSelf(                                                 // 绘制第一个立方体
-//        cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, &(sqsCL->descSet[0]));
-//    MatrixState3D::popMatrix();
-//    MatrixState3D::pushMatrix();
-//    MatrixState3D::translate(3.5f, 0, 0);                         // Sample4_4-沿x方向平移3.5
-//    MatrixState3D::rotate(30, 0, 0, 1);                      // Sample4_5-绕z轴旋转30°
-//    MatrixState3D::scale(0.4f, 2.0f, 0.6f);                       // Sample4_6-x轴、y轴、z轴3个方向按各自的缩放因子进行缩放
-//    objForDraw->drawSelf(                                                 // 绘制变换后的立方体
-//        cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, &(sqsCL->descSet[0]));
-//    MatrixState3D::popMatrix();
-//    MatrixState3D::popMatrix();
+    MatrixState3D::pushMatrix();
+    MatrixState3D::rotate(xAngle, 1, 0, 0);
+    MatrixState3D::rotate(yAngle, 0, 1, 0);
+    MatrixState3D::pushMatrix();
+    objForDraw->drawSelf(                                                 // 绘制第一个立方体
+        cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, &(sqsCL->descSet[0]));
+    MatrixState3D::popMatrix();
+    MatrixState3D::pushMatrix();
+    MatrixState3D::translate(3.5f, 0, 0);                         // Sample4_4-沿x方向平移3.5
+    MatrixState3D::rotate(30, 0, 0, 1);                      // Sample4_5-绕z轴旋转30°
+    MatrixState3D::scale(0.4f, 2.0f, 0.6f);                       // Sample4_6-x轴、y轴、z轴3个方向按各自的缩放因子进行缩放
+    objForDraw->drawSelf(                                                 // 绘制变换后的立方体
+        cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, &(sqsCL->descSet[0]));
+    MatrixState3D::popMatrix();
+    MatrixState3D::popMatrix();
     /// Sample4_4 **************************************************** end
 
     /// Sample4_7 ************************************************** start
@@ -1131,8 +1131,8 @@ void MyVulkanManager::drawObject() {
 //    MatrixState3D::popMatrix();
     /// Sample4_13 *************************************************** end
 
-    triForDraw->drawSelf(                                                 // 绘制三色三角形、Sample4_14-卷绕和背面剪裁
-        cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, &(sqsCL->descSet[0]));
+//    triForDraw->drawSelf(                                                 // 绘制三色三角形、Sample4_14-卷绕和背面剪裁
+//        cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, &(sqsCL->descSet[0]));
     vk::vkCmdEndRenderPass(cmdBuffer);                                    // 结束渲染通道
     result = vk::vkEndCommandBuffer(cmdBuffer);                           // 结束命令缓冲
 
