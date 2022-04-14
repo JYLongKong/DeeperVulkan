@@ -748,9 +748,9 @@ void MyVulkanManager::createDrawableObject() {
   /// Sample4_2 **************************************************** end
 
   /// Sample4_4 ************************************************** start
-  CubeData::genBallData();
-  objForDraw = new DrawableObjectCommon(
-      CubeData::vdata, CubeData::dataByteCount, CubeData::vCount, device, memoryroperties);
+//  CubeData::genBallData();
+//  objForDraw = new DrawableObjectCommon(
+//      CubeData::vdata, CubeData::dataByteCount, CubeData::vCount, device, memoryroperties);
   /// Sample4_4 **************************************************** end
 
   /// Sample4_7 ************************************************** start
@@ -768,18 +768,18 @@ void MyVulkanManager::createDrawableObject() {
 //      CircleData::vdata, CircleData::dataByteCount, CircleData::vCount, device, memoryroperties);
   /// Sample4_8 **************************************************** end
 
-  /// Sample4_10 ************************************************* start
-//  CircleData::genVertexData();
-//  cirForDraw = new DrawableObjectCommon(
-//      CircleData::vdata,
-//      CircleData::dataByteCount,
-//      CircleData::vCount,
-//      CircleData::idata,
-//      CircleData::indexByteCount,
-//      CircleData::iCount,
-//      device,
-//      memoryroperties);
-  /// Sample4_10 *************************************************** end
+  /// Sample4_10、Sample4_16 ************************************** start
+  CircleData::genVertexData();
+  cirForDraw = new DrawableObjectCommon(
+      CircleData::vdata,
+      CircleData::dataByteCount,
+      CircleData::vCount,
+      CircleData::idata,
+      CircleData::indexByteCount,
+      CircleData::iCount,
+      device,
+      memoryroperties);
+  /// Sample4_10、Sample4_16 *************************************** end
 
   /// Sample4_11 ************************************************* start
 //  cubeForDraw = new Cube(device, memoryroperties);
@@ -808,11 +808,11 @@ void MyVulkanManager::destroyDrawableObject() {
 //  delete triForDraw;
 
   /// Sample4_2
-  delete objForDraw;
+//  delete objForDraw;
 
   /// Sample4_8
 //  delete triForDraw;
-//  delete cirForDraw;
+  delete cirForDraw;
 
   /// Sample4_11
 //  delete cubeForDraw;
@@ -864,16 +864,16 @@ void MyVulkanManager::initPresentInfo() {
  * 初始化基本变换矩阵、摄像机矩阵和投影矩阵
  */
 void MyVulkanManager::initMatrix() {
-//  MatrixState3D::setCamera(0, 0, 200, 0, 0, 0, 0, 1, 0); // 初始化摄像机、Sample4_14-卷绕和背面剪裁
+  MatrixState3D::setCamera(0, 0, 200, 0, 0, 0, 0, 1, 0); // 初始化摄像机、Sample4_14-卷绕和背面剪裁、Sample4_16
 //  MatrixState3D::setCamera(0, 0, 2, 0, 0, 0, 0, 1, 0); // Sample4_2-初始化摄像机
-  MatrixState3D::setCamera(-16, 8, 45, 0, 0, 0, 0, 1.0, 0.0); // Sample4_4-CubeData
+//  MatrixState3D::setCamera(-16, 8, 45, 0, 0, 0, 0, 1.0, 0.0); // Sample4_4-CubeData
 //  MatrixState3D::setCamera(0, 0, 200, 0, 0, 0, 0, 1, 0); // Sample4_7
   MatrixState3D::setInitStack();                                          // 初始化基本变换矩阵
   float ratio = (float) screenWidth / (float) screenHeight;               // 求屏幕宽高比
-//  MatrixState3D::setProjectFrustum(-ratio, ratio, -1, 1, 1.5f, 1000); // 设置投影参数、Sample4_14-卷绕和背面剪裁
+  MatrixState3D::setProjectFrustum(-ratio, ratio, -1, 1, 1.5f, 1000); // 设置投影参数、Sample4_14-卷绕和背面剪裁、Sample4_16
 //  MatrixState3D::setProjectOrtho(-ratio, ratio, -1, 1, 1.0f, 20); // Sample4_2-设置正交投影参数
 //  MatrixState3D::setProjectFrustum(-ratio * 0.4, ratio * 0.4, -1 * 0.4, 1 * 0.4, 1.0f, 20); // Sample4_3-设置透视投影参数
-  MatrixState3D::setProjectFrustum(-ratio * 0.8f, ratio * 1.2f, -1, 1, 20, 100); // Sample4_4-CubeData
+//  MatrixState3D::setProjectFrustum(-ratio * 0.8f, ratio * 1.2f, -1, 1, 20, 100); // Sample4_4-CubeData
 //  MatrixState3D::setProjectFrustum(-ratio, ratio, -1, 1, 1.5f, 1000); // Sample4_7
 
   /// Sample4_11 ************************************************* start
@@ -1011,21 +1011,21 @@ void MyVulkanManager::drawObject() {
     /// Sample4_2 **************************************************** end
 
     /// Sample4_4 ************************************************** start
-    MatrixState3D::pushMatrix();
-    MatrixState3D::rotate(xAngle, 1, 0, 0);
-    MatrixState3D::rotate(yAngle, 0, 1, 0);
-    MatrixState3D::pushMatrix();
-    objForDraw->drawSelf(                                                 // 绘制第一个立方体
-        cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, &(sqsCL->descSet[0]));
-    MatrixState3D::popMatrix();
-    MatrixState3D::pushMatrix();
-    MatrixState3D::translate(3.5f, 0, 0);                         // Sample4_4-沿x方向平移3.5
-    MatrixState3D::rotate(30, 0, 0, 1);                      // Sample4_5-绕z轴旋转30°
-    MatrixState3D::scale(0.4f, 2.0f, 0.6f);                       // Sample4_6-x轴、y轴、z轴3个方向按各自的缩放因子进行缩放
-    objForDraw->drawSelf(                                                 // 绘制变换后的立方体
-        cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, &(sqsCL->descSet[0]));
-    MatrixState3D::popMatrix();
-    MatrixState3D::popMatrix();
+//    MatrixState3D::pushMatrix();
+//    MatrixState3D::rotate(xAngle, 1, 0, 0);
+//    MatrixState3D::rotate(yAngle, 0, 1, 0);
+//    MatrixState3D::pushMatrix();
+//    objForDraw->drawSelf(                                                 // 绘制第一个立方体
+//        cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, &(sqsCL->descSet[0]));
+//    MatrixState3D::popMatrix();
+//    MatrixState3D::pushMatrix();
+//    MatrixState3D::translate(3.5f, 0, 0);                         // Sample4_4-沿x方向平移3.5
+//    MatrixState3D::rotate(30, 0, 0, 1);                      // Sample4_5-绕z轴旋转30°
+//    MatrixState3D::scale(0.4f, 2.0f, 0.6f);                       // Sample4_6-x轴、y轴、z轴3个方向按各自的缩放因子进行缩放
+//    objForDraw->drawSelf(                                                 // 绘制变换后的立方体
+//        cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, &(sqsCL->descSet[0]));
+//    MatrixState3D::popMatrix();
+//    MatrixState3D::popMatrix();
     /// Sample4_4 **************************************************** end
 
     /// Sample4_7 ************************************************** start
@@ -1053,22 +1053,26 @@ void MyVulkanManager::drawObject() {
 //    MatrixState3D::popMatrix();
     /// Sample4_8 **************************************************** end
 
-    /// Sample4_10 ************************************************* start
-//    MatrixState3D::pushMatrix();
-//    MatrixState3D::rotate(xAngle, 1, 0, 0);
-//    MatrixState3D::rotate(yAngle, 0, 1, 0);
-//    MatrixState3D::pushMatrix();
-//    MatrixState3D::translate(0, 50, 0);
+    /// Sample4_10、Sample4_16 ************************************** start
+    MatrixState3D::pushMatrix();
+    MatrixState3D::rotate(xAngle, 1, 0, 0);
+    MatrixState3D::rotate(yAngle, 0, 1, 0);
+    MatrixState3D::pushMatrix();
+    MatrixState3D::translate(0, 50, 0);
 //    cirForDraw->drawSelf(                                                 // 绘制正十边形
 //        cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, &(sqsCL->descSet[0]), 0, CircleData::iCount);
-//    MatrixState3D::popMatrix();
-//    MatrixState3D::pushMatrix();
-//    MatrixState3D::translate(0, -50, 0);
+    cirForDraw->drawSelf(                                                 // Sample4_16-间接绘制正十边形
+        cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, &(sqsCL->descSet[0]), 0);
+    MatrixState3D::popMatrix();
+    MatrixState3D::pushMatrix();
+    MatrixState3D::translate(0, -50, 0);
 //    cirForDraw->drawSelf(                                                 // 绘制正十边形的下半部分
 //        cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, &(sqsCL->descSet[0]), 0, CircleData::iCount / 2 + 1);
-//    MatrixState3D::popMatrix();
-//    MatrixState3D::popMatrix();
-    /// Sample4_10 *************************************************** end
+    cirForDraw->drawSelf(                                                 // Sample4_16-间接绘制正十边形的下半部分
+        cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, &(sqsCL->descSet[0]), sizeof(VkDrawIndexedIndirectCommand));
+    MatrixState3D::popMatrix();
+    MatrixState3D::popMatrix();
+    /// Sample4_10、Sample4_16 *************************************** end
 
     /// Sample4_11 ************************************************* start
 //    MatrixState3D::pushMatrix();

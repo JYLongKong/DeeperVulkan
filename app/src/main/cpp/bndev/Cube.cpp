@@ -63,7 +63,7 @@
  */
 Cube::Cube(VkDevice &device, VkPhysicalDeviceMemoryProperties &memoryroperties, float *vdata, float unit_sizeIn) {
   unit_size = unit_sizeIn;
-  colorRect = new DrawableObjectCommon(vdata, ColorRect::dataByteCount, ColorRect::vCount, device, memoryroperties);
+//  colorRect = new DrawableObjectCommon(vdata, ColorRect::dataByteCount, ColorRect::vCount, device, memoryroperties); // 为Sample4_16隐藏
 }
 
 /**

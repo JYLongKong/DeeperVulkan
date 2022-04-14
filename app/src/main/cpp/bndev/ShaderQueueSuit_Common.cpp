@@ -309,8 +309,8 @@ void ShaderQueueSuit_Common::create_pipe_line(VkDevice &device, VkRenderPass &re
   ia.pNext = nullptr;
   ia.flags = 0;
   ia.primitiveRestartEnable = VK_FALSE;                                   // 关闭图元重启
-  ia.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;                      // 采用三角形图元列表模式进行图元组装
-//  ia.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN;                       // Sample4_10
+//  ia.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;                      // 采用三角形图元列表模式进行图元组装
+  ia.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN;                       // Sample4_10、Sample4_16
 
   /// Sample4_7 ************************************************** start
 //  VkPipelineInputAssemblyStateCreateInfo ia[topologyCount];               // 管线图元组装状态创建信息数组
