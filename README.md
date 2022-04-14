@@ -14,7 +14,29 @@
 
 ##### 注：本项目处在初期，内容还在持续火热更新中...
 
+### Android NDK集成Vulkan
 
+#### 在ndk/21.4.7075529/sources/third_party/shaderc下编译命令
+
+```shell
+$ ../../../ndk-build NDK_PROJECT_PATH=. APP_BUILD_SCRIPT=Android.mk APP_ABI=all APP_PLATFORM=android-21 APP_STL=c++_static -j8 clean libshaderc_combined
+```
+
+#### 如果出现以下问题
+
+```shell
+ndk/21.4.7075529/build/gmsl/__gmsl:512: *** non-numeric second argument to 'wordlist' function: 'android=24'.  Stop.
+```
+
+#### 则修改ndk/21.4.7075529/build/gmsl/__gmsl 第512行为
+
+```ABAP
+int_encode = $(__gmsl_tr1)$(wordlist 1,$(words $1),$(__gmsl_input_int))
+```
+
+#### 继续上述编译命令即可
+
+##### 注意 Android中minSdk需要24+
 
 ### Vulkan执行流程
 
