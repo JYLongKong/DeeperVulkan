@@ -19,6 +19,7 @@
 #include "CircleData.h"
 #include "ColorRect.h"
 #include "BallData.h"
+#include "LightManager.h"
 
 // 静态成员实现
 android_app *MyVulkanManager::Android_application;
@@ -661,10 +662,10 @@ void MyVulkanManager::create_render_pass() {
   result = vk::vkCreateRenderPass(device, &rp_info, nullptr, &renderPass); // 创建渲染通道
   assert(result == VK_SUCCESS);                                           // 检查是否创建成功
 
-  clear_values[0].color.float32[0] = 0.2f;                                // 帧缓冲清除用R分量值
-  clear_values[0].color.float32[1] = 0.2f;                                // 帧缓冲清除用G分量值
-  clear_values[0].color.float32[2] = 0.2f;                                // 帧缓冲清除用B分量值
-  clear_values[0].color.float32[3] = 0.2f;                                // 帧缓冲清除用A分量值
+  clear_values[0].color.float32[0] = 0.0f;                                // 帧缓冲清除用R分量值
+  clear_values[0].color.float32[1] = 0.0f;                                // 帧缓冲清除用G分量值
+  clear_values[0].color.float32[2] = 0.0f;                                // 帧缓冲清除用B分量值
+  clear_values[0].color.float32[3] = 0.0f;                                // 帧缓冲清除用A分量值
   clear_values[1].depthStencil.depth = 1.0f;                              // 帧缓冲清除用深度值
   clear_values[1].depthStencil.stencil = 0;                               // 帧缓冲清除用模板值
 
@@ -875,24 +876,28 @@ void MyVulkanManager::initPresentInfo() {
 
 /**
  * 初始化基本变换矩阵、摄像机矩阵和投影矩阵
+ * Sample5_2-新增初始化环境光照
  */
-void MyVulkanManager::initMatrix() {
+//void MyVulkanManager::initMatrix() {
+void MyVulkanManager::initMatrixAndLight() {
   // 初始化摄像机
 //  MatrixState3D::setCamera(0, 0, 200, 0, 0, 0, 0, 1, 0); // Sample4_14、Sample4_16
 //  MatrixState3D::setCamera(0, 0, 2, 0, 0, 0, 0, 1, 0); // Sample4_2
 //  MatrixState3D::setCamera(-16, 8, 45, 0, 0, 0, 0, 1.0, 0.0); // Sample4_4
 //  MatrixState3D::setCamera(0, 0, 200, 0, 0, 0, 0, 1, 0); // Sample4_7
-  MatrixState3D::setCamera(0, 0, 3, 0, 0, 0, 0, 1, 0);  // Sample5_1
+//  MatrixState3D::setCamera(0, 0, 3, 0, 0, 0, 0, 1, 0);  // Sample5_1
+  MatrixState3D::setCamera(0, 0, 30.0f, 0, 0, 0, 0, 1, 0);  // Sample5_2
 
   MatrixState3D::setInitStack();                                          // 初始化基本变换矩阵
   float ratio = (float) screenWidth / (float) screenHeight;               // 求屏幕宽高比
 
   // 设置投影参数
-  MatrixState3D::setProjectFrustum(-ratio, ratio, -1, 1, 1.5f, 1000); // Sample4_14、Sample4_16、Sample5_1
+//  MatrixState3D::setProjectFrustum(-ratio, ratio, -1, 1, 1.5f, 1000); // Sample4_14、Sample4_16、Sample5_1
 //  MatrixState3D::setProjectOrtho(-ratio, ratio, -1, 1, 1.0f, 20); // Sample4_2-设置正交投影参数
 //  MatrixState3D::setProjectFrustum(-ratio * 0.4, ratio * 0.4, -1 * 0.4, 1 * 0.4, 1.0f, 20); // Sample4_3-设置透视投影参数
 //  MatrixState3D::setProjectFrustum(-ratio * 0.8f, ratio * 1.2f, -1, 1, 20, 100); // Sample4_4
 //  MatrixState3D::setProjectFrustum(-ratio, ratio, -1, 1, 1.5f, 1000); // Sample4_7
+  MatrixState3D::setProjectFrustum(-ratio, ratio, -1, 1, 20.0f, 1000);  // Sample5_2
 
   /// Sample4_11 ************************************************* start
 //  if (ViewPara) { // 合理的视角
@@ -922,6 +927,9 @@ void MyVulkanManager::initMatrix() {
 ////      -ratio * 225.0f, ratio * 225.0f, -225.0f, 225.0f, 900.0f, 10000.0f);
 //  MatrixState3D::setCamera(5000.0f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
   /// Sample4_13 *************************************************** end
+
+  /// Sample5_2
+  LightManager::setLightAmbient(0.2f, 0.2f, 0.2f, 0.2f);  // 设置环境光强度
 }
 
 /**
@@ -954,8 +962,12 @@ void MyVulkanManager::flushUniformBuffer() {
   /// Sample4_14
 //  MatrixState3D::popMatrix();
 
-  /// Sample5_1-棋盘格球
-  float vertexUniformData[8] = {1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 1.0};
+  /// Sample5_1-棋盘格球的两种颜色
+//  float vertexUniformData[8] = {1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 1.0};
+
+  /// Sample5_2-环境光强度RGBA分量值
+  float vertexUniformData[4] = {LightManager::lightAmbientR, LightManager::lightAmbientG, LightManager::lightAmbientB,
+                                LightManager::lightAmbientA};
 
   uint8_t *pData;                                                         // CPU访问设备内存时的辅助指针
   VkResult result = vk::vkMapMemory(                                      // 将设备内存映射为CPU可访问
@@ -1157,12 +1169,23 @@ void MyVulkanManager::drawObject() {
     /// Sample4_13 *************************************************** end
 
     /// Sample5_1 ************************************************** start
+//    MatrixState3D::pushMatrix();
+//    MatrixState3D::rotate(xAngle, 1, 0, 0);
+//    MatrixState3D::rotate(yAngle, 0, 1, 0);
+//    ballForDraw->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, &(sqsCL->descSet[0]));
+//    MatrixState3D::popMatrix();
+    /// Sample5_1 **************************************************** end
+
+    /// Sample5_2 ************************************************** start
     MatrixState3D::pushMatrix();
-    MatrixState3D::rotate(xAngle, 1, 0, 0);
-    MatrixState3D::rotate(yAngle, 0, 1, 0);
+    MatrixState3D::translate(-1.5f, 0, -15);
     ballForDraw->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, &(sqsCL->descSet[0]));
     MatrixState3D::popMatrix();
-    /// Sample5_1 **************************************************** end
+    MatrixState3D::pushMatrix();
+    MatrixState3D::translate(1.5f, 0, -15);
+    ballForDraw->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, &(sqsCL->descSet[0]));
+    MatrixState3D::popMatrix();
+    /// Sample5_2 **************************************************** end
 
 //    triForDraw->drawSelf(                                                 // 绘制三色三角形、Sample4_14-卷绕和背面剪裁
 //        cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, &(sqsCL->descSet[0]));

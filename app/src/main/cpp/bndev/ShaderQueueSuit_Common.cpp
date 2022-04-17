@@ -33,7 +33,8 @@ void ShaderQueueSuit_Common::create_uniform_buffer(VkDevice &device,
   // 计算一致变量缓冲的总字节数，与后面着色器中对应的一致变量块所占的总字节数是一致的
   // 当着色器的这部分发生变化时，这里也需要相应修改(本案例用于存储总变换矩阵4x4)
 //  bufferByteCount = sizeof(float) * 16;
-  bufferByteCount = sizeof(float) * 8;                                    // Sample5_1
+//  bufferByteCount = sizeof(float) * 8;                                    // Sample5_1
+  bufferByteCount = sizeof(float) * 4;                                    // Sample5_2
 
   VkBufferCreateInfo buf_info = {};                                       // 构建一致变量缓冲创建信息结构体实例
   buf_info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;                  // 结构体的类型
@@ -102,8 +103,8 @@ void ShaderQueueSuit_Common::create_pipeline_layout(VkDevice &device) {
   layout_bindings[0].binding = 0;                                         // 此绑定的绑定点编号(需要与着色器中给定的对应绑定点编号一致)
   layout_bindings[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;  // 描述类型(此绑定对应类型为一致变量缓冲)
   layout_bindings[0].descriptorCount = 1;                                 // 描述数量
-//  layout_bindings[0].stageFlags = VK_SHADER_STAGE_VERTEX_BIT;             // 目标着色器阶段(此绑定对应的是顶点着色器)
-  layout_bindings[0].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;           // Sample5_1-目标着色器阶段(此绑定对应的是片元着色器)
+  layout_bindings[0].stageFlags = VK_SHADER_STAGE_VERTEX_BIT;             // 目标着色器阶段(此绑定对应的是顶点着色器)
+//  layout_bindings[0].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;           // Sample5_1-目标着色器阶段(此绑定对应的是片元着色器)
   layout_bindings[0].pImmutableSamplers = nullptr;
 
   VkDescriptorSetLayoutCreateInfo descriptor_layout = {};                 // 构建描述集布局创建信息结构体实例
@@ -117,13 +118,14 @@ void ShaderQueueSuit_Common::create_pipeline_layout(VkDevice &device) {
       device, &descriptor_layout, nullptr, descLayouts.data());
   assert(result == VK_SUCCESS);                                           // 检查描述集布局创建是否成功
 
-  /// Sample4_2 ************************************************** start
+  /// Sample4_2、Sample5_2 *************************************** start
   const unsigned push_constant_range_count = 1;                           // 推送常量块数量
   VkPushConstantRange push_constant_ranges[push_constant_range_count] = {}; // 推送常量范围列表
   push_constant_ranges[0].stageFlags = VK_SHADER_STAGE_VERTEX_BIT;        // 对应着色器阶段
   push_constant_ranges[0].offset = 0;                                     // 推送常量数据起始偏移量
-  push_constant_ranges[0].size = sizeof(float) * 16;                      // 推送常量数据总字节数
-  /// Sample4_2 **************************************************** end
+//  push_constant_ranges[0].size = sizeof(float) * 16;                      // 推送常量数据总字节数
+  push_constant_ranges[0].size = sizeof(float) * 32;                      // Sample5_2
+  /// Sample4_2、Sample5_2 ***************************************** end
 
   VkPipelineLayoutCreateInfo pPipelineLayoutCreateInfo = {};              // 构建管线布局创建信息结构体实例
   pPipelineLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -196,8 +198,10 @@ void ShaderQueueSuit_Common::create_shader(VkDevice &device) {
 //  std::string vertStr = FileUtil::loadAssetStr("shader/commonTexLight.vert"); // 加载顶点着色器脚本
 //  std::string fragStr = FileUtil::loadAssetStr("shader/commonTexLight.frag"); // 加载片元着色器脚本
 //  std::string fragStr = FileUtil::loadAssetStr("shader/sample4_11.frag"); // Sample4_11-加载片元着色器脚本
-  std::string vertStr = FileUtil::loadAssetStr("shader/sample5_1.vert");  // Sample5_1
-  std::string fragStr = FileUtil::loadAssetStr("shader/sample5_1.frag");  // Sample5_1
+//  std::string vertStr = FileUtil::loadAssetStr("shader/sample5_1.vert");  // Sample5_1
+//  std::string fragStr = FileUtil::loadAssetStr("shader/sample5_1.frag");  // Sample5_1
+  std::string vertStr = FileUtil::loadAssetStr("shader/sample5_2.vert");  // Sample5_2
+  std::string fragStr = FileUtil::loadAssetStr("shader/sample5_2.frag");  // Sample5_2
 
   // 给出顶点着色器对应的管线着色器阶段创建信息结构体实例的各项所需属性
   shaderStages[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;

@@ -1,5 +1,5 @@
-#ifndef VULKANEXBASE_MYVULKANMANAGER_H
-#define VULKANEXBASE_MYVULKANMANAGER_H
+#ifndef DEEPERVULKAN_MYVULKANMANAGER_H
+#define DEEPERVULKAN_MYVULKANMANAGER_H
 
 #include <android_native_app_glue.h>
 #include <vector>
@@ -108,7 +108,8 @@ class MyVulkanManager {
   static void initPipeline();                             // 初始化管线
   static void createFence();                              // 创建栅栏
   static void initPresentInfo();                          // 初始化显示信息
-  static void initMatrix();                               // 初始化矩阵
+//  static void initMatrix();                               // 初始化矩阵
+  static void initMatrixAndLight();                       // Sample5_2-初始化矩阵和光照
   static void flushUniformBuffer();                       // 将一致变量数据送入缓冲
   static void flushTexToDesSet();                         // 将纹理等数据与描述集关联
   static void destroyFence();                             // 销毁栅栏
@@ -123,4 +124,4 @@ class MyVulkanManager {
   static void destroy_vulkan_instance();                  // 销毁实例
 };
 
-#endif //VULKANEXBASE_MYVULKANMANAGER_H
+#endif //DEEPERVULKAN_MYVULKANMANAGER_H

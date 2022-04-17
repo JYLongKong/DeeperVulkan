@@ -1,6 +1,6 @@
 /// Sample4_2
-#ifndef VULKANEXBASE_STARDATA_H
-#define VULKANEXBASE_STARDATA_H                       // 防止重复定义
+#ifndef DEEPERVULKAN_STARDATA_H
+#define DEEPERVULKAN_STARDATA_H                       // 防止重复定义
 
 // 六角星物体顶点数据生成类
 class SixPointedStar {

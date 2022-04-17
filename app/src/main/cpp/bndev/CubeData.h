@@ -1,6 +1,6 @@
 /// Sample4_4
-#ifndef VULKANEXBASE_CUBEDATA_H
-#define VULKANEXBASE_CUBEDATA_H
+#ifndef DEEPERVULKAN_CUBEDATA_H
+#define DEEPERVULKAN_CUBEDATA_H
 
 class CubeData {
  public:

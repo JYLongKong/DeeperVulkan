@@ -1,5 +1,5 @@
-#ifndef VULKANEXBASE_HELPFUNCTION_H
-#define VULKANEXBASE_HELPFUNCTION_H
+#ifndef DEEPERVULKAN_HELPFUNCTION_H
+#define DEEPERVULKAN_HELPFUNCTION_H
 
 #include <vulkan/vulkan.h>
 #include "../vksysutil/vulkan_wrapper.h"

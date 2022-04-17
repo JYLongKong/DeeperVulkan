@@ -1,5 +1,5 @@
-#ifndef VULKANEXBASE_OBJOBJECT_H
-#define VULKANEXBASE_OBJOBJECT_H
+#ifndef DEEPERVULKAN_OBJOBJECT_H
+#define DEEPERVULKAN_OBJOBJECT_H
 
 #include <vulkan/vulkan.h>
 #include "vulkan_wrapper.h"

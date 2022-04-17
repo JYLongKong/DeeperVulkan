@@ -1,5 +1,5 @@
-#ifndef VULKANEXBASE_FPSUTIL_H
-#define VULKANEXBASE_FPSUTIL_H
+#ifndef DEEPERVULKAN_FPSUTIL_H
+#define DEEPERVULKAN_FPSUTIL_H
 
 class FPSUtil {
  public:
@@ -22,4 +22,4 @@ class FPSUtil {
   static void after(int dstFPS);
 };
 
-#endif //VULKANEXBASE_FPSUTIL_H
+#endif //DEEPERVULKAN_FPSUTIL_H

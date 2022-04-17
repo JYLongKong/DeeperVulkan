@@ -1,5 +1,5 @@
-#ifndef VULKANEXBASE_BALLDATA_H
-#define VULKANEXBASE_BALLDATA_H
+#ifndef DEEPERVULKAN_BALLDATA_H
+#define DEEPERVULKAN_BALLDATA_H
 
 class BallData {
  public:
@@ -11,4 +11,4 @@ class BallData {
   static float toRadians(float degree);
 };
 
-#endif // VULKANEXBASE_BALLDATA_H
+#endif // DEEPERVULKAN_BALLDATA_H

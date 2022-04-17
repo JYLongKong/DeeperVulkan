@@ -20,7 +20,8 @@ void ThreadTask::doTask() {
   MyVulkanManager::initPipeline();                  // 初始化渲染管线
   MyVulkanManager::createFence();                   // 创建栅栏
   MyVulkanManager::initPresentInfo();               // 初始化呈现信息
-  MyVulkanManager::initMatrix();                    // 初始化基本变换矩阵、摄像机矩阵、投影矩阵
+//  MyVulkanManager::initMatrix();                    // 初始化基本变换矩阵、摄像机矩阵、投影矩阵
+  MyVulkanManager::initMatrixAndLight();            // Sample5_2-初始化基本变换矩阵、摄像机矩阵、投影矩阵、光照
   MyVulkanManager::drawObject();                    // 执行绘制
   MyVulkanManager::destroyFence();                  // 销毁栅栏
   MyVulkanManager::destroyPipeline();               // 销毁管线

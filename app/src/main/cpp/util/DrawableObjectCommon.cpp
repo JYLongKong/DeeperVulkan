@@ -338,11 +338,20 @@ void DrawableObjectCommon::drawSelf(
   );
 
   /// Sample4_2 ************************************************** start
-  float *mvp = MatrixState3D::getFinalMatrix();                           // 获取总变换矩阵
-  memcpy(pushConstantData, mvp, sizeof(float) * 16);          // 将总变换矩阵复制进推送常量数据数组
-  vk::vkCmdPushConstants(cmd, pipelineLayout,                             // 将推送常量数据送入管线
-                         VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(float) * 16, pushConstantData);
+//  float *mvp = MatrixState3D::getFinalMatrix();                           // 获取总变换矩阵
+//  memcpy(pushConstantData, mvp, sizeof(float) * 16);          // 将总变换矩阵复制进推送常量数据数组
+//  vk::vkCmdPushConstants(cmd, pipelineLayout,                             // 将推送常量数据送入管线
+//                         VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(float) * 16, pushConstantData);
   /// Sample4_2 **************************************************** end
+
+  /// Sample5_2 ************************************************** start
+  float *mvp = MatrixState3D::getFinalMatrix();
+  float *mm = MatrixState3D::getMMatrix();
+  memcpy(pushConstantData, mvp, sizeof(float) * 16);
+  memcpy(pushConstantData + 16, mm, sizeof(float) * 16);
+  vk::vkCmdPushConstants(cmd, pipelineLayout,
+                         VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(float) * 32, pushConstantData);
+  /// Sample5_2 **************************************************** end
 
   vk::vkCmdDraw(cmd, vCount, 1, 0, 0);                                    // 执行绘制
 

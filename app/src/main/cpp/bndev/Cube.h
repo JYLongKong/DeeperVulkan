@@ -1,5 +1,5 @@
-#ifndef VULKANEXBASE_CUBE_H
-#define VULKANEXBASE_CUBE_H
+#ifndef DEEPERVULKAN_CUBE_H
+#define DEEPERVULKAN_CUBE_H
 
 #include "ColorRect.h"
 #include "DrawableObjectCommon.h"
@@ -22,4 +22,4 @@ class Cube {
   ~Cube();
 };
 
-#endif //VULKANEXBASE_CUBE_H
+#endif //DEEPERVULKAN_CUBE_H

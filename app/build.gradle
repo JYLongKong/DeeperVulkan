@@ -27,6 +27,19 @@ android {
     }
 
     buildTypes {
+        debug {
+            minifyEnabled false
+            // 拷贝apk到根目录
+            copy {
+                def apkDirPath = getRootDir().path + '/apk/'
+                def apkName = 'Sample.apk'
+                delete(file(apkDirPath + apkName))
+                from file('build/intermediates/apk/debug/')
+                into apkDirPath
+                include '*.apk'
+                rename { apkName }
+            }
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'

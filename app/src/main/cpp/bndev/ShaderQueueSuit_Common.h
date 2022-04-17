@@ -1,5 +1,5 @@
-#ifndef VULKANEXBASE_SHADERQUEUESUIT_CommonLight_H
-#define VULKANEXBASE_SHADERQUEUESUIT_CommonLight_H
+#ifndef DEEPERVULKAN_SHADERQUEUESUIT_CommonLight_H
+#define DEEPERVULKAN_SHADERQUEUESUIT_CommonLight_H
 
 #include <vector>
 #include <vulkan/vulkan.h>

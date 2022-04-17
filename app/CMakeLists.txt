@@ -23,6 +23,8 @@ add_library(
         src/main/cpp/util/HelpFunction.cpp
         src/main/cpp/util/FPSUtil.cpp
         src/main/cpp/util/DrawableObjectCommon.cpp
+        src/main/cpp/util/LightManager.cpp
+
         src/main/cpp/bndev/ShaderCompileUtil.cpp
         src/main/cpp/bndev/ShaderQueueSuit_Common.cpp
         src/main/cpp/bndev/MyVulkanManager.cpp

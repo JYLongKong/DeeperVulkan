@@ -1,5 +1,5 @@
-#ifndef VULKANEXBASE_COLORRECT_H
-#define VULKANEXBASE_COLORRECT_H
+#ifndef DEEPERVULKAN_COLORRECT_H
+#define DEEPERVULKAN_COLORRECT_H
 
 #include <cstdint>
 
@@ -18,4 +18,4 @@ class ColorRect {
   static void genVertexData();
 };
 
-#endif //VULKANEXBASE_COLORRECT_H
+#endif //DEEPERVULKAN_COLORRECT_H
