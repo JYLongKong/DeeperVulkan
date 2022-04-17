@@ -18,6 +18,7 @@
 #include "BeltData.h"
 #include "CircleData.h"
 #include "ColorRect.h"
+#include "BallData.h"
 
 // 静态成员实现
 android_app *MyVulkanManager::Android_application;
@@ -102,6 +103,9 @@ DrawableObjectCommon *MyVulkanManager::colorRectY;
 
 /// Sample4_14
 //float MyVulkanManager::yAngle = 0;
+
+/// Sample5_1
+DrawableObjectCommon *MyVulkanManager::ballForDraw;
 
 /**
  * 创建Vulkan实例的方法
@@ -769,16 +773,16 @@ void MyVulkanManager::createDrawableObject() {
   /// Sample4_8 **************************************************** end
 
   /// Sample4_10、Sample4_16 ************************************** start
-  CircleData::genVertexData();
-  cirForDraw = new DrawableObjectCommon(
-      CircleData::vdata,
-      CircleData::dataByteCount,
-      CircleData::vCount,
-      CircleData::idata,
-      CircleData::indexByteCount,
-      CircleData::iCount,
-      device,
-      memoryroperties);
+//  CircleData::genVertexData();
+//  cirForDraw = new DrawableObjectCommon(
+//      CircleData::vdata,
+//      CircleData::dataByteCount,
+//      CircleData::vCount,
+//      CircleData::idata,
+//      CircleData::indexByteCount,
+//      CircleData::iCount,
+//      device,
+//      memoryroperties);
   /// Sample4_10、Sample4_16 *************************************** end
 
   /// Sample4_11 ************************************************* start
@@ -798,6 +802,12 @@ void MyVulkanManager::createDrawableObject() {
 //  colorRectY = new DrawableObjectCommon(
 //      ColorRect::vdataY, ColorRect::dataByteCount, ColorRect::vCount, device, memoryroperties);
   /// Sample4_13 *************************************************** end
+
+  /// Sample5_1 ************************************************** start
+  BallData::genBallData(9);                                      // 生成球面的顶点数据
+  ballForDraw = new DrawableObjectCommon(                                 // 创建绘制用球对象
+      BallData::vdata, BallData::dataByteCount, BallData::vCount, device, memoryroperties);
+  /// Sample5_1 **************************************************** end
 }
 
 /**
@@ -812,7 +822,7 @@ void MyVulkanManager::destroyDrawableObject() {
 
   /// Sample4_8
 //  delete triForDraw;
-  delete cirForDraw;
+//  delete cirForDraw;
 
   /// Sample4_11
 //  delete cubeForDraw;
@@ -824,6 +834,9 @@ void MyVulkanManager::destroyDrawableObject() {
   /// Sample4_13
 //  delete colorRectG;
 //  delete colorRectY;
+
+  /// Sample5_1
+  delete ballForDraw;
 }
 
 /**
@@ -864,16 +877,21 @@ void MyVulkanManager::initPresentInfo() {
  * 初始化基本变换矩阵、摄像机矩阵和投影矩阵
  */
 void MyVulkanManager::initMatrix() {
-  MatrixState3D::setCamera(0, 0, 200, 0, 0, 0, 0, 1, 0); // 初始化摄像机、Sample4_14-卷绕和背面剪裁、Sample4_16
-//  MatrixState3D::setCamera(0, 0, 2, 0, 0, 0, 0, 1, 0); // Sample4_2-初始化摄像机
-//  MatrixState3D::setCamera(-16, 8, 45, 0, 0, 0, 0, 1.0, 0.0); // Sample4_4-CubeData
+  // 初始化摄像机
+//  MatrixState3D::setCamera(0, 0, 200, 0, 0, 0, 0, 1, 0); // Sample4_14、Sample4_16
+//  MatrixState3D::setCamera(0, 0, 2, 0, 0, 0, 0, 1, 0); // Sample4_2
+//  MatrixState3D::setCamera(-16, 8, 45, 0, 0, 0, 0, 1.0, 0.0); // Sample4_4
 //  MatrixState3D::setCamera(0, 0, 200, 0, 0, 0, 0, 1, 0); // Sample4_7
+  MatrixState3D::setCamera(0, 0, 3, 0, 0, 0, 0, 1, 0);  // Sample5_1
+
   MatrixState3D::setInitStack();                                          // 初始化基本变换矩阵
   float ratio = (float) screenWidth / (float) screenHeight;               // 求屏幕宽高比
-  MatrixState3D::setProjectFrustum(-ratio, ratio, -1, 1, 1.5f, 1000); // 设置投影参数、Sample4_14-卷绕和背面剪裁、Sample4_16
+
+  // 设置投影参数
+  MatrixState3D::setProjectFrustum(-ratio, ratio, -1, 1, 1.5f, 1000); // Sample4_14、Sample4_16、Sample5_1
 //  MatrixState3D::setProjectOrtho(-ratio, ratio, -1, 1, 1.0f, 20); // Sample4_2-设置正交投影参数
 //  MatrixState3D::setProjectFrustum(-ratio * 0.4, ratio * 0.4, -1 * 0.4, 1 * 0.4, 1.0f, 20); // Sample4_3-设置透视投影参数
-//  MatrixState3D::setProjectFrustum(-ratio * 0.8f, ratio * 1.2f, -1, 1, 20, 100); // Sample4_4-CubeData
+//  MatrixState3D::setProjectFrustum(-ratio * 0.8f, ratio * 1.2f, -1, 1, 20, 100); // Sample4_4
 //  MatrixState3D::setProjectFrustum(-ratio, ratio, -1, 1, 1.5f, 1000); // Sample4_7
 
   /// Sample4_11 ************************************************* start
@@ -931,10 +949,13 @@ void MyVulkanManager::flushUniformBuffer() {
   /// Sample4_14 *************************************************** end
 
   /// Sample4_2
-  float *vertexUniformData = MatrixState3D::getFinalMatrix();
+//  float *vertexUniformData = MatrixState3D::getFinalMatrix();
 
   /// Sample4_14
 //  MatrixState3D::popMatrix();
+
+  /// Sample5_1-棋盘格球
+  float vertexUniformData[8] = {1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 1.0};
 
   uint8_t *pData;                                                         // CPU访问设备内存时的辅助指针
   VkResult result = vk::vkMapMemory(                                      // 将设备内存映射为CPU可访问
@@ -1054,24 +1075,24 @@ void MyVulkanManager::drawObject() {
     /// Sample4_8 **************************************************** end
 
     /// Sample4_10、Sample4_16 ************************************** start
-    MatrixState3D::pushMatrix();
-    MatrixState3D::rotate(xAngle, 1, 0, 0);
-    MatrixState3D::rotate(yAngle, 0, 1, 0);
-    MatrixState3D::pushMatrix();
-    MatrixState3D::translate(0, 50, 0);
-//    cirForDraw->drawSelf(                                                 // 绘制正十边形
-//        cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, &(sqsCL->descSet[0]), 0, CircleData::iCount);
-    cirForDraw->drawSelf(                                                 // Sample4_16-间接绘制正十边形
-        cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, &(sqsCL->descSet[0]), 0);
-    MatrixState3D::popMatrix();
-    MatrixState3D::pushMatrix();
-    MatrixState3D::translate(0, -50, 0);
-//    cirForDraw->drawSelf(                                                 // 绘制正十边形的下半部分
-//        cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, &(sqsCL->descSet[0]), 0, CircleData::iCount / 2 + 1);
-    cirForDraw->drawSelf(                                                 // Sample4_16-间接绘制正十边形的下半部分
-        cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, &(sqsCL->descSet[0]), sizeof(VkDrawIndexedIndirectCommand));
-    MatrixState3D::popMatrix();
-    MatrixState3D::popMatrix();
+//    MatrixState3D::pushMatrix();
+//    MatrixState3D::rotate(xAngle, 1, 0, 0);
+//    MatrixState3D::rotate(yAngle, 0, 1, 0);
+//    MatrixState3D::pushMatrix();
+//    MatrixState3D::translate(0, 50, 0);
+////    cirForDraw->drawSelf(                                                 // 绘制正十边形
+////        cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, &(sqsCL->descSet[0]), 0, CircleData::iCount);
+//    cirForDraw->drawSelf(                                                 // Sample4_16-间接绘制正十边形
+//        cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, &(sqsCL->descSet[0]), 0);
+//    MatrixState3D::popMatrix();
+//    MatrixState3D::pushMatrix();
+//    MatrixState3D::translate(0, -50, 0);
+////    cirForDraw->drawSelf(                                                 // 绘制正十边形的下半部分
+////        cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, &(sqsCL->descSet[0]), 0, CircleData::iCount / 2 + 1);
+//    cirForDraw->drawSelf(                                                 // Sample4_16-间接绘制正十边形的下半部分
+//        cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, &(sqsCL->descSet[0]), sizeof(VkDrawIndexedIndirectCommand));
+//    MatrixState3D::popMatrix();
+//    MatrixState3D::popMatrix();
     /// Sample4_10、Sample4_16 *************************************** end
 
     /// Sample4_11 ************************************************* start
@@ -1134,6 +1155,14 @@ void MyVulkanManager::drawObject() {
 //    MatrixState3D::popMatrix();
 //    MatrixState3D::popMatrix();
     /// Sample4_13 *************************************************** end
+
+    /// Sample5_1 ************************************************** start
+    MatrixState3D::pushMatrix();
+    MatrixState3D::rotate(xAngle, 1, 0, 0);
+    MatrixState3D::rotate(yAngle, 0, 1, 0);
+    ballForDraw->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, &(sqsCL->descSet[0]));
+    MatrixState3D::popMatrix();
+    /// Sample5_1 **************************************************** end
 
 //    triForDraw->drawSelf(                                                 // 绘制三色三角形、Sample4_14-卷绕和背面剪裁
 //        cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, &(sqsCL->descSet[0]));

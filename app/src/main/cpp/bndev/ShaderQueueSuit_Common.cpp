@@ -32,7 +32,8 @@ void ShaderQueueSuit_Common::create_uniform_buffer(VkDevice &device,
                                                    VkPhysicalDeviceMemoryProperties &memoryroperties) {
   // 计算一致变量缓冲的总字节数，与后面着色器中对应的一致变量块所占的总字节数是一致的
   // 当着色器的这部分发生变化时，这里也需要相应修改(本案例用于存储总变换矩阵4x4)
-  bufferByteCount = sizeof(float) * 16;
+//  bufferByteCount = sizeof(float) * 16;
+  bufferByteCount = sizeof(float) * 8;                                    // Sample5_1
 
   VkBufferCreateInfo buf_info = {};                                       // 构建一致变量缓冲创建信息结构体实例
   buf_info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;                  // 结构体的类型
@@ -101,7 +102,8 @@ void ShaderQueueSuit_Common::create_pipeline_layout(VkDevice &device) {
   layout_bindings[0].binding = 0;                                         // 此绑定的绑定点编号(需要与着色器中给定的对应绑定点编号一致)
   layout_bindings[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;  // 描述类型(此绑定对应类型为一致变量缓冲)
   layout_bindings[0].descriptorCount = 1;                                 // 描述数量
-  layout_bindings[0].stageFlags = VK_SHADER_STAGE_VERTEX_BIT;             // 目标着色器阶段(此绑定对应的是顶点着色器)
+//  layout_bindings[0].stageFlags = VK_SHADER_STAGE_VERTEX_BIT;             // 目标着色器阶段(此绑定对应的是顶点着色器)
+  layout_bindings[0].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;           // Sample5_1-目标着色器阶段(此绑定对应的是片元着色器)
   layout_bindings[0].pImmutableSamplers = nullptr;
 
   VkDescriptorSetLayoutCreateInfo descriptor_layout = {};                 // 构建描述集布局创建信息结构体实例
@@ -191,9 +193,11 @@ void ShaderQueueSuit_Common::init_descriptor_set(VkDevice &device) {
  * 创建着色器
  */
 void ShaderQueueSuit_Common::create_shader(VkDevice &device) {
-  std::string vertStr = FileUtil::loadAssetStr("shader/commonTexLight.vert"); // 加载顶点着色器脚本
-  std::string fragStr = FileUtil::loadAssetStr("shader/commonTexLight.frag"); // 加载片元着色器脚本
+//  std::string vertStr = FileUtil::loadAssetStr("shader/commonTexLight.vert"); // 加载顶点着色器脚本
+//  std::string fragStr = FileUtil::loadAssetStr("shader/commonTexLight.frag"); // 加载片元着色器脚本
 //  std::string fragStr = FileUtil::loadAssetStr("shader/sample4_11.frag"); // Sample4_11-加载片元着色器脚本
+  std::string vertStr = FileUtil::loadAssetStr("shader/sample5_1.vert");  // Sample5_1
+  std::string fragStr = FileUtil::loadAssetStr("shader/sample5_1.frag");  // Sample5_1
 
   // 给出顶点着色器对应的管线着色器阶段创建信息结构体实例的各项所需属性
   shaderStages[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -254,18 +258,19 @@ void ShaderQueueSuit_Common::initVertexAttributeInfo() {
   // 设置顶点输入绑定描述结构体属性
   vertexBinding.binding = 0;                                              // 对应绑定点
   vertexBinding.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;                  // 数据输入频率为每顶点输入一套数据
-  vertexBinding.stride = sizeof(float) * 6;                               // 每组数据的跨度字节数(x,y,z,R,G,B 6个分量)
+//  vertexBinding.stride = sizeof(float) * 6;                               // 每组数据的跨度字节数(x,y,z,R,G,B 6个分量)
+  vertexBinding.stride = sizeof(float) * 3;                               // Sample5_1-球
 
   vertexAttribs[0].binding = 0;                                           // 第1个顶点输入属性的绑定点
   vertexAttribs[0].location = 0;                                          // 第1个顶点输入属性的位置索引
   vertexAttribs[0].format = VK_FORMAT_R32G32B32_SFLOAT;                   // 第1个顶点输入属性的数据格式
   vertexAttribs[0].offset = 0;                                            // 第1个顶点输入属性的偏移量
 
-  vertexAttribs[1].binding = 0;                                           // 第2个顶点输入属性的绑定点
-  vertexAttribs[1].location = 1;                                          // 第2个顶点输入属性的位置索引
-  vertexAttribs[1].format = VK_FORMAT_R32G32B32_SFLOAT;                   // 第2个顶点输入属性的数据格式
-  // 由于第1个顶点输入属性包含3个float分量，每个float分量4个字节，偏移量以字节计
-  vertexAttribs[1].offset = 12;                                           // 第2个顶点输入属性的偏移量
+//  vertexAttribs[1].binding = 0;                                           // 第2个顶点输入属性的绑定点
+//  vertexAttribs[1].location = 1;                                          // 第2个顶点输入属性的位置索引
+//  vertexAttribs[1].format = VK_FORMAT_R32G32B32_SFLOAT;                   // 第2个顶点输入属性的数据格式
+//  // 由于第1个顶点输入属性包含3个float分量，每个float分量4个字节，偏移量以字节计
+//  vertexAttribs[1].offset = 12;                                           // 第2个顶点输入属性的偏移量
 }
 
 /**
@@ -301,7 +306,8 @@ void ShaderQueueSuit_Common::create_pipe_line(VkDevice &device, VkRenderPass &re
   vi.flags = 0;
   vi.vertexBindingDescriptionCount = 1;                                   // 顶点输入绑定描述数量
   vi.pVertexBindingDescriptions = &vertexBinding;                         // 顶点输入绑定描述列表
-  vi.vertexAttributeDescriptionCount = 2;                                 // 顶点输入属性描述数量
+//  vi.vertexAttributeDescriptionCount = 2;                                 // 顶点输入属性描述数量
+  vi.vertexAttributeDescriptionCount = 1;                                 // Sample5_1-球
   vi.pVertexAttributeDescriptions = vertexAttribs;                        // 顶点输入属性描述列表
 
   VkPipelineInputAssemblyStateCreateInfo ia;                              // 管线图元组装状态创建信息
@@ -309,8 +315,8 @@ void ShaderQueueSuit_Common::create_pipe_line(VkDevice &device, VkRenderPass &re
   ia.pNext = nullptr;
   ia.flags = 0;
   ia.primitiveRestartEnable = VK_FALSE;                                   // 关闭图元重启
-//  ia.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;                      // 采用三角形图元列表模式进行图元组装
-  ia.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN;                       // Sample4_10、Sample4_16
+  ia.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;                      // 采用三角形图元列表模式进行图元组装
+//  ia.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN;                       // Sample4_10、Sample4_16
 
   /// Sample4_7 ************************************************** start
 //  VkPipelineInputAssemblyStateCreateInfo ia[topologyCount];               // 管线图元组装状态创建信息数组

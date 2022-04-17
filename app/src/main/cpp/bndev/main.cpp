@@ -18,6 +18,9 @@ float yDis;
 /// Sample4_7
 bool isClick = true;
 
+/// Sample5_1
+float TOUCH_SCALE_FACTOR = 180.0f / 320;
+
 /**
  * 事件处理回调方法
  * Sample4_1
@@ -65,12 +68,12 @@ static int32_t engine_handle_input(struct android_app *app, AInputEvent *event) 
         case AMOTION_EVENT_ACTION_MOVE: // 触摸点移动
 
           /// Sample4_2 ************************************************** start
-          xDis = x - xPre;                      // 计算触控点x位移
-          yDis = y - yPre;                      // 计算触控点y位移
-          MyVulkanManager::xAngle += yDis / 10; // 计算x轴旋转角
-          MyVulkanManager::yAngle += xDis / 10; // 计算y轴旋转角
-          xPre = x;                             // 记录触控点x坐标
-          yPre = y;                             // 记录触控点y坐标
+//          xDis = x - xPre;                      // 计算触控点x位移
+//          yDis = y - yPre;                      // 计算触控点y位移
+//          MyVulkanManager::xAngle += yDis / 10; // 计算x轴旋转角
+//          MyVulkanManager::yAngle += xDis / 10; // 计算y轴旋转角
+//          xPre = x;                             // 记录触控点x坐标
+//          yPre = y;                             // 记录触控点y坐标
           /// Sample4_2 **************************************************** end
 
           /// Sample4_7 ************************************************** start
@@ -95,6 +98,15 @@ static int32_t engine_handle_input(struct android_app *app, AInputEvent *event) 
 //            yPre = y;
 //          }
           /// Sample4_11 *************************************************** end
+
+          /// Sample5_1 ************************************************** start
+          xDis = x - xPre;
+          yDis = y - yPre;
+          MyVulkanManager::xAngle += yDis * TOUCH_SCALE_FACTOR;
+          MyVulkanManager::yAngle += xDis * TOUCH_SCALE_FACTOR;
+          xPre = x;
+          yPre = y;
+          /// Sample5_1 **************************************************** end
 
           break;
         case AMOTION_EVENT_ACTION_UP:   // 触摸点抬起
