@@ -7,6 +7,7 @@
 #include "help.h"
 #include "MyVulkanManager.h"
 #include "mylog.h"
+#include "LightManager.h"
 
 extern "C"
 {
@@ -19,7 +20,10 @@ float yDis;
 bool isClick = true;
 
 /// Sample5_1
-float TOUCH_SCALE_FACTOR = 180.0f / 320;
+//float TOUCH_SCALE_FACTOR = 180.0f / 320;
+
+/// Sample5_3
+float TOUCH_SCALE_FACTOR = 10.0f / 320; // 角度缩放比例
 
 /**
  * 事件处理回调方法
@@ -100,13 +104,22 @@ static int32_t engine_handle_input(struct android_app *app, AInputEvent *event) 
           /// Sample4_11 *************************************************** end
 
           /// Sample5_1 ************************************************** start
+//          xDis = x - xPre;
+//          yDis = y - yPre;
+//          MyVulkanManager::xAngle += yDis * TOUCH_SCALE_FACTOR;
+//          MyVulkanManager::yAngle += xDis * TOUCH_SCALE_FACTOR;
+//          xPre = x;
+//          yPre = y;
+          /// Sample5_1 **************************************************** end
+
+          /// Sample5_3 ************************************************** start
           xDis = x - xPre;
           yDis = y - yPre;
-          MyVulkanManager::xAngle += yDis * TOUCH_SCALE_FACTOR;
-          MyVulkanManager::yAngle += xDis * TOUCH_SCALE_FACTOR;
+          LightManager::lx = LightManager::lx + xDis * TOUCH_SCALE_FACTOR;  // 修改光源位置x点坐标
+          LightManager::ly = LightManager::ly - yDis * TOUCH_SCALE_FACTOR;  // 修改光源位置y点坐标
           xPre = x;
           yPre = y;
-          /// Sample5_1 **************************************************** end
+          /// Sample5_3 **************************************************** end
 
           break;
         case AMOTION_EVENT_ACTION_UP:   // 触摸点抬起

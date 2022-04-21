@@ -51,13 +51,31 @@ void BallData::genBallData(float angleSpan) {
       alVertix.push_back(z3);
     }
   }
+
+//  vCount = alVertix.size() / 3;
+//  dataByteCount = alVertix.size() * sizeof(float);
+//  vdata = new float[alVertix.size()];
+//  int index = 0;
+//  for (int i = 0; i < vCount; ++i) {
+//    vdata[index++] = alVertix[i * 3];
+//    vdata[index++] = alVertix[i * 3 + 1];
+//    vdata[index++] = alVertix[i * 3 + 2];
+//  }
+
+  /// Sample5_3 ************************************************** start
   vCount = alVertix.size() / 3;
-  dataByteCount = alVertix.size() * sizeof(float);
-  vdata = new float[alVertix.size()];
+  dataByteCount = alVertix.size() * 2 * sizeof(float);                    // 计算顶点和法向量数据总字节数
+  vdata = new float[alVertix.size() * 2];                                 // 创建存放顶点和法向量数据的数组
   int index = 0;
   for (int i = 0; i < vCount; ++i) {
+    // 保存顶点位置xyz分量
     vdata[index++] = alVertix[i * 3];
     vdata[index++] = alVertix[i * 3 + 1];
     vdata[index++] = alVertix[i * 3 + 2];
+    // 保存法向量xyz轴分量(除以r是为了规格化)
+    vdata[index++] = alVertix[i * 3] / r;
+    vdata[index++] = alVertix[i * 3 + 1] / r;
+    vdata[index++] = alVertix[i * 3 + 2] / r;
   }
+  /// Sample5_3 **************************************************** end
 }

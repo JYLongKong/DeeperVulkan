@@ -929,7 +929,11 @@ void MyVulkanManager::initMatrixAndLight() {
   /// Sample4_13 *************************************************** end
 
   /// Sample5_2
-  LightManager::setLightAmbient(0.2f, 0.2f, 0.2f, 0.2f);  // 设置环境光强度
+//  LightManager::setLightAmbient(0.2f, 0.2f, 0.2f, 0.2f);  // 设置环境光强度
+
+  /// Sample5_3
+  LightManager::setLightPosition(0, 0, -13);  // 设置光源位置
+  LightManager::setLightDiffuse(0.8f, 0.8f, 0.8f, 0.8f);  // 设置散射光强度
 }
 
 /**
@@ -966,8 +970,16 @@ void MyVulkanManager::flushUniformBuffer() {
 //  float vertexUniformData[8] = {1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 1.0};
 
   /// Sample5_2-环境光强度RGBA分量值
-  float vertexUniformData[4] = {LightManager::lightAmbientR, LightManager::lightAmbientG, LightManager::lightAmbientB,
-                                LightManager::lightAmbientA};
+//  float vertexUniformData[4] = {LightManager::lightAmbientR, LightManager::lightAmbientG, LightManager::lightAmbientB,
+//                                LightManager::lightAmbientA};
+
+  /// Sample5_3-散射光
+  float vertexUniformData[8] = {
+      // 光源位置
+      LightManager::lx, LightManager::ly, LightManager::lz, 1.0,  // 注: 补了一个1.0为了使总的数据量为16字节的整数倍
+      // 散射光强度
+      LightManager::lightDiffuseR, LightManager::lightDiffuseG, LightManager::lightDiffuseB, LightManager::lightDiffuseA
+  };
 
   uint8_t *pData;                                                         // CPU访问设备内存时的辅助指针
   VkResult result = vk::vkMapMemory(                                      // 将设备内存映射为CPU可访问

@@ -34,7 +34,8 @@ void ShaderQueueSuit_Common::create_uniform_buffer(VkDevice &device,
   // 当着色器的这部分发生变化时，这里也需要相应修改(本案例用于存储总变换矩阵4x4)
 //  bufferByteCount = sizeof(float) * 16;
 //  bufferByteCount = sizeof(float) * 8;                                    // Sample5_1
-  bufferByteCount = sizeof(float) * 4;                                    // Sample5_2
+//  bufferByteCount = sizeof(float) * 4;                                    // Sample5_2
+  bufferByteCount = sizeof(float) * 8;                                    // Sample5_3-此处的总字节数应与vertexUniformData一致
 
   VkBufferCreateInfo buf_info = {};                                       // 构建一致变量缓冲创建信息结构体实例
   buf_info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;                  // 结构体的类型
@@ -200,8 +201,9 @@ void ShaderQueueSuit_Common::create_shader(VkDevice &device) {
 //  std::string fragStr = FileUtil::loadAssetStr("shader/sample4_11.frag"); // Sample4_11-加载片元着色器脚本
 //  std::string vertStr = FileUtil::loadAssetStr("shader/sample5_1.vert");  // Sample5_1
 //  std::string fragStr = FileUtil::loadAssetStr("shader/sample5_1.frag");  // Sample5_1
-  std::string vertStr = FileUtil::loadAssetStr("shader/sample5_2.vert");  // Sample5_2
+//  std::string vertStr = FileUtil::loadAssetStr("shader/sample5_2.vert");  // Sample5_2
   std::string fragStr = FileUtil::loadAssetStr("shader/sample5_2.frag");  // Sample5_2
+  std::string vertStr = FileUtil::loadAssetStr("shader/sample5_3.vert");  // Sample5_3
 
   // 给出顶点着色器对应的管线着色器阶段创建信息结构体实例的各项所需属性
   shaderStages[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -263,7 +265,8 @@ void ShaderQueueSuit_Common::initVertexAttributeInfo() {
   vertexBinding.binding = 0;                                              // 对应绑定点
   vertexBinding.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;                  // 数据输入频率为每顶点输入一套数据
 //  vertexBinding.stride = sizeof(float) * 6;                               // 每组数据的跨度字节数(x,y,z,R,G,B 6个分量)
-  vertexBinding.stride = sizeof(float) * 3;                               // Sample5_1-球
+//  vertexBinding.stride = sizeof(float) * 3;                               // Sample5_1-球
+  vertexBinding.stride = sizeof(float) * 6;                               // Sample5_3-顶点+法向共6个分量
 
   vertexAttribs[0].binding = 0;                                           // 第1个顶点输入属性的绑定点
   vertexAttribs[0].location = 0;                                          // 第1个顶点输入属性的位置索引
@@ -275,6 +278,13 @@ void ShaderQueueSuit_Common::initVertexAttributeInfo() {
 //  vertexAttribs[1].format = VK_FORMAT_R32G32B32_SFLOAT;                   // 第2个顶点输入属性的数据格式
 //  // 由于第1个顶点输入属性包含3个float分量，每个float分量4个字节，偏移量以字节计
 //  vertexAttribs[1].offset = 12;                                           // 第2个顶点输入属性的偏移量
+
+  /// Sample5_3 ************************************************** start
+  vertexAttribs[1].binding = 0;                                           // 法向量输入属性的绑定点
+  vertexAttribs[1].location = 1;                                          // 法向量输入属性的位置索引
+  vertexAttribs[1].format = VK_FORMAT_R32G32B32_SFLOAT;                   // 法向量输入属性的数据格式
+  vertexAttribs[1].offset = 12;                                           // 法向量输入属性的偏移量
+  /// Sample5_3 **************************************************** end
 }
 
 /**
@@ -310,8 +320,8 @@ void ShaderQueueSuit_Common::create_pipe_line(VkDevice &device, VkRenderPass &re
   vi.flags = 0;
   vi.vertexBindingDescriptionCount = 1;                                   // 顶点输入绑定描述数量
   vi.pVertexBindingDescriptions = &vertexBinding;                         // 顶点输入绑定描述列表
-//  vi.vertexAttributeDescriptionCount = 2;                                 // 顶点输入属性描述数量
-  vi.vertexAttributeDescriptionCount = 1;                                 // Sample5_1-球
+  vi.vertexAttributeDescriptionCount = 2;                                 // 顶点输入属性描述数量
+//  vi.vertexAttributeDescriptionCount = 1;                                 // Sample5_1-球
   vi.pVertexAttributeDescriptions = vertexAttribs;                        // 顶点输入属性描述列表
 
   VkPipelineInputAssemblyStateCreateInfo ia;                              // 管线图元组装状态创建信息
