@@ -932,8 +932,12 @@ void MyVulkanManager::initMatrixAndLight() {
 //  LightManager::setLightAmbient(0.2f, 0.2f, 0.2f, 0.2f);  // 设置环境光强度
 
   /// Sample5_3
+//  LightManager::setLightPosition(0, 0, -13);  // 设置光源位置
+//  LightManager::setLightDiffuse(0.8f, 0.8f, 0.8f, 0.8f);  // 设置散射光强度
+
+  /// Sample5_4
   LightManager::setLightPosition(0, 0, -13);  // 设置光源位置
-  LightManager::setLightDiffuse(0.8f, 0.8f, 0.8f, 0.8f);  // 设置散射光强度
+  LightManager::setLightSpecular(0.7f, 0.7f, 0.7f, 0.7f); // 设置镜面光强度
 }
 
 /**
@@ -974,11 +978,19 @@ void MyVulkanManager::flushUniformBuffer() {
 //                                LightManager::lightAmbientA};
 
   /// Sample5_3-散射光
-  float vertexUniformData[8] = {
-      // 光源位置
-      LightManager::lx, LightManager::ly, LightManager::lz, 1.0,  // 注: 补了一个1.0为了使总的数据量为16字节的整数倍
-      // 散射光强度
-      LightManager::lightDiffuseR, LightManager::lightDiffuseG, LightManager::lightDiffuseB, LightManager::lightDiffuseA
+//  float vertexUniformData[8] = {
+//      // 光源位置
+//      LightManager::lx, LightManager::ly, LightManager::lz, 1.0,  // 注: 补了一个1.0为了使总的数据量为16字节的整数倍
+//      // 散射光强度
+//      LightManager::lightDiffuseR, LightManager::lightDiffuseG, LightManager::lightDiffuseB, LightManager::lightDiffuseA
+//  };
+
+  /// Sample5_4-镜面光
+  float vertexUniformData[12] = {                                         // 一致缓冲数据数组
+      MatrixState3D::cx, MatrixState3D::cy, MatrixState3D::cz, 1.0,       // 摄像机位置XYZ分量值
+      LightManager::lx, LightManager::ly, LightManager::lz, 1.0,          // 光源位置XYZ分量值
+      LightManager::lightSpecularR, LightManager::lightSpecularG,         // 镜面光强度RGBA分量值
+      LightManager::lightSpecularB, LightManager::lightSpecularA
   };
 
   uint8_t *pData;                                                         // CPU访问设备内存时的辅助指针
