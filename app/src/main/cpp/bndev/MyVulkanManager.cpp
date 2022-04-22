@@ -928,16 +928,11 @@ void MyVulkanManager::initMatrixAndLight() {
 //  MatrixState3D::setCamera(5000.0f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
   /// Sample4_13 *************************************************** end
 
-  /// Sample5_2
-//  LightManager::setLightAmbient(0.2f, 0.2f, 0.2f, 0.2f);  // 设置环境光强度
-
-  /// Sample5_3
-//  LightManager::setLightPosition(0, 0, -13);  // 设置光源位置
-//  LightManager::setLightDiffuse(0.8f, 0.8f, 0.8f, 0.8f);  // 设置散射光强度
-
-  /// Sample5_4
+  /// Sample5_5
   LightManager::setLightPosition(0, 0, -13);  // 设置光源位置
-  LightManager::setLightSpecular(0.7f, 0.7f, 0.7f, 0.7f); // 设置镜面光强度
+  LightManager::setLightAmbient(0.1f, 0.1f, 0.1f, 0.1f);  // 设置环境光强度
+  LightManager::setLightDiffuse(0.6f, 0.6f, 0.6f, 0.6f);  // 设置散射光强度
+  LightManager::setLightSpecular(0.4f, 0.4f, 0.4f, 0.4f); // 设置镜面光强度
 }
 
 /**
@@ -973,7 +968,7 @@ void MyVulkanManager::flushUniformBuffer() {
   /// Sample5_1-棋盘格球的两种颜色
 //  float vertexUniformData[8] = {1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 1.0};
 
-  /// Sample5_2-环境光强度RGBA分量值
+  /// Sample5_2-环境光
 //  float vertexUniformData[4] = {LightManager::lightAmbientR, LightManager::lightAmbientG, LightManager::lightAmbientB,
 //                                LightManager::lightAmbientA};
 
@@ -986,11 +981,23 @@ void MyVulkanManager::flushUniformBuffer() {
 //  };
 
   /// Sample5_4-镜面光
-  float vertexUniformData[12] = {                                         // 一致缓冲数据数组
-      MatrixState3D::cx, MatrixState3D::cy, MatrixState3D::cz, 1.0,       // 摄像机位置XYZ分量值
-      LightManager::lx, LightManager::ly, LightManager::lz, 1.0,          // 光源位置XYZ分量值
-      LightManager::lightSpecularR, LightManager::lightSpecularG,         // 镜面光强度RGBA分量值
-      LightManager::lightSpecularB, LightManager::lightSpecularA
+//  float vertexUniformData[12] = {                                         // 一致缓冲数据数组
+//      MatrixState3D::cx, MatrixState3D::cy, MatrixState3D::cz, 1.0,       // 摄像机位置XYZ分量值
+//      LightManager::lx, LightManager::ly, LightManager::lz, 1.0,          // 光源位置XYZ分量值
+//      LightManager::lightSpecularR, LightManager::lightSpecularG,         // 镜面光强度RGBA分量值
+//      LightManager::lightSpecularB, LightManager::lightSpecularA
+//  };
+
+  /// Sample5_5-三光合一
+  float vertexUniformData[20] = {
+      MatrixState3D::cx, MatrixState3D::cy, MatrixState3D::cz, 1.0,
+      LightManager::lx, LightManager::ly, LightManager::lz, 1.0,
+      LightManager::lightAmbientR, LightManager::lightAmbientG, LightManager::lightAmbientB,
+      LightManager::lightAmbientA,
+      LightManager::lightDiffuseR, LightManager::lightDiffuseG, LightManager::lightDiffuseB,
+      LightManager::lightDiffuseA,
+      LightManager::lightSpecularR, LightManager::lightSpecularG, LightManager::lightSpecularB,
+      LightManager::lightSpecularA
   };
 
   uint8_t *pData;                                                         // CPU访问设备内存时的辅助指针

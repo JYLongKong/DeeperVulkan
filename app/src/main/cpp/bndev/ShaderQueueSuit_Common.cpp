@@ -36,7 +36,8 @@ void ShaderQueueSuit_Common::create_uniform_buffer(VkDevice &device,
 //  bufferByteCount = sizeof(float) * 8;                                    // Sample5_1
 //  bufferByteCount = sizeof(float) * 4;                                    // Sample5_2
 //  bufferByteCount = sizeof(float) * 8;                                    // Sample5_3-此处的总字节数应与vertexUniformData一致
-  bufferByteCount = sizeof(float) * 12;                                   // Sample5_4
+//  bufferByteCount = sizeof(float) * 12;                                   // Sample5_4
+  bufferByteCount = sizeof(float) * 20;                                   // Sample5_5
 
   VkBufferCreateInfo buf_info = {};                                       // 构建一致变量缓冲创建信息结构体实例
   buf_info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;                  // 结构体的类型
@@ -205,7 +206,8 @@ void ShaderQueueSuit_Common::create_shader(VkDevice &device) {
 //  std::string vertStr = FileUtil::loadAssetStr("shader/sample5_2.vert");  // Sample5_2
   std::string fragStr = FileUtil::loadAssetStr("shader/sample5_2.frag");  // Sample5_2
 //  std::string vertStr = FileUtil::loadAssetStr("shader/sample5_3.vert");  // Sample5_3
-  std::string vertStr = FileUtil::loadAssetStr("shader/sample5_4.vert");  // Sample5_4
+//  std::string vertStr = FileUtil::loadAssetStr("shader/sample5_4.vert");  // Sample5_4
+  std::string vertStr = FileUtil::loadAssetStr("shader/sample5_5.vert");  // Sample5_5
 
   // 给出顶点着色器对应的管线着色器阶段创建信息结构体实例的各项所需属性
   shaderStages[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
