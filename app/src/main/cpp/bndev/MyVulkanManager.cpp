@@ -928,8 +928,9 @@ void MyVulkanManager::initMatrixAndLight() {
 //  MatrixState3D::setCamera(5000.0f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
   /// Sample4_13 *************************************************** end
 
-  /// Sample5_5
-  LightManager::setLightPosition(0, 0, -13);  // 设置光源位置
+  /// Sample5_5、Sample5_6
+  LightManager::setLightPosition(0, 0, -13);  // 设置定位光光源位置
+  LightManager::setLightDirection(-0.0f, 0.0f, 1.0f); // 设置定向光光源方向
   LightManager::setLightAmbient(0.1f, 0.1f, 0.1f, 0.1f);  // 设置环境光强度
   LightManager::setLightDiffuse(0.6f, 0.6f, 0.6f, 0.6f);  // 设置散射光强度
   LightManager::setLightSpecular(0.4f, 0.4f, 0.4f, 0.4f); // 设置镜面光强度
@@ -988,10 +989,11 @@ void MyVulkanManager::flushUniformBuffer() {
 //      LightManager::lightSpecularB, LightManager::lightSpecularA
 //  };
 
-  /// Sample5_5-三光合一
+  /// Sample5_5、Sample5_6-三光合一
   float vertexUniformData[20] = {
       MatrixState3D::cx, MatrixState3D::cy, MatrixState3D::cz, 1.0,
-      LightManager::lx, LightManager::ly, LightManager::lz, 1.0,
+//      LightManager::lx, LightManager::ly, LightManager::lz, 1.0,          // Sample5_5-定位光
+      LightManager::ldx, LightManager::ldy, LightManager::ldz, 1.0,       // Sample5_6-定向光
       LightManager::lightAmbientR, LightManager::lightAmbientG, LightManager::lightAmbientB,
       LightManager::lightAmbientA,
       LightManager::lightDiffuseR, LightManager::lightDiffuseG, LightManager::lightDiffuseB,

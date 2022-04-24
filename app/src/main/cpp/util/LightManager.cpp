@@ -4,6 +4,10 @@ float LightManager::lx = 0;
 float LightManager::ly = 0;
 float LightManager::lz = 0;
 
+float LightManager::ldx = 0;
+float LightManager::ldy = 0;
+float LightManager::ldz = 0;
+
 float LightManager::lightAmbientR = 0;
 float LightManager::lightAmbientG = 0;
 float LightManager::lightAmbientB = 0;
@@ -23,6 +27,12 @@ void LightManager::setLightPosition(float lxIn, float lyIn, float lzIn) {
   lx = lxIn;
   ly = lyIn;
   lz = lzIn;
+}
+
+void LightManager::setLightDirection(float ldxIn, float ldyIn, float ldzIn) {
+  ldx = ldxIn;
+  ldy = ldyIn;
+  ldz = ldzIn;
 }
 
 void LightManager::setLightAmbient(

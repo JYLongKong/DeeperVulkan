@@ -113,13 +113,35 @@ static int32_t engine_handle_input(struct android_app *app, AInputEvent *event) 
           /// Sample5_1 **************************************************** end
 
           /// Sample5_3 ************************************************** start
+//          xDis = x - xPre;
+//          yDis = y - yPre;
+//          LightManager::lx = LightManager::lx + xDis * TOUCH_SCALE_FACTOR;  // 修改光源位置x点坐标
+//          LightManager::ly = LightManager::ly - yDis * TOUCH_SCALE_FACTOR;  // 修改光源位置y点坐标
+//          xPre = x;
+//          yPre = y;
+          /// Sample5_3 **************************************************** end
+
+          /// Sample5_6 ************************************************** start
           xDis = x - xPre;
           yDis = y - yPre;
-          LightManager::lx = LightManager::lx + xDis * TOUCH_SCALE_FACTOR;  // 修改光源位置x点坐标
-          LightManager::ly = LightManager::ly - yDis * TOUCH_SCALE_FACTOR;  // 修改光源位置y点坐标
+          LightManager::ldx = LightManager::ldx + xDis * TOUCH_SCALE_FACTOR;
+          LightManager::ldy = LightManager::ldy - yDis * TOUCH_SCALE_FACTOR;
+          // 控制光照方向范围
+          if (LightManager::ldx <= -4.0f) {
+            LightManager::ldx = -4.0f;
+          }
+          if (LightManager::ldx >= 4.0f) {
+            LightManager::ldx = 4.0f;
+          }
+          if (LightManager::ldy <= -4.0f) {
+            LightManager::ldy = -4.0f;
+          }
+          if (LightManager::ldy >= 4.0f) {
+            LightManager::ldy = 4.0f;
+          }
           xPre = x;
           yPre = y;
-          /// Sample5_3 **************************************************** end
+          /// Sample5_6 **************************************************** end
 
           break;
         case AMOTION_EVENT_ACTION_UP:   // 触摸点抬起
