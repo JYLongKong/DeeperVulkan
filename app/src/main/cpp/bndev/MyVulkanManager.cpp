@@ -805,10 +805,16 @@ void MyVulkanManager::createDrawableObject() {
   /// Sample4_13 *************************************************** end
 
   /// Sample5_1 ************************************************** start
-  BallData::genBallData(9);                                      // 生成球面的顶点数据
-  ballForDraw = new DrawableObjectCommon(                                 // 创建绘制用球对象
-      BallData::vdata, BallData::dataByteCount, BallData::vCount, device, memoryroperties);
+//  BallData::genBallData(9);                                      // 生成球面的顶点数据
+//  ballForDraw = new DrawableObjectCommon(                                 // 创建绘制用球对象
+//      BallData::vdata, BallData::dataByteCount, BallData::vCount, device, memoryroperties);
   /// Sample5_1 **************************************************** end
+
+  /// Sample5_7 ************************************************** start
+  CubeData::genData();
+  objForDraw = new DrawableObjectCommon(
+      CubeData::vdata, CubeData::dataByteCount, CubeData::vCount, device, memoryroperties);
+  /// Sample5_7 **************************************************** end
 }
 
 /**
@@ -818,8 +824,8 @@ void MyVulkanManager::destroyDrawableObject() {
   /// Sample4_1、Sample4_14
 //  delete triForDraw;
 
-  /// Sample4_2
-//  delete objForDraw;
+  /// Sample4_2、Sample5_7
+  delete objForDraw;
 
   /// Sample4_8
 //  delete triForDraw;
@@ -837,7 +843,7 @@ void MyVulkanManager::destroyDrawableObject() {
 //  delete colorRectY;
 
   /// Sample5_1
-  delete ballForDraw;
+//  delete ballForDraw;
 }
 
 /**
@@ -992,8 +998,8 @@ void MyVulkanManager::flushUniformBuffer() {
   /// Sample5_5、Sample5_6-三光合一
   float vertexUniformData[20] = {
       MatrixState3D::cx, MatrixState3D::cy, MatrixState3D::cz, 1.0,
-//      LightManager::lx, LightManager::ly, LightManager::lz, 1.0,          // Sample5_5-定位光
-      LightManager::ldx, LightManager::ldy, LightManager::ldz, 1.0,       // Sample5_6-定向光
+      LightManager::lx, LightManager::ly, LightManager::lz, 1.0,          // Sample5_5-定位光
+//      LightManager::ldx, LightManager::ldy, LightManager::ldz, 1.0,       // Sample5_6-定向光
       LightManager::lightAmbientR, LightManager::lightAmbientG, LightManager::lightAmbientB,
       LightManager::lightAmbientA,
       LightManager::lightDiffuseR, LightManager::lightDiffuseG, LightManager::lightDiffuseB,
@@ -1210,15 +1216,30 @@ void MyVulkanManager::drawObject() {
     /// Sample5_1 **************************************************** end
 
     /// Sample5_2 ************************************************** start
+//    MatrixState3D::pushMatrix();
+//    MatrixState3D::translate(-1.5f, 0, -15);
+//    ballForDraw->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, &(sqsCL->descSet[0]));
+//    MatrixState3D::popMatrix();
+//    MatrixState3D::pushMatrix();
+//    MatrixState3D::translate(1.5f, 0, -15);
+//    ballForDraw->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, &(sqsCL->descSet[0]));
+//    MatrixState3D::popMatrix();
+    /// Sample5_2 **************************************************** end
+
+    /// Sample5_7 ************************************************** start
     MatrixState3D::pushMatrix();
     MatrixState3D::translate(-1.5f, 0, -15);
-    ballForDraw->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, &(sqsCL->descSet[0]));
+    MatrixState3D::rotate(45, 1, 0, 0);
+    MatrixState3D::rotate(45, 0, 0, 1);
+    objForDraw->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, &(sqsCL->descSet[0]));
     MatrixState3D::popMatrix();
     MatrixState3D::pushMatrix();
     MatrixState3D::translate(1.5f, 0, -15);
-    ballForDraw->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, &(sqsCL->descSet[0]));
+    MatrixState3D::rotate(45, 1, 0, 0);
+    MatrixState3D::rotate(45, 0, 0, 1);
+    objForDraw->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, &(sqsCL->descSet[0]));
     MatrixState3D::popMatrix();
-    /// Sample5_2 **************************************************** end
+    /// Sample5_7 **************************************************** end
 
 //    triForDraw->drawSelf(                                                 // 绘制三色三角形、Sample4_14-卷绕和背面剪裁
 //        cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, &(sqsCL->descSet[0]));

@@ -207,8 +207,8 @@ void ShaderQueueSuit_Common::create_shader(VkDevice &device) {
   std::string fragStr = FileUtil::loadAssetStr("shader/sample5_2.frag");  // Sample5_2
 //  std::string vertStr = FileUtil::loadAssetStr("shader/sample5_3.vert");  // Sample5_3
 //  std::string vertStr = FileUtil::loadAssetStr("shader/sample5_4.vert");  // Sample5_4
-//  std::string vertStr = FileUtil::loadAssetStr("shader/sample5_5.vert");  // Sample5_5
-  std::string vertStr = FileUtil::loadAssetStr("shader/sample5_6.vert");  // Sample5_6
+  std::string vertStr = FileUtil::loadAssetStr("shader/sample5_5.vert");  // Sample5_5、Sample5_7
+//  std::string vertStr = FileUtil::loadAssetStr("shader/sample5_6.vert");  // Sample5_6
 
   // 给出顶点着色器对应的管线着色器阶段创建信息结构体实例的各项所需属性
   shaderStages[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;

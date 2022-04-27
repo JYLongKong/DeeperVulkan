@@ -8,6 +8,9 @@ class CubeData {
   static int dataByteCount;
   static int vCount;
   static void genBallData();
+
+  /// Sample5_7-立方体面法向量
+  static void genData();
 };
 
 #endif
