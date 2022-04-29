@@ -9,7 +9,7 @@ class CubeData {
   static int vCount;
   static void genBallData();
 
-  /// Sample5_7-立方体面法向量
+  /// Sample5_7、Sample5_8-立方体面法向量、点法向量
   static void genData();
 };
 

@@ -188,7 +188,7 @@ void CubeData::genBallData() {
   }
 }
 
-/// Sample5_7-立方体面法向量
+/// Sample5_7、Sample5_8-立方体面法向量、点法向量
 void CubeData::genData() {
   const float rect = 1.0f;                                                // 立方体的边长
   std::vector<float> alVertix = {                                         // 存放顶点坐标的vector
@@ -286,15 +286,22 @@ void CubeData::genData() {
       0, -1, 0
   };
   vCount = alVertix.size() / 3;                                           // 顶点的数量为坐标值数量的1/3，因为一个顶点有3个坐标
-  dataByteCount = alVertix.size() * 2 * sizeof(float);                    // 顶点和法向量数据的总字节数
+  dataByteCount = alVertix.size() * 2 * sizeof(float);                    // 顶点坐标和法向量数据的总字节数
   vdata = new float[alVertix.size() * 2];                                 // 存放顶点坐标和法向量数据的数组
   int index = 0;
   for (int i = 0; i < vCount; ++i) {
     vdata[index++] = alVertix[i * 3];                                     // 保存顶点坐标
     vdata[index++] = alVertix[i * 3 + 1];
     vdata[index++] = alVertix[i * 3 + 2];
-    vdata[index++] = alNormal[i * 3];                                     // 保存顶点法向量
-    vdata[index++] = alNormal[i * 3 + 1];
-    vdata[index++] = alNormal[i * 3 + 2];
+
+    /// Sample5_7 保存面法向量
+//    vdata[index++] = alNormal[i * 3];
+//    vdata[index++] = alNormal[i * 3 + 1];
+//    vdata[index++] = alNormal[i * 3 + 2];
+
+    /// Sample5_8 直接采用各个顶点的坐标代替每个顶点的平均法向量
+    vdata[index++] = alVertix[i * 3];
+    vdata[index++] = alVertix[i * 3 + 1];
+    vdata[index++] = alVertix[i * 3 + 2];
   }
 }
