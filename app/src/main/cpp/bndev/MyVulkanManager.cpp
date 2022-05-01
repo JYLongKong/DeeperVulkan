@@ -20,6 +20,7 @@
 #include "ColorRect.h"
 #include "BallData.h"
 #include "LightManager.h"
+#include "FlatData.h"
 
 // 静态成员实现
 android_app *MyVulkanManager::Android_application;
@@ -811,10 +812,16 @@ void MyVulkanManager::createDrawableObject() {
   /// Sample5_1 **************************************************** end
 
   /// Sample5_7 ************************************************** start
-  CubeData::genData();
-  objForDraw = new DrawableObjectCommon(
-      CubeData::vdata, CubeData::dataByteCount, CubeData::vCount, device, memoryroperties);
+//  CubeData::genData();
+//  objForDraw = new DrawableObjectCommon(
+//      CubeData::vdata, CubeData::dataByteCount, CubeData::vCount, device, memoryroperties);
   /// Sample5_7 **************************************************** end
+
+  /// Sample5_9 ************************************************** start
+  FlatData::genData();
+  objForDraw = new DrawableObjectCommon(
+      FlatData::vdata, FlatData::dataByteCount, FlatData::vCount, device, memoryroperties);
+  /// Sample5_9 **************************************************** end
 }
 
 /**
@@ -934,8 +941,9 @@ void MyVulkanManager::initMatrixAndLight() {
 //  MatrixState3D::setCamera(5000.0f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
   /// Sample4_13 *************************************************** end
 
-  /// Sample5_5、Sample5_6
-  LightManager::setLightPosition(0, 0, -13);  // 设置定位光光源位置
+  /// Sample5_5、Sample5_6、Sample5_9
+//  LightManager::setLightPosition(0, 0, -13);  // 设置定位光光源位置
+  LightManager::setLightPosition(0, 0, -14.5f); // Sample5_9-每片元计算光照
   LightManager::setLightDirection(-0.0f, 0.0f, 1.0f); // 设置定向光光源方向
   LightManager::setLightAmbient(0.1f, 0.1f, 0.1f, 0.1f);  // 设置环境光强度
   LightManager::setLightDiffuse(0.6f, 0.6f, 0.6f, 0.6f);  // 设置散射光强度
@@ -1227,19 +1235,26 @@ void MyVulkanManager::drawObject() {
     /// Sample5_2 **************************************************** end
 
     /// Sample5_7 ************************************************** start
-    MatrixState3D::pushMatrix();
-    MatrixState3D::translate(-1.5f, 0, -15);
-    MatrixState3D::rotate(45, 1, 0, 0);
-    MatrixState3D::rotate(45, 0, 0, 1);
-    objForDraw->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, &(sqsCL->descSet[0]));
-    MatrixState3D::popMatrix();
-    MatrixState3D::pushMatrix();
-    MatrixState3D::translate(1.5f, 0, -15);
-    MatrixState3D::rotate(45, 1, 0, 0);
-    MatrixState3D::rotate(45, 0, 0, 1);
-    objForDraw->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, &(sqsCL->descSet[0]));
-    MatrixState3D::popMatrix();
+//    MatrixState3D::pushMatrix();
+//    MatrixState3D::translate(-1.5f, 0, -15);
+//    MatrixState3D::rotate(45, 1, 0, 0);
+//    MatrixState3D::rotate(45, 0, 0, 1);
+//    objForDraw->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, &(sqsCL->descSet[0]));
+//    MatrixState3D::popMatrix();
+//    MatrixState3D::pushMatrix();
+//    MatrixState3D::translate(1.5f, 0, -15);
+//    MatrixState3D::rotate(45, 1, 0, 0);
+//    MatrixState3D::rotate(45, 0, 0, 1);
+//    objForDraw->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, &(sqsCL->descSet[0]));
+//    MatrixState3D::popMatrix();
     /// Sample5_7 **************************************************** end
+
+    /// Sample5_9 ************************************************** start
+    MatrixState3D::pushMatrix();
+    MatrixState3D::translate(0, 0, -15);
+    objForDraw->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, &(sqsCL->descSet[0]));
+    MatrixState3D::popMatrix();
+    /// Sample5_9 **************************************************** end
 
 //    triForDraw->drawSelf(                                                 // 绘制三色三角形、Sample4_14-卷绕和背面剪裁
 //        cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, &(sqsCL->descSet[0]));

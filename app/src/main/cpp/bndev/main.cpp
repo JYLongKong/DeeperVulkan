@@ -23,7 +23,10 @@ bool isClick = true;
 //float TOUCH_SCALE_FACTOR = 180.0f / 320;
 
 /// Sample5_3
-float TOUCH_SCALE_FACTOR = 10.0f / 320; // 角度缩放比例
+//float TOUCH_SCALE_FACTOR = 10.0f / 320; // 角度缩放比例
+
+/// Sample5_9
+float TOUCH_SCALE_FACTOR = 5.0f / 320;
 
 /**
  * 事件处理回调方法

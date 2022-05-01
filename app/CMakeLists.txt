@@ -40,6 +40,7 @@ add_library(
         src/main/cpp/bndev/ColorRect.cpp
         src/main/cpp/bndev/Cube.cpp
         src/main/cpp/bndev/BallData.cpp
+        src/main/cpp/bndev/FlatData.cpp
 )
 
 
