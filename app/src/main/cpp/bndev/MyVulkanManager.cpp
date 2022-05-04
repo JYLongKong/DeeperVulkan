@@ -941,9 +941,9 @@ void MyVulkanManager::initMatrixAndLight() {
 //  MatrixState3D::setCamera(5000.0f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
   /// Sample4_13 *************************************************** end
 
-  /// Sample5_5、Sample5_6、Sample5_9
+  /// Sample5_5~Sample5_10
 //  LightManager::setLightPosition(0, 0, -13);  // 设置定位光光源位置
-  LightManager::setLightPosition(0, 0, -14.5f); // Sample5_9-每片元计算光照
+  LightManager::setLightPosition(0, 0, -14.5f); // Sample5_9、Sample5_10-光照的每顶点计算与每片元计算
   LightManager::setLightDirection(-0.0f, 0.0f, 1.0f); // 设置定向光光源方向
   LightManager::setLightAmbient(0.1f, 0.1f, 0.1f, 0.1f);  // 设置环境光强度
   LightManager::setLightDiffuse(0.6f, 0.6f, 0.6f, 0.6f);  // 设置散射光强度

@@ -106,8 +106,8 @@ void ShaderQueueSuit_Common::create_pipeline_layout(VkDevice &device) {
   layout_bindings[0].binding = 0;                                         // 此绑定的绑定点编号(需要与着色器中给定的对应绑定点编号一致)
   layout_bindings[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;  // 描述类型(此绑定对应类型为一致变量缓冲)
   layout_bindings[0].descriptorCount = 1;                                 // 描述数量
-//  layout_bindings[0].stageFlags = VK_SHADER_STAGE_VERTEX_BIT;             // 目标着色器阶段(此绑定对应的是顶点着色器)
-  layout_bindings[0].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;           // Sample5_1、Sample5_9-目标着色器阶段(此绑定对应的是片元着色器)
+  layout_bindings[0].stageFlags = VK_SHADER_STAGE_VERTEX_BIT;             // 目标着色器阶段(此绑定对应的是顶点着色器)
+//  layout_bindings[0].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;           // Sample5_1、Sample5_9-目标着色器阶段(此绑定对应的是片元着色器)
   layout_bindings[0].pImmutableSamplers = nullptr;
 
   VkDescriptorSetLayoutCreateInfo descriptor_layout = {};                 // 构建描述集布局创建信息结构体实例
@@ -207,10 +207,11 @@ void ShaderQueueSuit_Common::create_shader(VkDevice &device) {
 //  std::string fragStr = FileUtil::loadAssetStr("shader/sample5_2.frag");  // Sample5_2
 //  std::string vertStr = FileUtil::loadAssetStr("shader/sample5_3.vert");  // Sample5_3
 //  std::string vertStr = FileUtil::loadAssetStr("shader/sample5_4.vert");  // Sample5_4
-//  std::string vertStr = FileUtil::loadAssetStr("shader/sample5_5.vert");  // Sample5_5、Sample5_7
+  std::string vertStr = FileUtil::loadAssetStr("shader/sample5_5.vert");  // Sample5_5、Sample5_7、Sample5_10
 //  std::string vertStr = FileUtil::loadAssetStr("shader/sample5_6.vert");  // Sample5_6
-  std::string vertStr = FileUtil::loadAssetStr("shader/sample5_9.vert");  // Sample5_9
-  std::string fragStr = FileUtil::loadAssetStr("shader/sample5_9.frag");  // Sample5_9
+//  std::string vertStr = FileUtil::loadAssetStr("shader/sample5_9.vert");  // Sample5_9
+//  std::string fragStr = FileUtil::loadAssetStr("shader/sample5_9.frag");  // Sample5_9
+  std::string fragStr = FileUtil::loadAssetStr("shader/sample5_10.frag"); // Sample5_10
 
   // 给出顶点着色器对应的管线着色器阶段创建信息结构体实例的各项所需属性
   shaderStages[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
