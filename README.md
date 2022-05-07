@@ -16,6 +16,16 @@
 
 ### Android NDK集成Vulkan
 
+#### 第一次Build基本遇到如下问题
+
+```shell
+Build command failed.
+Error while executing process D:\Android\SDK\cmake\3.18.1\bin\ninja.exe with arguments {-C E:\projects\Android\DeeperVulkan\app\.cxx\Debug\5l3u162n\arm64-v8a bn-vulkan-lib}
+ninja: Entering directory `E:\projects\Android\DeeperVulkan\app\.cxx\Debug\5l3u162n\arm64-v8a'
+
+ninja: error: 'D:/Android/SDK/ndk/21.4.7075529/sources/third_party/shaderc/libs/c++_static/arm64-v8a/libshaderc.a', needed by '../../../../build/intermediates/cxx/Debug/5l3u162n/obj/arm64-v8a/libbn-vulkan-lib.so', missing and no known rule to make it
+```
+
 #### 在ndk/21.4.7075529/sources/third_party/shaderc下编译命令
 
 ```shell
