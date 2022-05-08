@@ -24,6 +24,8 @@ add_library(
         src/main/cpp/util/FPSUtil.cpp
         src/main/cpp/util/DrawableObjectCommon.cpp
         src/main/cpp/util/LightManager.cpp
+        src/main/cpp/util/TexDataObject.cpp
+        src/main/cpp/util/TextureManager.cpp
 
         src/main/cpp/bndev/ShaderCompileUtil.cpp
         src/main/cpp/bndev/ShaderQueueSuit_Common.cpp

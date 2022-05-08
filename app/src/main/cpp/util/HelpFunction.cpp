@@ -8,8 +8,7 @@ bool memoryTypeFromProperties(VkPhysicalDeviceMemoryProperties &memoryProperties
     //若对应类型比特位为1
     if ((typeBits & 1) == 1) {
       //此类型与掩码匹配
-      if ((memoryProperties.memoryTypes[i].propertyFlags & requirements_mask) ==
-          requirements_mask) {
+      if ((memoryProperties.memoryTypes[i].propertyFlags & requirements_mask) == requirements_mask) {
         *typeIndex = i;
         return true;
       }
