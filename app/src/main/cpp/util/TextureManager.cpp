@@ -31,6 +31,7 @@ void setImageLayout(VkCommandBuffer cmd,
   image_memory_barrier.subresourceRange.baseArrayLayer = 0;               // 基础数组层
   image_memory_barrier.subresourceRange.layerCount = 1;                   // 数组层的数量
 
+  // 根据不同的新布局或旧布局预设值设置了源访问掩码或目标访问掩码
   if (old_image_layout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL) {
     image_memory_barrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
   }
@@ -57,9 +58,9 @@ void setImageLayout(VkCommandBuffer cmd,
     image_memory_barrier.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
   }
 
-  VkPipelineStageFlags src_stages = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;    // 屏障前阶段
-  VkPipelineStageFlags dest_stages = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;   // 屏障后阶段
-  vk::vkCmdPipelineBarrier(cmd, src_stages, dest_stages, 0, 0, nullptr, 0, nullptr, 1, &image_memory_barrier);
+  VkPipelineStageFlags src_stages = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;    // 设置必须在图像内存屏障实现前执行完毕的管线阶段
+  VkPipelineStageFlags dest_stages = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;   // 设置必须在图像内存屏障结束后才能开始执行的管线阶段
+  vk::vkCmdPipelineBarrier(cmd, src_stages, dest_stages, 0, 0, nullptr, 0, nullptr, 1, &image_memory_barrier); // 放置图像内存屏障
 }
 
 void TextureManager::initSampler(VkDevice &device, VkPhysicalDevice &gpu) {
@@ -166,6 +167,7 @@ void TextureManager::init_SPEC_2D_Textures(
     image_create_info.pQueueFamilyIndices = nullptr;                      // 队列家族索引列表
     image_create_info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;            // 共享模式
     image_create_info.flags = 0;                                          // 标志
+
     VkImage textureImage;                                                 // 纹理对应的图像
     result = vk::vkCreateImage(device, &image_create_info, nullptr, &textureImage); // 创建图像
     assert(result == VK_SUCCESS);
@@ -180,6 +182,7 @@ void TextureManager::init_SPEC_2D_Textures(
     mem_alloc.allocationSize = mem_reqs.size;                             // 实际分配的内存字节数
     flag = memoryTypeFromProperties(                                      // 获取内存类型索引
         memoryroperties, mem_reqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &mem_alloc.memoryTypeIndex);
+
     VkDeviceMemory textureMemory;                                         // 纹理图像对应设备内存
     result = vk::vkAllocateMemory(device, &mem_alloc, nullptr, &textureMemory); // 分配设备内存
     textureMemoryList[texName] = textureMemory;                           // 添加到纹理内存列表
@@ -202,7 +205,6 @@ void TextureManager::init_SPEC_2D_Textures(
     cmd_buf_info.pInheritanceInfo = nullptr;                              // 继承信息
 
     const VkCommandBuffer cmd_bufs[] = {cmdBuffer};                       // 命令缓冲数组
-
     VkSubmitInfo submit_info[1] = {};                                     // 提交信息数组
     submit_info[0].pNext = nullptr;
     submit_info[0].sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -230,12 +232,11 @@ void TextureManager::init_SPEC_2D_Textures(
     setImageLayout(cmdBuffer, textureImage, VK_IMAGE_ASPECT_COLOR_BIT,  // 修改图像布局(为纹理采样准备)
                    VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
     result = vk::vkEndCommandBuffer(cmdBuffer);                           // 结束命令缓冲(停止记录命令)
-    result = vk::vkQueueSubmit(queueGraphics, 1, submit_info, copyFence); // 提交给队列执行
 
+    result = vk::vkQueueSubmit(queueGraphics, 1, submit_info, copyFence); // 提交给队列执行
     do {                                                                  // 循环等待执行完毕
       result = vk::vkWaitForFences(device, 1, &copyFence, VK_TRUE, 100000000);
     } while (result == VK_TIMEOUT);
-
     vk::vkDestroyBuffer(device, tempBuf, nullptr);                        // 销毁中转缓冲
     vk::vkFreeMemory(device, memTemp, nullptr);                           // 释放中转缓冲的设备内存
     vk::vkDestroyFence(device, copyFence, nullptr);                       // 销毁拷贝任务用栅栏
