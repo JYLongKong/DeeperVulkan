@@ -6,6 +6,7 @@
 #include <ctime>
 
 #include "../util/FileUtil.h"
+#include "../util/TextureManager.h"
 #include "../util/HelpFunction.h"
 #include "../util/FPSUtil.h"
 #include "MyVulkanManager.h"
@@ -108,6 +109,9 @@ DrawableObjectCommon *MyVulkanManager::colorRectY;
 
 /// Sample5_1
 DrawableObjectCommon *MyVulkanManager::ballForDraw;
+
+/// Sample6_1
+DrawableObjectCommon *MyVulkanManager::texTri;
 
 /**
  * 创建Vulkan实例的方法
@@ -738,6 +742,10 @@ void MyVulkanManager::destroy_frame_buffer() {
 }
 
 /**
+ *
+ */
+
+/**
  * 创建绘制用物体
  */
 void MyVulkanManager::createDrawableObject() {
@@ -818,10 +826,19 @@ void MyVulkanManager::createDrawableObject() {
   /// Sample5_7 **************************************************** end
 
   /// Sample5_9 ************************************************** start
-  FlatData::genData();
-  objForDraw = new DrawableObjectCommon(
-      FlatData::vdata, FlatData::dataByteCount, FlatData::vCount, device, memoryroperties);
+//  FlatData::genData();
+//  objForDraw = new DrawableObjectCommon(
+//      FlatData::vdata, FlatData::dataByteCount, FlatData::vCount, device, memoryroperties);
   /// Sample5_9 **************************************************** end
+
+  /// Sample6_1 ************************************************** start
+  float *vdataIn = new float[15]{                                         // 顶点数据数组
+      0, 10, 0, 0.5, 0,                                                   // 第1个顶点的位置和纹理(x, y, z, s, t)
+      -9, -5, 0, 0, 1,                                                    // 第2个顶点的数据
+      9, -5, 0, 1, 1                                                      // 第3个顶点的数据
+  };
+  texTri = new DrawableObjectCommon(vdataIn, 15 * 4, 3, device, memoryroperties); // 创建三角形绘制物体
+  /// Sample6_1 **************************************************** end
 }
 
 /**
@@ -1301,3 +1318,5 @@ void MyVulkanManager::doVulkan() {
   thread t1(&ThreadTask::doTask, tt);                             // 创建线程执行任务方法doTask
   t1.detach();                                                    // 将子线程与主线程分离
 }
+
+

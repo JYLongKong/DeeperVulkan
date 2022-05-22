@@ -16,6 +16,7 @@ void ThreadTask::doTask() {
   MyVulkanManager::create_vulkan_DepthBuffer();     // 创建深度缓冲
   MyVulkanManager::create_render_pass();            // 创建渲染通道
   MyVulkanManager::create_frame_buffer();           // 创建帧缓冲
+  MyVulkanManager::init_texture();                  // Sample6_1-初始化纹理
   MyVulkanManager::createDrawableObject();          // 创建绘制用的物体
   MyVulkanManager::initPipeline();                  // 初始化渲染管线
   MyVulkanManager::createFence();                   // 创建栅栏
@@ -26,6 +27,7 @@ void ThreadTask::doTask() {
   MyVulkanManager::destroyFence();                  // 销毁栅栏
   MyVulkanManager::destroyPipeline();               // 销毁管线
   MyVulkanManager::destroyDrawableObject();         // 销毁绘制用物体
+  MyVulkanManager::destroy_textures();              // Sample6_1-销毁纹理
   MyVulkanManager::destroy_frame_buffer();          // 销毁帧缓冲
   MyVulkanManager::destroy_render_pass();           // 销毁渲染通道相关
   MyVulkanManager::destroy_vulkan_DepthBuffer();    // 销毁深度缓冲相关

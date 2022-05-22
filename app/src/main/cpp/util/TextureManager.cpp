@@ -58,9 +58,21 @@ void setImageLayout(VkCommandBuffer cmd,
     image_memory_barrier.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
   }
 
-  VkPipelineStageFlags src_stages = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;    // 设置必须在图像内存屏障实现前执行完毕的管线阶段
-  VkPipelineStageFlags dest_stages = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;   // 设置必须在图像内存屏障结束后才能开始执行的管线阶段
-  vk::vkCmdPipelineBarrier(cmd, src_stages, dest_stages, 0, 0, nullptr, 0, nullptr, 1, &image_memory_barrier); // 放置图像内存屏障
+  VkPipelineStageFlags src_stages = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;    // 屏障前阶段(表示当管线刚开始执行的阶段)
+  VkPipelineStageFlags dest_stages = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;   // 屏障后阶段(表示当管线刚开始执行的阶段)
+  // 放置图像内存屏障
+  vk::vkCmdPipelineBarrier(
+      cmd,                                                                // 实现指定内存屏障的命令缓冲
+      src_stages,                                                         // 必须在指定内存屏障实现前执行完毕的管线阶段
+      dest_stages,                                                        // 必须在指定内存屏障结束后才能开始执行的管线阶段
+      0,                                                                  // 指定的内存屏障是否拥有屏幕空间位置
+      0,                                                                  // 指定全局内存屏障的数量
+      nullptr,                                                            // 指向全局内存屏障结构体实例列表的指针
+      0,                                                                  // 指定缓冲内存屏障的数量
+      nullptr,                                                            // 指向缓冲内存屏障结构体实例列表的指针
+      1,                                                                  // 指定图像内存屏障的数量
+      &image_memory_barrier                                               // 指向图像内存屏障结构体实例列表的指针
+  );
 }
 
 void TextureManager::initSampler(VkDevice &device, VkPhysicalDevice &gpu) {
@@ -101,10 +113,11 @@ void TextureManager::init_SPEC_2D_Textures(
 
   VkFormatProperties formatProps;                                         // 指定格式纹理的格式属性
   vk::vkGetPhysicalDeviceFormatProperties(gpu, format, &formatProps);     // 获取指定格式纹理的格式属性
-  bool needStaging = !(formatProps.linearTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT); // 判断是否能使用线性瓦片纹理
+  bool needStaging = !(formatProps.linearTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT); // 判断此格式纹理是否能使用线性瓦片纹理
   LOGI("TextureManager %s", (needStaging ? "不能使用线性瓦片纹理" : "能使用线性瓦片纹理"));
 
   if (needStaging) {
+    // 不能使用线性瓦片纹理
     VkBuffer tempBuf;                                                     // 中转存储用的缓冲
     VkBufferCreateInfo buf_info = {};                                     // 构建缓冲创建信息结构体实例
     buf_info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -241,6 +254,7 @@ void TextureManager::init_SPEC_2D_Textures(
     vk::vkFreeMemory(device, memTemp, nullptr);                           // 释放中转缓冲的设备内存
     vk::vkDestroyFence(device, copyFence, nullptr);                       // 销毁拷贝任务用栅栏
   } else {
+    // 能使用线性瓦片纹理
     VkImageCreateInfo image_create_info = {};                             // 构建图像创建信息结构体实例
     image_create_info.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
     image_create_info.pNext = nullptr;
@@ -258,7 +272,7 @@ void TextureManager::init_SPEC_2D_Textures(
     image_create_info.queueFamilyIndexCount = 0;                          // 队列家族数量
     image_create_info.pQueueFamilyIndices = nullptr;                      // 队列家族索引列表
     image_create_info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;            // 共享模式
-    image_create_info.flags = 0;
+    image_create_info.flags = 0;                                          // 标志
 
     VkImage textureImage;                                                 // 纹理对应的图像
     VkResult result = vk::vkCreateImage(device, &image_create_info, nullptr, &textureImage); // 创建图像
@@ -270,7 +284,6 @@ void TextureManager::init_SPEC_2D_Textures(
     mem_alloc.pNext = nullptr;
     mem_alloc.allocationSize = 0;                                         // 内存字节数
     mem_alloc.memoryTypeIndex = 0;                                        // 内存类型索引
-
     VkMemoryRequirements mem_reqs;                                        // 纹理图像的内存需求
     vk::vkGetImageMemoryRequirements(device, textureImage, &mem_reqs);    // 获取纹理图像的内存需求
     mem_alloc.allocationSize = mem_reqs.size;                             // 实际分配的内存字节数
@@ -302,6 +315,7 @@ void TextureManager::init_SPEC_2D_Textures(
   view_info.subresourceRange.baseArrayLayer = 0;                          // 基础数组层
   view_info.subresourceRange.layerCount = 1;                              // 数组层的数量
   view_info.image = textureImageList[texName];                            // 对应的图像
+
   VkImageView viewTexture;                                                // 纹理图像对应的图像视图
   VkResult result = vk::vkCreateImageView(device, &view_info, nullptr, &viewTexture);
   viewTextureList[texName] = viewTexture;                                 // 添加到图像视图列表

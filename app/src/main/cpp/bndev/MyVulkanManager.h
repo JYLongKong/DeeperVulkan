@@ -9,6 +9,7 @@
 #include "DrawableObjectCommon.h"
 #include "ShaderQueueSuit_Common.h"
 #include "Cube.h"
+#include "TexDataObject.h"
 
 #define FENCE_TIMEOUT 100000000                           // 栅栏的超时时间
 
@@ -93,6 +94,9 @@ class MyVulkanManager {
   /// Sample5_1 球
   static DrawableObjectCommon *ballForDraw;
 
+  /// Sample6_1 纹理
+  static DrawableObjectCommon * texTri;
+
   static void init_vulkan_instance();                     // 创建Vulkan实例
   static void enumerate_vulkan_phy_devices();             // 初始化物理设备
   static void create_vulkan_devices();                    // 创建逻辑设备
@@ -102,6 +106,7 @@ class MyVulkanManager {
   static void create_render_pass();                       // 创建渲染通道
   static void init_queue();                               // 获取设备中支持图形工作的队列
   static void create_frame_buffer();                      // 创建帧缓冲
+  static void init_texture();                             // Sample6_1-初始化纹理
   static void createDrawableObject();                     // 创建绘制用物体
   static void drawObject();                               // 执行场景中的物体绘制
   static void doVulkan();                                 // 启动线程执行Vulkan任务
@@ -115,6 +120,7 @@ class MyVulkanManager {
   static void destroyFence();                             // 销毁栅栏
   static void destroyPipeline();                          // 销毁管线
   static void destroyDrawableObject();                    // 销毁绘制用物体
+  static void destroy_textures();                         // 销毁纹理
   static void destroy_frame_buffer();                     // 销毁帧缓冲
   static void destroy_render_pass();                      // 销毁渲染通道
   static void destroy_vulkan_DepthBuffer();               // 销毁深度缓冲相关
