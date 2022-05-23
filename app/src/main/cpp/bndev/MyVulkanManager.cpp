@@ -112,6 +112,7 @@ DrawableObjectCommon *MyVulkanManager::ballForDraw;
 
 /// Sample6_1
 DrawableObjectCommon *MyVulkanManager::texTri;
+float MyVulkanManager::zAngle = 0;
 
 /**
  * 创建Vulkan实例的方法
@@ -742,8 +743,12 @@ void MyVulkanManager::destroy_frame_buffer() {
 }
 
 /**
- *
+ * 初始化纹理
+ * Sample6_1
  */
+void MyVulkanManager::init_texture() {
+  TextureManager::initTextures(device, gpus[0], memoryroperties, cmdBuffer, queueGraphics);
+}
 
 /**
  * 创建绘制用物体
@@ -849,7 +854,7 @@ void MyVulkanManager::destroyDrawableObject() {
 //  delete triForDraw;
 
   /// Sample4_2、Sample5_7
-  delete objForDraw;
+//  delete objForDraw;
 
   /// Sample4_8
 //  delete triForDraw;
@@ -868,6 +873,17 @@ void MyVulkanManager::destroyDrawableObject() {
 
   /// Sample5_1
 //  delete ballForDraw;
+
+  /// Sample6_1
+  delete texTri;
+}
+
+/**
+ * 销毁纹理
+ * Sample6_1
+ */
+void MyVulkanManager::destroy_textures() {
+  TextureManager::destroyTextures(device);
 }
 
 /**
@@ -922,12 +938,12 @@ void MyVulkanManager::initMatrixAndLight() {
   float ratio = (float) screenWidth / (float) screenHeight;               // 求屏幕宽高比
 
   // 设置投影参数
-//  MatrixState3D::setProjectFrustum(-ratio, ratio, -1, 1, 1.5f, 1000); // Sample4_14、Sample4_16、Sample5_1
+  MatrixState3D::setProjectFrustum(-ratio, ratio, -1, 1, 1.5f, 1000); // Sample4_14、Sample4_16、Sample5_1、Sample6_1
 //  MatrixState3D::setProjectOrtho(-ratio, ratio, -1, 1, 1.0f, 20); // Sample4_2-设置正交投影参数
 //  MatrixState3D::setProjectFrustum(-ratio * 0.4, ratio * 0.4, -1 * 0.4, 1 * 0.4, 1.0f, 20); // Sample4_3-设置透视投影参数
 //  MatrixState3D::setProjectFrustum(-ratio * 0.8f, ratio * 1.2f, -1, 1, 20, 100); // Sample4_4
 //  MatrixState3D::setProjectFrustum(-ratio, ratio, -1, 1, 1.5f, 1000); // Sample4_7
-  MatrixState3D::setProjectFrustum(-ratio, ratio, -1, 1, 20.0f, 1000);  // Sample5_2
+//  MatrixState3D::setProjectFrustum(-ratio, ratio, -1, 1, 20.0f, 1000);  // Sample5_2
 
   /// Sample4_11 ************************************************* start
 //  if (ViewPara) { // 合理的视角
@@ -1021,23 +1037,27 @@ void MyVulkanManager::flushUniformBuffer() {
 //  };
 
   /// Sample5_5、Sample5_6-三光合一
-  float vertexUniformData[20] = {
-      MatrixState3D::cx, MatrixState3D::cy, MatrixState3D::cz, 1.0,
-      LightManager::lx, LightManager::ly, LightManager::lz, 1.0,          // Sample5_5-定位光
-//      LightManager::ldx, LightManager::ldy, LightManager::ldz, 1.0,       // Sample5_6-定向光
-      LightManager::lightAmbientR, LightManager::lightAmbientG, LightManager::lightAmbientB,
-      LightManager::lightAmbientA,
-      LightManager::lightDiffuseR, LightManager::lightDiffuseG, LightManager::lightDiffuseB,
-      LightManager::lightDiffuseA,
-      LightManager::lightSpecularR, LightManager::lightSpecularG, LightManager::lightSpecularB,
-      LightManager::lightSpecularA
-  };
+//  float vertexUniformData[20] = {
+//      MatrixState3D::cx, MatrixState3D::cy, MatrixState3D::cz, 1.0,
+//      LightManager::lx, LightManager::ly, LightManager::lz, 1.0,          // Sample5_5-定位光
+////      LightManager::ldx, LightManager::ldy, LightManager::ldz, 1.0,       // Sample5_6-定向光
+//      LightManager::lightAmbientR, LightManager::lightAmbientG, LightManager::lightAmbientB,
+//      LightManager::lightAmbientA,
+//      LightManager::lightDiffuseR, LightManager::lightDiffuseG, LightManager::lightDiffuseB,
+//      LightManager::lightDiffuseA,
+//      LightManager::lightSpecularR, LightManager::lightSpecularG, LightManager::lightSpecularB,
+//      LightManager::lightSpecularA
+//  };
+
+  /// Sample6_1-纹理三角形
+  float fragmentUniformData[1] = {0.9};                                   // 亮度调节系数,与片元着色器中brightFactor对应
 
   uint8_t *pData;                                                         // CPU访问设备内存时的辅助指针
   VkResult result = vk::vkMapMemory(                                      // 将设备内存映射为CPU可访问
       device, sqsCL->memUniformBuf, 0, sqsCL->bufferByteCount, 0, (void **) &pData);
   assert(result == VK_SUCCESS);                                           // 检查映射是否成功
-  memcpy(pData, vertexUniformData, sqsCL->bufferByteCount);               // 将最终矩阵数据复制进设备内存
+//  memcpy(pData, vertexUniformData, sqsCL->bufferByteCount);               // 将最终矩阵数据复制进设备内存
+  memcpy(pData, fragmentUniformData, sqsCL->bufferByteCount);             // Sample6_1-将数据拷贝进设备内存
   vk::vkUnmapMemory(device, sqsCL->memUniformBuf);                        // 解除内存映射
 }
 
@@ -1045,8 +1065,17 @@ void MyVulkanManager::flushUniformBuffer() {
  * 更新绘制用描述集
  */
 void MyVulkanManager::flushTexToDesSet() {
-  sqsCL->writes[0].dstSet = sqsCL->descSet[0];                            // 更新描述集对应的写入属性
-  vk::vkUpdateDescriptorSets(device, 1, sqsCL->writes, 0, nullptr);       // 更新描述集
+//  sqsCL->writes[0].dstSet = sqsCL->descSet[0];                            // 更新描述集对应的写入属性
+//  vk::vkUpdateDescriptorSets(device, 1, sqsCL->writes, 0, nullptr);       // 更新描述集
+
+  /// Sample6_1 将纹理等数据与描述集关联******************************* start
+  for (int i = 0; i < TextureManager::texNames.size(); ++i) {             // 遍历所有纹理
+    sqsCL->writes[0].dstSet = sqsCL->descSet[i];                          // 更新描述集对应的写入属性0(一致变量)
+    sqsCL->writes[1].dstSet = sqsCL->descSet[i];                          // 更新描述集对应的写入属性1(纹理)
+    sqsCL->writes[1].pImageInfo = &(TextureManager::texImageInfoList[TextureManager::texNames[i]]); // 写入属性1对应的纹理图像信息
+    vk::vkUpdateDescriptorSets(device, 2, sqsCL->writes, 0, nullptr);     // 更新描述集
+  }
+  /// Sample6_1 **************************************************** end
 }
 
 /**
@@ -1267,11 +1296,20 @@ void MyVulkanManager::drawObject() {
     /// Sample5_7 **************************************************** end
 
     /// Sample5_9 ************************************************** start
-    MatrixState3D::pushMatrix();
-    MatrixState3D::translate(0, 0, -15);
-    objForDraw->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, &(sqsCL->descSet[0]));
-    MatrixState3D::popMatrix();
+//    MatrixState3D::pushMatrix();
+//    MatrixState3D::translate(0, 0, -15);
+//    objForDraw->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, &(sqsCL->descSet[0]));
+//    MatrixState3D::popMatrix();
     /// Sample5_9 **************************************************** end
+
+    /// Sample6_1 ************************************************** start
+    MatrixState3D::pushMatrix();
+    MatrixState3D::rotate(yAngle, 0, 1, 0);
+    MatrixState3D::rotate(zAngle, 0, 0, 1);
+    texTri->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, // 绘制纹理三角形
+                     &(sqsCL->descSet[TextureManager::getVkDescriptorSetIndex("texture/wall.bntex")]));
+    MatrixState3D::popMatrix();
+    /// Sample6_1 **************************************************** end
 
 //    triForDraw->drawSelf(                                                 // 绘制三色三角形、Sample4_14-卷绕和背面剪裁
 //        cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, &(sqsCL->descSet[0]));

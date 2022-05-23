@@ -50,7 +50,7 @@ class DrawableObjectCommon {
   ~DrawableObjectCommon();
 
   /**
-   * 绘制方法
+   * 绘制物体
    */
   void drawSelf(
       VkCommandBuffer &secondary_cmd,

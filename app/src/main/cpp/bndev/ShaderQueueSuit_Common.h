@@ -35,7 +35,8 @@ class ShaderQueueSuit_Common {
  public:
   int bufferByteCount;                                // 一致缓冲总字节数
   VkDeviceMemory memUniformBuf;                       // 一致变量缓冲内存
-  VkWriteDescriptorSet writes[1];                     // 一致变量写入描述集
+//  VkWriteDescriptorSet writes[1];                     // 一致变量写入描述集
+  VkWriteDescriptorSet writes[2];                     // Sample6_1
   std::vector<VkDescriptorSet> descSet;               // 描述集列表
   VkPipelineLayout pipelineLayout;                    // 管线布局
 

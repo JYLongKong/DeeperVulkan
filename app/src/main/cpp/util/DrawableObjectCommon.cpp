@@ -309,7 +309,7 @@ DrawableObjectCommon::~DrawableObjectCommon() {
 }
 
 /**
- * 绘制的方法
+ * 绘制物体
  */
 void DrawableObjectCommon::drawSelf(
     VkCommandBuffer &cmd,
@@ -339,7 +339,7 @@ void DrawableObjectCommon::drawSelf(
 
   /// Sample4_2、Sample6_1 *************************************** start
   float *mvp = MatrixState3D::getFinalMatrix();                           // 获取最终变换矩阵
-  memcpy(pushConstantData, mvp, sizeof(float) * 16);          // 将最终变换矩阵复制进推送常量数据数组
+  memcpy(pushConstantData, mvp, sizeof(float) * 16);           // 将最终变换矩阵复制进推送常量数据数组
   vk::vkCmdPushConstants(cmd, pipelineLayout,                             // 将推送常量数据送入管线
                          VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(float) * 16, pushConstantData);
   /// Sample4_2、Sample6_1 ***************************************** end
