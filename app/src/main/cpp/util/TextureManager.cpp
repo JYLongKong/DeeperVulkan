@@ -305,7 +305,8 @@ void TextureManager::init_SPEC_2D_Textures(
   view_info.pNext = nullptr;
   view_info.viewType = VK_IMAGE_VIEW_TYPE_2D;                             // 图像视图的类型
   view_info.format = format;                                              // 图像视图的像素格式
-  view_info.components.r = VK_COMPONENT_SWIZZLE_R;                        // 设置R通道调和
+//  view_info.components.r = VK_COMPONENT_SWIZZLE_G;                        // 设置R通道调和
+  view_info.components.r = VK_COMPONENT_SWIZZLE_G;                        // Sample6_2-将纹理图中绿色通道的值映射到采样器的红色通道
   view_info.components.g = VK_COMPONENT_SWIZZLE_G;                        // 设置G通道调和
   view_info.components.b = VK_COMPONENT_SWIZZLE_B;                        // 设置B通道调和
   view_info.components.a = VK_COMPONENT_SWIZZLE_A;                        // 设置A通道调和
