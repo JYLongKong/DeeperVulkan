@@ -3,12 +3,17 @@
 #include "HelpFunction.h"
 #include "FileUtil.h"
 
-std::vector<std::string> TextureManager::texNames = {"texture/wall.bntex"};
+//std::vector<std::string> TextureManager::texNames = {"texture/wall.bntex"};
 std::vector<VkSampler> TextureManager::samplerList;
 std::map<std::string, VkImage> TextureManager::textureImageList;
 std::map<std::string, VkDeviceMemory> TextureManager::textureMemoryList;
 std::map<std::string, VkImageView> TextureManager::viewTextureList;
 std::map<std::string, VkDescriptorImageInfo> TextureManager::texImageInfoList;
+
+/// Sample6_3
+std::vector<std::string>TextureManager::texNames =
+    {"texture/robot0.bntex", "texture/robot1.bntex", "texture/robot2.bntex", "texture/robot3.bntex"};
+std::map<std::string, int> TextureManager::imageSampler;
 
 void setImageLayout(VkCommandBuffer cmd,
                     VkImage image,
@@ -81,19 +86,39 @@ void TextureManager::initSampler(VkDevice &device, VkPhysicalDevice &gpu) {
   samplerCreateInfo.magFilter = VK_FILTER_LINEAR;                         // 放大时的纹理采样方式
   samplerCreateInfo.minFilter = VK_FILTER_NEAREST;                        // 缩小时的纹理采样方式
   samplerCreateInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;          // mipmap模式
-  samplerCreateInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE; // 纹理S轴的拉伸方式
-  samplerCreateInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE; // 纹理T轴的拉伸方式
-  samplerCreateInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE; // 纹理W轴的拉伸方式
-  samplerCreateInfo.mipLodBias = 0.0;                                     // mipmap时的Lod调整值
-  samplerCreateInfo.minLod = 0.0;                                         // 最小Lod值
-  samplerCreateInfo.maxLod = 0.0;                                         // 最大Lod值
-  samplerCreateInfo.anisotropyEnable = VK_FALSE;                          // 是否启用各向异性过滤
-  samplerCreateInfo.maxAnisotropy = 1;                                    // 各向异性最大过滤值
-  samplerCreateInfo.compareEnable = VK_FALSE;                             // 是否开启比较功能
-  samplerCreateInfo.compareOp = VK_COMPARE_OP_NEVER;                      // 纹素数据比较操作
-  samplerCreateInfo.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;     // 要使用的预定义边框颜色
+//  samplerCreateInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE; // 纹理S轴的拉伸方式
+//  samplerCreateInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE; // 纹理T轴的拉伸方式
+//  samplerCreateInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE; // 纹理W轴的拉伸方式
+  /// Sample6_3 ************************************************** start
+  for (int i = 0; i < SAMPLER_COUNT; ++i) {                               // 循环设置各种拉伸方式
+    if (i == 0) {                                                         // 设置为重复拉伸方式
+      samplerCreateInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+      samplerCreateInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+      samplerCreateInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+    } else if (i == 1) {                                                  // 设置为截取拉伸方式
+      samplerCreateInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+      samplerCreateInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+      samplerCreateInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+    } else if (i == 2) {                                                  // 设置为镜像重复拉伸方式
+      samplerCreateInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT;
+      samplerCreateInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT;
+      samplerCreateInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT;
+    } else if (i == 3) {                                                  // 设置为边框拉伸方式
+      samplerCreateInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
+      samplerCreateInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
+      samplerCreateInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
+    }
+    /// Sample6_3 **************************************************** end
+    samplerCreateInfo.mipLodBias = 0.0;                                     // mipmap时的Lod调整值
+    samplerCreateInfo.minLod = 0.0;                                         // 最小Lod值
+    samplerCreateInfo.maxLod = 0.0;                                         // 最大Lod值
+    samplerCreateInfo.anisotropyEnable = VK_FALSE;                          // 是否启用各向异性过滤
+    samplerCreateInfo.maxAnisotropy = 1;                                    // 各向异性最大过滤值
+    samplerCreateInfo.compareEnable = VK_FALSE;                             // 是否开启比较功能
+    samplerCreateInfo.compareOp = VK_COMPARE_OP_NEVER;                      // 纹素数据比较操作
+    samplerCreateInfo.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;     // 要使用的预定义边框颜色
 
-  for (int i = 0; i < SAMPLER_COUNT; ++i) {                               // 循环创建指定数量的采样器
+//  for (int i = 0; i < SAMPLER_COUNT; ++i) {                               // 循环创建指定数量的采样器
     VkSampler samplerTexture;                                             // 声明采样器对象
     VkResult result = vk::vkCreateSampler(                                // 创建采样器
         device, &samplerCreateInfo, nullptr, &samplerTexture);
@@ -323,7 +348,8 @@ void TextureManager::init_SPEC_2D_Textures(
 
   VkDescriptorImageInfo texImageInfo;                                     // 构建图像描述信息实例
   texImageInfo.imageView = viewTexture;                                   // 采用的图像视图
-  texImageInfo.sampler = samplerList[0];                                  // 采用的采样器
+//  texImageInfo.sampler = samplerList[0];                                  // 采用的采样器
+  texImageInfo.sampler = samplerList[imageSampler[texName]];              // Sample6_3
   texImageInfo.imageLayout = VK_IMAGE_LAYOUT_GENERAL;                     // 图像布局
   texImageInfoList[texName] = texImageInfo;                               // 添加到纹理图像描述信息列表
 
@@ -337,6 +363,7 @@ void TextureManager::initTextures(VkDevice &device,
                                   VkQueue &queueGraphics) {
   initSampler(device, gpu);                                         // 初始化采样器
   for (int i = 0; i < texNames.size(); ++i) {                             // 遍历纹理文件名称列表
+    imageSampler[texNames[i]] = i;                                        // Sample6_3-设置对应纹理的采样器索引
     TexDataObject *ctdo = FileUtil::loadCommonTexData(texNames[i]); // 加载纹理文件数据
     LOGI("%s: width=%d height=%d", texNames[i].c_str(), ctdo->width, ctdo->height); // 打印纹理数据信息
     init_SPEC_2D_Textures(                                                // 加载2D纹理

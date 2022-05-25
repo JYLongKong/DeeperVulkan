@@ -114,6 +114,12 @@ DrawableObjectCommon *MyVulkanManager::ballForDraw;
 DrawableObjectCommon *MyVulkanManager::texTri;
 float MyVulkanManager::zAngle = 0;
 
+/// Sample6_3
+DrawableObjectCommon *MyVulkanManager::texTri1;
+DrawableObjectCommon *MyVulkanManager::texTri2;
+int MyVulkanManager::samplerType = 0;
+int MyVulkanManager::texType = 0;
+
 /**
  * 创建Vulkan实例的方法
  */
@@ -837,13 +843,31 @@ void MyVulkanManager::createDrawableObject() {
   /// Sample5_9 **************************************************** end
 
   /// Sample6_1 ************************************************** start
-  float *vdataIn = new float[15]{                                         // 顶点数据数组
-      0, 10, 0, 0.5, 0,                                                   // 第1个顶点的位置和纹理(x, y, z, s, t)
-      -9, -5, 0, 0, 1,                                                    // 第2个顶点的数据
-      9, -5, 0, 1, 1                                                      // 第3个顶点的数据
-  };
-  texTri = new DrawableObjectCommon(vdataIn, 15 * 4, 3, device, memoryroperties); // 创建三角形绘制物体
+//  float *vdataIn = new float[15]{                                         // 顶点数据数组
+//      0, 10, 0, 0.5, 0,                                                   // 第1个顶点的位置和纹理(x, y, z, s, t)
+//      -9, -5, 0, 0, 1,                                                    // 第2个顶点的数据
+//      9, -5, 0, 1, 1                                                      // 第3个顶点的数据
+//  };
+//  texTri = new DrawableObjectCommon(vdataIn, 15 * 4, 3, device, memoryroperties); // 创建三角形绘制物体
   /// Sample6_1 **************************************************** end
+
+  /// Sample6_3 ************************************************** start
+  float *vdataIn = new float[30]{                                         // 顶点数据数组(x, y, z, s, t)
+      9, 9, 0, 4, 0, -9, 9, 0, 0, 0, -9, -9, 0, 0, 4,                     // 第1个三角形的数据
+      9, 9, 0, 4, 0, -9, -9, 0, 0, 4, 9, -9, 0, 4, 4                      // 第2个三角形的数据
+  };
+  texTri = new DrawableObjectCommon(vdataIn, 30 * 4, 6, device, memoryroperties); // 创建绘制物体1
+  vdataIn = new float[30]{
+      9, 9, 0, 4, 0, -9, 9, 0, 0, 0, -9, -9, 0, 0, 2,
+      9, 9, 0, 4, 0, -9, -9, 0, 0, 2, 9, -9, 0, 4, 2
+  };
+  texTri1 = new DrawableObjectCommon(vdataIn, 30 * 4, 6, device, memoryroperties); // 创建绘制物体2
+  vdataIn = new float[30]{
+      9, 9, 0, 1, 0, -9, 9, 0, 0, 0, -9, -9, 0, 0, 1,
+      9, 9, 0, 1, 0, -9, -9, 0, 0, 1, 9, -9, 0, 1, 1
+  };
+  texTri2 = new DrawableObjectCommon(vdataIn, 30 * 4, 6, device, memoryroperties); // 创建绘制物体3
+  /// Sample6_3 **************************************************** end
 }
 
 /**
@@ -1303,13 +1327,42 @@ void MyVulkanManager::drawObject() {
     /// Sample5_9 **************************************************** end
 
     /// Sample6_1 ************************************************** start
+//    MatrixState3D::pushMatrix();
+//    MatrixState3D::rotate(yAngle, 0, 1, 0);
+//    MatrixState3D::rotate(zAngle, 0, 0, 1);
+//    texTri->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, // 绘制纹理三角形
+//                     &(sqsCL->descSet[TextureManager::getVkDescriptorSetIndex("texture/wall.bntex")]));
+//    MatrixState3D::popMatrix();
+    /// Sample6_1 **************************************************** end
+
+    /// Sample6_3 ************************************************** start
     MatrixState3D::pushMatrix();
     MatrixState3D::rotate(yAngle, 0, 1, 0);
     MatrixState3D::rotate(zAngle, 0, 0, 1);
-    texTri->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, // 绘制纹理三角形
-                     &(sqsCL->descSet[TextureManager::getVkDescriptorSetIndex("texture/wall.bntex")]));
+    string textureName;                                                   // 当前纹理名称
+    switch (samplerType) {
+      case 0:textureName = "texture/robot0.bntex";
+        break;
+      case 1:textureName = "texture/robot1.bntex";
+        break;
+      case 2:textureName = "texture/robot2.bntex";
+        break;
+      case 3:textureName = "texture/robot3.bntex";
+        break;
+      default:break;
+    }
+    if (texType == 0) {                                                   // 采用4×4纹理坐标范围
+      texTri->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, // 绘制物体0
+                       &(sqsCL->descSet[TextureManager::getVkDescriptorSetIndex(textureName)]));
+    } else if (texType == 1) {                                            // 采用4×2纹理坐标范围
+      texTri1->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline,  // 绘制物体1
+                        &(sqsCL->descSet[TextureManager::getVkDescriptorSetIndex(textureName)]));
+    } else if (texType == 2) {                                            // 采用1×1纹理坐标范围
+      texTri2->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline,  // 绘制物体2
+                        &(sqsCL->descSet[TextureManager::getVkDescriptorSetIndex(textureName)]));
+    }
     MatrixState3D::popMatrix();
-    /// Sample6_1 **************************************************** end
+    /// Sample6_3 **************************************************** end
 
 //    triForDraw->drawSelf(                                                 // 绘制三色三角形、Sample4_14-卷绕和背面剪裁
 //        cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, &(sqsCL->descSet[0]));

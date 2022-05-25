@@ -61,15 +61,15 @@ static int32_t engine_handle_input(struct android_app *app, AInputEvent *event) 
           /// Sample4_1 **************************************************** end
 
           /// Sample4_2 ************************************************** start
-          xPre = x;
-          yPre = y;
-          /// Sample4_2 **************************************************** end
-
-          /// Sample4_7 ************************************************** start
-//          isClick = true;
 //          xPre = x;
 //          yPre = y;
-          /// Sample4_7 **************************************************** end
+          /// Sample4_2 **************************************************** end
+
+          /// Sample4_7、6_3 ********************************************** start
+          isClick = true;
+          xPre = x;
+          yPre = y;
+          /// Sample4_7、6_3 ************************************************ end
 
           break;
         case AMOTION_EVENT_ACTION_MOVE: // 触摸点移动
@@ -146,14 +146,17 @@ static int32_t engine_handle_input(struct android_app *app, AInputEvent *event) 
 //          yPre = y;
           /// Sample5_6 **************************************************** end
 
-          /// Sample6_1 ************************************************** start
+          /// Sample6_1、6_3 ********************************************** start
           xDis = x - xPre;
           yDis = y - yPre;
           MyVulkanManager::yAngle += xDis * 180.0 / 600;
           MyVulkanManager::zAngle += yDis * 180.0 / 600;
           xPre = x;
           yPre = y;
-          /// Sample6_1 **************************************************** end
+          if (abs((int) xDis) > 10 || abs((int) yDis) > 10) {
+            isClick = false;
+          }
+          /// Sample6_1、6_3 *********************************************** end
 
           break;
         case AMOTION_EVENT_ACTION_UP:   // 触摸点抬起
@@ -184,6 +187,16 @@ static int32_t engine_handle_input(struct android_app *app, AInputEvent *event) 
 //            MyVulkanManager::depthOffsetFlag = ++MyVulkanManager::depthOffsetFlag % 3;
 //          }
           /// Sample4_13 *************************************************** end
+
+          /// Sample6_3 ************************************************** start
+          if (isClick) {
+            if (x < MyVulkanManager::screenWidth / 2) { // 触控位置在屏幕左侧
+              MyVulkanManager::samplerType = (++MyVulkanManager::samplerType % 4);
+            } else {  // 触控位置在屏幕右侧
+              MyVulkanManager::texType = (++MyVulkanManager::texType % 3);
+            }
+          }
+          /// Sample6_3 **************************************************** end
 
           break;
         default:break;

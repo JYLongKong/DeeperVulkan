@@ -94,8 +94,14 @@ class MyVulkanManager {
   /// Sample5_1 球
   static DrawableObjectCommon *ballForDraw;
 
-  /// Sample6_1 纹理
-  static DrawableObjectCommon * texTri;
+  /// Sample6_1 纹理三角形
+  static DrawableObjectCommon *texTri;
+
+  /// Sample6_3 纹理拉伸
+  static DrawableObjectCommon *texTri1;
+  static DrawableObjectCommon *texTri2;
+  static int samplerType;                                 // 当前使用的采样器索引(0~3)
+  static int texType;                                     // 当前使用的纹理坐标范围索引(0~2)
 
   static void init_vulkan_instance();                     // 创建Vulkan实例
   static void enumerate_vulkan_phy_devices();             // 初始化物理设备
