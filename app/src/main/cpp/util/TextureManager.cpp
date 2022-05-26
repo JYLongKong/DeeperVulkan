@@ -3,17 +3,18 @@
 #include "HelpFunction.h"
 #include "FileUtil.h"
 
-//std::vector<std::string> TextureManager::texNames = {"texture/wall.bntex"};
 std::vector<VkSampler> TextureManager::samplerList;
 std::map<std::string, VkImage> TextureManager::textureImageList;
 std::map<std::string, VkDeviceMemory> TextureManager::textureMemoryList;
 std::map<std::string, VkImageView> TextureManager::viewTextureList;
 std::map<std::string, VkDescriptorImageInfo> TextureManager::texImageInfoList;
+std::map<std::string, int> TextureManager::imageSampler;                  // Sample6_3
 
-/// Sample6_3
-std::vector<std::string>TextureManager::texNames =
-    {"texture/robot0.bntex", "texture/robot1.bntex", "texture/robot2.bntex", "texture/robot3.bntex"};
-std::map<std::string, int> TextureManager::imageSampler;
+//std::vector<std::string> TextureManager::texNames = {"texture/wall.bntex"}; // Sample6_1、Sample6_2
+//std::vector<std::string> TextureManager::texNames =                       // Sample6_3
+//    {"texture/robot0.bntex", "texture/robot1.bntex", "texture/robot2.bntex", "texture/robot3.bntex"};
+std::vector<std::string> TextureManager::texNames =                       // Sample6_4
+    {"texture/32Nearest.bntex", "texture/32Linear.bntex", "texture/256Nearest.bntex", "texture/256Linear.bntex"};
 
 void setImageLayout(VkCommandBuffer cmd,
                     VkImage image,
@@ -83,32 +84,48 @@ void setImageLayout(VkCommandBuffer cmd,
 void TextureManager::initSampler(VkDevice &device, VkPhysicalDevice &gpu) {
   VkSamplerCreateInfo samplerCreateInfo = {};                             // 构建采样器创建信息结构体实例
   samplerCreateInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;        // 结构体的类型
-  samplerCreateInfo.magFilter = VK_FILTER_LINEAR;                         // 放大时的纹理采样方式
-  samplerCreateInfo.minFilter = VK_FILTER_NEAREST;                        // 缩小时的纹理采样方式
-  samplerCreateInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;          // mipmap模式
-//  samplerCreateInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE; // 纹理S轴的拉伸方式
-//  samplerCreateInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE; // 纹理T轴的拉伸方式
-//  samplerCreateInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE; // 纹理W轴的拉伸方式
-  /// Sample6_3 ************************************************** start
-  for (int i = 0; i < SAMPLER_COUNT; ++i) {                               // 循环设置各种拉伸方式
-    if (i == 0) {                                                         // 设置为重复拉伸方式
-      samplerCreateInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-      samplerCreateInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-      samplerCreateInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-    } else if (i == 1) {                                                  // 设置为截取拉伸方式
-      samplerCreateInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
-      samplerCreateInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
-      samplerCreateInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
-    } else if (i == 2) {                                                  // 设置为镜像重复拉伸方式
-      samplerCreateInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT;
-      samplerCreateInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT;
-      samplerCreateInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT;
-    } else if (i == 3) {                                                  // 设置为边框拉伸方式
-      samplerCreateInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
-      samplerCreateInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
-      samplerCreateInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
+
+  /// 纹理采样方式
+//  samplerCreateInfo.magFilter = VK_FILTER_LINEAR;                         // 放大时的纹理采样方式
+//  samplerCreateInfo.minFilter = VK_FILTER_NEAREST;                        // 缩小时的纹理采样方式
+  /// Sample6_4 ************************************************** start
+  for (int i = 0; i < SAMPLER_COUNT; ++i) {                               // 循环设置不同的采样方式
+    if (i == 0) {
+      samplerCreateInfo.magFilter = VK_FILTER_NEAREST;                    // 放大时采用最近点采样方式
+      samplerCreateInfo.minFilter = VK_FILTER_NEAREST;                    // 缩小时采用最近点采样方式
+    } else if (i == 1) {
+      samplerCreateInfo.magFilter = VK_FILTER_LINEAR;                     // 放大时采用线性采样方式
+      samplerCreateInfo.minFilter = VK_FILTER_LINEAR;                     // 缩小时采用线性采样方式
     }
+    /// Sample6_4 **************************************************** end
+
+    samplerCreateInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;          // mipmap模式
+
+    /// 纹理拉伸方式
+    samplerCreateInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE; // 纹理S轴的拉伸方式
+    samplerCreateInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE; // 纹理T轴的拉伸方式
+    samplerCreateInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE; // 纹理W轴的拉伸方式
+    /// Sample6_3 ************************************************** start
+//  for (int i = 0; i < SAMPLER_COUNT; ++i) {                               // 循环设置各种拉伸方式
+//    if (i == 0) {                                                         // 设置为重复拉伸方式
+//      samplerCreateInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+//      samplerCreateInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+//      samplerCreateInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+//    } else if (i == 1) {                                                  // 设置为截取拉伸方式
+//      samplerCreateInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+//      samplerCreateInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+//      samplerCreateInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+//    } else if (i == 2) {                                                  // 设置为镜像重复拉伸方式
+//      samplerCreateInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT;
+//      samplerCreateInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT;
+//      samplerCreateInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT;
+//    } else if (i == 3) {                                                  // 设置为边框拉伸方式
+//      samplerCreateInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
+//      samplerCreateInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
+//      samplerCreateInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
+//    }
     /// Sample6_3 **************************************************** end
+
     samplerCreateInfo.mipLodBias = 0.0;                                     // mipmap时的Lod调整值
     samplerCreateInfo.minLod = 0.0;                                         // 最小Lod值
     samplerCreateInfo.maxLod = 0.0;                                         // 最大Lod值
@@ -330,8 +347,8 @@ void TextureManager::init_SPEC_2D_Textures(
   view_info.pNext = nullptr;
   view_info.viewType = VK_IMAGE_VIEW_TYPE_2D;                             // 图像视图的类型
   view_info.format = format;                                              // 图像视图的像素格式
-//  view_info.components.r = VK_COMPONENT_SWIZZLE_G;                        // 设置R通道调和
-  view_info.components.r = VK_COMPONENT_SWIZZLE_G;                        // Sample6_2-将纹理图中绿色通道的值映射到采样器的红色通道
+  view_info.components.r = VK_COMPONENT_SWIZZLE_R;                        // 设置R通道调和
+//  view_info.components.r = VK_COMPONENT_SWIZZLE_G;                        // Sample6_2-将纹理图中绿色通道的值映射到采样器的红色通道
   view_info.components.g = VK_COMPONENT_SWIZZLE_G;                        // 设置G通道调和
   view_info.components.b = VK_COMPONENT_SWIZZLE_B;                        // 设置B通道调和
   view_info.components.a = VK_COMPONENT_SWIZZLE_A;                        // 设置A通道调和
@@ -346,10 +363,10 @@ void TextureManager::init_SPEC_2D_Textures(
   VkResult result = vk::vkCreateImageView(device, &view_info, nullptr, &viewTexture);
   viewTextureList[texName] = viewTexture;                                 // 添加到图像视图列表
 
-  VkDescriptorImageInfo texImageInfo;                                     // 构建图像描述信息实例
+  VkDescriptorImageInfo texImageInfo;                                     // 构建图像描述信息结构体实例
   texImageInfo.imageView = viewTexture;                                   // 采用的图像视图
 //  texImageInfo.sampler = samplerList[0];                                  // 采用的采样器
-  texImageInfo.sampler = samplerList[imageSampler[texName]];              // Sample6_3
+  texImageInfo.sampler = samplerList[imageSampler[texName]];              // Sample6_3、Sample6_4
   texImageInfo.imageLayout = VK_IMAGE_LAYOUT_GENERAL;                     // 图像布局
   texImageInfoList[texName] = texImageInfo;                               // 添加到纹理图像描述信息列表
 
@@ -363,7 +380,8 @@ void TextureManager::initTextures(VkDevice &device,
                                   VkQueue &queueGraphics) {
   initSampler(device, gpu);                                         // 初始化采样器
   for (int i = 0; i < texNames.size(); ++i) {                             // 遍历纹理文件名称列表
-    imageSampler[texNames[i]] = i;                                        // Sample6_3-设置对应纹理的采样器索引
+//    imageSampler[texNames[i]] = i;                                        // Sample6_3-设置对应纹理的采样器索引
+    imageSampler[texNames[i]] = i % 2;                                    // Sample6_4
     TexDataObject *ctdo = FileUtil::loadCommonTexData(texNames[i]); // 加载纹理文件数据
     LOGI("%s: width=%d height=%d", texNames[i].c_str(), ctdo->width, ctdo->height); // 打印纹理数据信息
     init_SPEC_2D_Textures(                                                // 加载2D纹理

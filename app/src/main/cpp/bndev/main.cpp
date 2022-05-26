@@ -28,6 +28,9 @@ bool isClick = true;
 /// Sample5_9
 float TOUCH_SCALE_FACTOR = 5.0f / 320;
 
+/// Sample6_4
+int pressType = 1;
+
 /**
  * 事件处理回调方法
  * Sample4_1
@@ -83,13 +86,13 @@ static int32_t engine_handle_input(struct android_app *app, AInputEvent *event) 
 //          yPre = y;                             // 记录触控点y坐标
           /// Sample4_2 **************************************************** end
 
-          /// Sample4_7 ************************************************** start
-//          xDis = x - xPre;
-//          yDis = y - yPre;
-//          if (abs((int) xDis) > 10 || abs((int) yDis) > 10) {
-//            isClick = false;
-//          }
-          /// Sample4_7 **************************************************** end
+          /// Sample4_7、Sample6_4 *************************************** start
+          xDis = x - xPre;
+          yDis = y - yPre;
+          if (abs((int) xDis) > 10 || abs((int) yDis) > 10) {
+            isClick = false;
+          }
+          /// Sample4_7、Sample6_4 ***************************************** end
 
           /// Sample4_11 ************************************************* start
 //          xDis = x - xPre;
@@ -147,15 +150,15 @@ static int32_t engine_handle_input(struct android_app *app, AInputEvent *event) 
           /// Sample5_6 **************************************************** end
 
           /// Sample6_1、6_3 ********************************************** start
-          xDis = x - xPre;
-          yDis = y - yPre;
-          MyVulkanManager::yAngle += xDis * 180.0 / 600;
-          MyVulkanManager::zAngle += yDis * 180.0 / 600;
-          xPre = x;
-          yPre = y;
-          if (abs((int) xDis) > 10 || abs((int) yDis) > 10) {
-            isClick = false;
-          }
+//          xDis = x - xPre;
+//          yDis = y - yPre;
+//          MyVulkanManager::yAngle += xDis * 180.0 / 600;
+//          MyVulkanManager::zAngle += yDis * 180.0 / 600;
+//          xPre = x;
+//          yPre = y;
+//          if (abs((int) xDis) > 10 || abs((int) yDis) > 10) {
+//            isClick = false;
+//          }
           /// Sample6_1、6_3 *********************************************** end
 
           break;
@@ -189,14 +192,35 @@ static int32_t engine_handle_input(struct android_app *app, AInputEvent *event) 
           /// Sample4_13 *************************************************** end
 
           /// Sample6_3 ************************************************** start
-          if (isClick) {
-            if (x < MyVulkanManager::screenWidth / 2) { // 触控位置在屏幕左侧
-              MyVulkanManager::samplerType = (++MyVulkanManager::samplerType % 4);
-            } else {  // 触控位置在屏幕右侧
-              MyVulkanManager::texType = (++MyVulkanManager::texType % 3);
-            }
-          }
+//          if (isClick) {
+//            if (x < MyVulkanManager::screenWidth / 2) { // 触控位置在屏幕左侧
+//              MyVulkanManager::samplerType = (++MyVulkanManager::samplerType % 4);
+//            } else {  // 触控位置在屏幕右侧
+//              MyVulkanManager::texType = (++MyVulkanManager::texType % 3);
+//            }
+//          }
           /// Sample6_3 **************************************************** end
+
+          /// Sample6_4 ************************************************** start
+          if (isClick) {
+            switch (pressType) {
+              case 0:MyVulkanManager::smallType = 0;
+                MyVulkanManager::bigType = 1;
+                break;
+              case 1:MyVulkanManager::smallType = 1;
+                MyVulkanManager::bigType = 0;
+                break;
+              case 2:MyVulkanManager::smallType = 0;
+                MyVulkanManager::bigType = 0;
+                break;
+              case 3:MyVulkanManager::smallType = 1;
+                MyVulkanManager::bigType = 1;
+                break;
+              default:break;
+            }
+            pressType = (++pressType % 4);
+          }
+          /// Sample6_4 **************************************************** end
 
           break;
         default:break;

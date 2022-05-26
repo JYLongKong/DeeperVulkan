@@ -120,6 +120,10 @@ DrawableObjectCommon *MyVulkanManager::texTri2;
 int MyVulkanManager::samplerType = 0;
 int MyVulkanManager::texType = 0;
 
+/// Sample6_4
+int MyVulkanManager::smallType = 0;
+int MyVulkanManager::bigType = 1;
+
 /**
  * 创建Vulkan实例的方法
  */
@@ -852,22 +856,43 @@ void MyVulkanManager::createDrawableObject() {
   /// Sample6_1 **************************************************** end
 
   /// Sample6_3 ************************************************** start
-  float *vdataIn = new float[30]{                                         // 顶点数据数组(x, y, z, s, t)
-      9, 9, 0, 4, 0, -9, 9, 0, 0, 0, -9, -9, 0, 0, 4,                     // 第1个三角形的数据
-      9, 9, 0, 4, 0, -9, -9, 0, 0, 4, 9, -9, 0, 4, 4                      // 第2个三角形的数据
-  };
-  texTri = new DrawableObjectCommon(vdataIn, 30 * 4, 6, device, memoryroperties); // 创建绘制物体1
-  vdataIn = new float[30]{
-      9, 9, 0, 4, 0, -9, 9, 0, 0, 0, -9, -9, 0, 0, 2,
-      9, 9, 0, 4, 0, -9, -9, 0, 0, 2, 9, -9, 0, 4, 2
-  };
-  texTri1 = new DrawableObjectCommon(vdataIn, 30 * 4, 6, device, memoryroperties); // 创建绘制物体2
-  vdataIn = new float[30]{
-      9, 9, 0, 1, 0, -9, 9, 0, 0, 0, -9, -9, 0, 0, 1,
-      9, 9, 0, 1, 0, -9, -9, 0, 0, 1, 9, -9, 0, 1, 1
-  };
-  texTri2 = new DrawableObjectCommon(vdataIn, 30 * 4, 6, device, memoryroperties); // 创建绘制物体3
+//  float *vdataIn = new float[30]{                                         // 顶点数据数组(x, y, z, s, t)
+//      9, 9, 0, 4, 0, -9, 9, 0, 0, 0, -9, -9, 0, 0, 4,                     // 第1个三角形的数据
+//      9, 9, 0, 4, 0, -9, -9, 0, 0, 4, 9, -9, 0, 4, 4                      // 第2个三角形的数据
+//  };
+//  texTri = new DrawableObjectCommon(vdataIn, 30 * 4, 6, device, memoryroperties); // 创建绘制物体1
+//  vdataIn = new float[30]{
+//      9, 9, 0, 4, 0, -9, 9, 0, 0, 0, -9, -9, 0, 0, 2,
+//      9, 9, 0, 4, 0, -9, -9, 0, 0, 2, 9, -9, 0, 4, 2
+//  };
+//  texTri1 = new DrawableObjectCommon(vdataIn, 30 * 4, 6, device, memoryroperties); // 创建绘制物体2
+//  vdataIn = new float[30]{
+//      9, 9, 0, 1, 0, -9, 9, 0, 0, 0, -9, -9, 0, 0, 1,
+//      9, 9, 0, 1, 0, -9, -9, 0, 0, 1, 9, -9, 0, 1, 1
+//  };
+//  texTri2 = new DrawableObjectCommon(vdataIn, 30 * 4, 6, device, memoryroperties); // 创建绘制物体3
   /// Sample6_3 **************************************************** end
+
+  /// Sample6_4 ************************************************** start
+  float *vdataIn = new float[30]{
+      2, 2, 0, 1, 0,
+      -2, 2, 0, 0, 0,
+      -2, -2, 0, 0, 1,
+      2, 2, 0, 1, 0,
+      -2, -2, 0, 0, 1,
+      2, -2, 0, 1, 1
+  };
+  texTri = new DrawableObjectCommon(vdataIn, 30 * 4, 6, device, memoryroperties);
+  float *vdataIn1 = new float[30]{
+      7, 7, 0, 1, 0,
+      -7, 7, 0, 0, 0,
+      -7, -7, 0, 0, 1,
+      7, 7, 0, 1, 0,
+      -7, -7, 0, 0, 1,
+      7, -7, 0, 1, 1
+  };
+  texTri1 = new DrawableObjectCommon(vdataIn1, 30 * 4, 6, device, memoryroperties);
+  /// Sample6_4 **************************************************** end
 }
 
 /**
@@ -1000,11 +1025,11 @@ void MyVulkanManager::initMatrixAndLight() {
 
   /// Sample5_5~Sample5_10
 //  LightManager::setLightPosition(0, 0, -13);  // 设置定位光光源位置
-  LightManager::setLightPosition(0, 0, -14.5f); // Sample5_9、Sample5_10-光照的每顶点计算与每片元计算
-  LightManager::setLightDirection(-0.0f, 0.0f, 1.0f); // 设置定向光光源方向
-  LightManager::setLightAmbient(0.1f, 0.1f, 0.1f, 0.1f);  // 设置环境光强度
-  LightManager::setLightDiffuse(0.6f, 0.6f, 0.6f, 0.6f);  // 设置散射光强度
-  LightManager::setLightSpecular(0.4f, 0.4f, 0.4f, 0.4f); // 设置镜面光强度
+//  LightManager::setLightPosition(0, 0, -14.5f); // Sample5_9、Sample5_10-光照的每顶点计算与每片元计算
+//  LightManager::setLightDirection(-0.0f, 0.0f, 1.0f); // 设置定向光光源方向
+//  LightManager::setLightAmbient(0.1f, 0.1f, 0.1f, 0.1f);  // 设置环境光强度
+//  LightManager::setLightDiffuse(0.6f, 0.6f, 0.6f, 0.6f);  // 设置散射光强度
+//  LightManager::setLightSpecular(0.4f, 0.4f, 0.4f, 0.4f); // 设置镜面光强度
 }
 
 /**
@@ -1336,33 +1361,58 @@ void MyVulkanManager::drawObject() {
     /// Sample6_1 **************************************************** end
 
     /// Sample6_3 ************************************************** start
+//    MatrixState3D::pushMatrix();
+//    MatrixState3D::rotate(yAngle, 0, 1, 0);
+//    MatrixState3D::rotate(zAngle, 0, 0, 1);
+//    string textureName;                                                   // 当前纹理名称
+//    switch (samplerType) {
+//      case 0:textureName = "texture/robot0.bntex";
+//        break;
+//      case 1:textureName = "texture/robot1.bntex";
+//        break;
+//      case 2:textureName = "texture/robot2.bntex";
+//        break;
+//      case 3:textureName = "texture/robot3.bntex";
+//        break;
+//      default:break;
+//    }
+//    if (texType == 0) {                                                   // 采用4×4纹理坐标范围
+//      texTri->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, // 绘制物体0
+//                       &(sqsCL->descSet[TextureManager::getVkDescriptorSetIndex(textureName)]));
+//    } else if (texType == 1) {                                            // 采用4×2纹理坐标范围
+//      texTri1->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline,  // 绘制物体1
+//                        &(sqsCL->descSet[TextureManager::getVkDescriptorSetIndex(textureName)]));
+//    } else if (texType == 2) {                                            // 采用1×1纹理坐标范围
+//      texTri2->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline,  // 绘制物体2
+//                        &(sqsCL->descSet[TextureManager::getVkDescriptorSetIndex(textureName)]));
+//    }
+//    MatrixState3D::popMatrix();
+    /// Sample6_3 **************************************************** end
+
+    /// Sample6_4 ************************************************** start
     MatrixState3D::pushMatrix();
-    MatrixState3D::rotate(yAngle, 0, 1, 0);
-    MatrixState3D::rotate(zAngle, 0, 0, 1);
-    string textureName;                                                   // 当前纹理名称
-    switch (samplerType) {
-      case 0:textureName = "texture/robot0.bntex";
-        break;
-      case 1:textureName = "texture/robot1.bntex";
-        break;
-      case 2:textureName = "texture/robot2.bntex";
-        break;
-      case 3:textureName = "texture/robot3.bntex";
-        break;
-      default:break;
-    }
-    if (texType == 0) {                                                   // 采用4×4纹理坐标范围
-      texTri->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, // 绘制物体0
-                       &(sqsCL->descSet[TextureManager::getVkDescriptorSetIndex(textureName)]));
-    } else if (texType == 1) {                                            // 采用4×2纹理坐标范围
-      texTri1->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline,  // 绘制物体1
-                        &(sqsCL->descSet[TextureManager::getVkDescriptorSetIndex(textureName)]));
-    } else if (texType == 2) {                                            // 采用1×1纹理坐标范围
-      texTri2->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline,  // 绘制物体2
-                        &(sqsCL->descSet[TextureManager::getVkDescriptorSetIndex(textureName)]));
+    MatrixState3D::translate(0, 10, 0);
+    MatrixState3D::rotate(-30, 0, 0, 1);
+    if (smallType == 0) {                                                 // 采用最近点采样
+      texTri->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, // 绘制小纹理矩形
+                       &(sqsCL->descSet[TextureManager::getVkDescriptorSetIndex("texture/256Nearest.bntex")]));
+    } else {                                                              // 采用线性采样
+      texTri->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, // 绘制小纹理矩形
+                       &(sqsCL->descSet[TextureManager::getVkDescriptorSetIndex("texture/256Linear.bntex")]));
     }
     MatrixState3D::popMatrix();
-    /// Sample6_3 **************************************************** end
+    MatrixState3D::pushMatrix();
+    MatrixState3D::translate(0, -5, 0);
+    MatrixState3D::rotate(-30, 0, 0, 1);
+    if (bigType == 0) {                                                   // 采用最近点采样
+      texTri1->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, // 绘制大纹理矩形
+                        &(sqsCL->descSet[TextureManager::getVkDescriptorSetIndex("texture/32Nearest.bntex")]));
+    } else {                                                              // 采用线性采样
+      texTri1->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, // 绘制大纹理矩形
+                        &(sqsCL->descSet[TextureManager::getVkDescriptorSetIndex("texture/32Linear.bntex")]));
+    }
+    MatrixState3D::popMatrix();
+    /// Sample6_4 **************************************************** end
 
 //    triForDraw->drawSelf(                                                 // 绘制三色三角形、Sample4_14-卷绕和背面剪裁
 //        cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, &(sqsCL->descSet[0]));
@@ -1409,5 +1459,3 @@ void MyVulkanManager::doVulkan() {
   thread t1(&ThreadTask::doTask, tt);                             // 创建线程执行任务方法doTask
   t1.detach();                                                    // 将子线程与主线程分离
 }
-
-

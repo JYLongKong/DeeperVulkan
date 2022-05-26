@@ -9,7 +9,8 @@
 #include "TexDataObject.h"
 
 //#define SAMPLER_COUNT 1 // 采样器数量
-#define SAMPLER_COUNT 4 // Sample6_3-四种不同拉伸方式的采样器
+//#define SAMPLER_COUNT 4 // Sample6_3-四种纹理拉伸方式的采样器
+#define SAMPLER_COUNT 2 // Sample6_4-两种纹理采样方式的采样器
 
 class TextureManager {
  public:
@@ -19,7 +20,7 @@ class TextureManager {
   static std::map<std::string, VkDeviceMemory> textureMemoryList;         // 纹理图像内存列表
   static std::map<std::string, VkImageView> viewTextureList;              // 纹理图像视图列表
   static std::map<std::string, VkDescriptorImageInfo> texImageInfoList;   // 纹理图像描述信息列表
-  static std::map<std::string, int> imageSampler;                         // Sample6_3-对应纹理的采样器索引
+  static std::map<std::string, int> imageSampler;                         // Sample6_3-纹理文件名称对应的采样器索引
 
   /**
    * 加载所有纹理
