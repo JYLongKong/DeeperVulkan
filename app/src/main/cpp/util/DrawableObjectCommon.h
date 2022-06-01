@@ -33,6 +33,11 @@ class DrawableObjectCommon {
       VkDevice &device, VkPhysicalDeviceMemoryProperties &memoryroperties);
   /// Sample4_15 *************************************************** end
 
+  /// Sample6_5 ************************************************** start
+  float *pushConstantDataVertex;
+  float *pushConstantDataFrag;
+  /// Sample6_5 **************************************************** end
+
   DrawableObjectCommon(
       float *vdataIn,
       int dataByteCount,
@@ -56,7 +61,7 @@ class DrawableObjectCommon {
       VkCommandBuffer &secondary_cmd,
       VkPipelineLayout &pipelineLayout,
       VkPipeline &pipeline,
-      VkDescriptorSet *desSetPointer
+      VkDescriptorSet *desSetPointer,
 
       /// Sample4_10
 //      uint32_t sIndex,
@@ -64,6 +69,9 @@ class DrawableObjectCommon {
 
       /// Sample4_16
 //      int cmdDataOffset = 0
+
+      /// Sample6_5
+      float lodLevel
   );
 
   /// Sample4_10 ************************************************* start

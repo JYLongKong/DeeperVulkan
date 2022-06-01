@@ -13,8 +13,9 @@ std::map<std::string, int> TextureManager::imageSampler;                  // Sam
 //std::vector<std::string> TextureManager::texNames = {"texture/wall.bntex"}; // Sample6_1、Sample6_2
 //std::vector<std::string> TextureManager::texNames =                       // Sample6_3
 //    {"texture/robot0.bntex", "texture/robot1.bntex", "texture/robot2.bntex", "texture/robot3.bntex"};
-std::vector<std::string> TextureManager::texNames =                       // Sample6_4
-    {"texture/32Nearest.bntex", "texture/32Linear.bntex", "texture/256Nearest.bntex", "texture/256Linear.bntex"};
+//std::vector<std::string> TextureManager::texNames =                       // Sample6_4
+//    {"texture/32Nearest.bntex", "texture/32Linear.bntex", "texture/256Nearest.bntex", "texture/256Linear.bntex"};
+std::vector<std::string> TextureManager::texNames = {"texture/mipmap.bntex"}; // Sample6_5
 
 void setImageLayout(VkCommandBuffer cmd,
                     VkImage image,
@@ -87,25 +88,28 @@ void TextureManager::initSampler(VkDevice &device, VkPhysicalDevice &gpu) {
 
   /// 纹理采样方式
 //  samplerCreateInfo.magFilter = VK_FILTER_LINEAR;                         // 放大时的纹理采样方式
-//  samplerCreateInfo.minFilter = VK_FILTER_NEAREST;                        // 缩小时的纹理采样方式
+  samplerCreateInfo.magFilter = VK_FILTER_NEAREST;                        // Sample6_5
+  samplerCreateInfo.minFilter = VK_FILTER_NEAREST;                        // 缩小时的纹理采样方式
   /// Sample6_4 ************************************************** start
-  for (int i = 0; i < SAMPLER_COUNT; ++i) {                               // 循环设置不同的采样方式
-    if (i == 0) {
-      samplerCreateInfo.magFilter = VK_FILTER_NEAREST;                    // 放大时采用最近点采样方式
-      samplerCreateInfo.minFilter = VK_FILTER_NEAREST;                    // 缩小时采用最近点采样方式
-    } else if (i == 1) {
-      samplerCreateInfo.magFilter = VK_FILTER_LINEAR;                     // 放大时采用线性采样方式
-      samplerCreateInfo.minFilter = VK_FILTER_LINEAR;                     // 缩小时采用线性采样方式
-    }
-    /// Sample6_4 **************************************************** end
+//  for (int i = 0; i < SAMPLER_COUNT; ++i) {                               // 循环设置不同的采样方式
+//    if (i == 0) {
+//      samplerCreateInfo.magFilter = VK_FILTER_NEAREST;                    // 放大时采用最近点采样方式
+//      samplerCreateInfo.minFilter = VK_FILTER_NEAREST;                    // 缩小时采用最近点采样方式
+//    } else if (i == 1) {
+//      samplerCreateInfo.magFilter = VK_FILTER_LINEAR;                     // 放大时采用线性采样方式
+//      samplerCreateInfo.minFilter = VK_FILTER_LINEAR;                     // 缩小时采用线性采样方式
+//    }
+  /// Sample6_4 **************************************************** end
 
-    samplerCreateInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;          // mipmap模式
+  /// MipMap模式
+//  samplerCreateInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;          // mipmap模式
+  samplerCreateInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;           // Sample6_5
 
-    /// 纹理拉伸方式
-    samplerCreateInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE; // 纹理S轴的拉伸方式
-    samplerCreateInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE; // 纹理T轴的拉伸方式
-    samplerCreateInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE; // 纹理W轴的拉伸方式
-    /// Sample6_3 ************************************************** start
+  /// 纹理拉伸方式
+  samplerCreateInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE; // 纹理S轴的拉伸方式
+  samplerCreateInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE; // 纹理T轴的拉伸方式
+  samplerCreateInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE; // 纹理W轴的拉伸方式
+  /// Sample6_3 ************************************************** start
 //  for (int i = 0; i < SAMPLER_COUNT; ++i) {                               // 循环设置各种拉伸方式
 //    if (i == 0) {                                                         // 设置为重复拉伸方式
 //      samplerCreateInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
@@ -124,18 +128,19 @@ void TextureManager::initSampler(VkDevice &device, VkPhysicalDevice &gpu) {
 //      samplerCreateInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
 //      samplerCreateInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
 //    }
-    /// Sample6_3 **************************************************** end
+  /// Sample6_3 **************************************************** end
 
-    samplerCreateInfo.mipLodBias = 0.0;                                     // mipmap时的Lod调整值
-    samplerCreateInfo.minLod = 0.0;                                         // 最小Lod值
-    samplerCreateInfo.maxLod = 0.0;                                         // 最大Lod值
-    samplerCreateInfo.anisotropyEnable = VK_FALSE;                          // 是否启用各向异性过滤
-    samplerCreateInfo.maxAnisotropy = 1;                                    // 各向异性最大过滤值
-    samplerCreateInfo.compareEnable = VK_FALSE;                             // 是否开启比较功能
-    samplerCreateInfo.compareOp = VK_COMPARE_OP_NEVER;                      // 纹素数据比较操作
-    samplerCreateInfo.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;     // 要使用的预定义边框颜色
+  samplerCreateInfo.mipLodBias = 0.0;                                     // mipmap时的Lod调整值
+  samplerCreateInfo.minLod = 0.0;                                         // 最小Lod值
+//  samplerCreateInfo.maxLod = 0.0;                                         // 最大Lod值
+  samplerCreateInfo.maxLod = 9.0;                                         // Sample6_5
+  samplerCreateInfo.anisotropyEnable = VK_FALSE;                          // 是否启用各向异性过滤
+  samplerCreateInfo.maxAnisotropy = 1;                                    // 各向异性最大过滤值
+  samplerCreateInfo.compareEnable = VK_FALSE;                             // 是否开启比较功能
+  samplerCreateInfo.compareOp = VK_COMPARE_OP_NEVER;                      // 纹素数据比较操作
+  samplerCreateInfo.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;     // 要使用的预定义边框颜色
 
-//  for (int i = 0; i < SAMPLER_COUNT; ++i) {                               // 循环创建指定数量的采样器
+  for (int i = 0; i < SAMPLER_COUNT; ++i) {                               // 循环创建指定数量的采样器
     VkSampler samplerTexture;                                             // 声明采样器对象
     VkResult result = vk::vkCreateSampler(                                // 创建采样器
         device, &samplerCreateInfo, nullptr, &samplerTexture);
@@ -151,8 +156,8 @@ void TextureManager::init_SPEC_2D_Textures(
     VkCommandBuffer &cmdBuffer,
     VkQueue &queueGraphics,
     VkFormat format,
-    TexDataObject *ctdo) {
-
+    TexDataObject *ctdo
+) {
   VkFormatProperties formatProps;                                         // 指定格式纹理的格式属性
   vk::vkGetPhysicalDeviceFormatProperties(gpu, format, &formatProps);     // 获取指定格式纹理的格式属性
   bool needStaging = !(formatProps.linearTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT); // 判断此格式纹理是否能使用线性瓦片纹理
@@ -373,19 +378,227 @@ void TextureManager::init_SPEC_2D_Textures(
   delete ctdo;                                                            // 删除内存中的纹理数据
 }
 
+void TextureManager::init_SPEC_Textures_ForMipMap(
+    std::string texName,
+    VkDevice &device,
+    VkPhysicalDevice &gpu,
+    VkPhysicalDeviceMemoryProperties &memoryroperties,
+    VkCommandBuffer &cmdBuffer,
+    VkQueue &queueGraphics,
+    VkFormat format,
+    TexDataObject *ctdo,
+    int levels
+) {
+  VkImageCreateInfo image_create_info = {};
+  image_create_info.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+  image_create_info.pNext = nullptr;
+  image_create_info.imageType = VK_IMAGE_TYPE_2D;
+  image_create_info.format = format;
+  image_create_info.extent.width = ctdo->width;
+  image_create_info.extent.height = ctdo->height;
+  image_create_info.extent.depth = 1;
+  image_create_info.mipLevels = levels;
+  image_create_info.arrayLayers = 1;
+  image_create_info.samples = VK_SAMPLE_COUNT_1_BIT;
+  image_create_info.tiling = VK_IMAGE_TILING_OPTIMAL;
+  image_create_info.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+  image_create_info.usage =
+      VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+  image_create_info.queueFamilyIndexCount = 0;
+  image_create_info.pQueueFamilyIndices = nullptr;
+  image_create_info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+  image_create_info.flags = 0;
+
+  VkImage textureImage;
+  VkResult result = vk::vkCreateImage(device, &image_create_info, nullptr, &textureImage);
+  assert(result == VK_SUCCESS);
+  textureImageList[texName] = textureImage;
+
+  VkMemoryAllocateInfo mem_alloc = {};
+  mem_alloc.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+  mem_alloc.pNext = nullptr;
+  mem_alloc.allocationSize = 0;
+  mem_alloc.memoryTypeIndex = 0;
+  VkMemoryRequirements mem_reqs;
+  vk::vkGetImageMemoryRequirements(device, textureImage, &mem_reqs);
+  mem_alloc.allocationSize = mem_reqs.size;
+  LOGI("IMG mem_reqs.size=%d", (int) (mem_reqs.size));
+  bool flag = memoryTypeFromProperties(memoryroperties, mem_reqs.memoryTypeBits, 0, &mem_alloc.memoryTypeIndex);
+  assert(flag);
+
+  VkDeviceMemory textureMemory;
+  result = vk::vkAllocateMemory(device, &mem_alloc, nullptr, &(textureMemory));
+  assert(result == VK_SUCCESS);
+  textureMemoryList[texName] = textureMemory;
+  result = vk::vkBindImageMemory(device, textureImage, textureMemory, 0);
+  assert(result == VK_SUCCESS);
+
+  /// 创建缓冲，将纹理数据首先搞进缓冲，然后传输进纹理
+  VkBuffer stagingBuffer;
+  VkBufferCreateInfo bufferCreateInfo = {};
+  bufferCreateInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+  bufferCreateInfo.pNext = nullptr;
+  bufferCreateInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+  bufferCreateInfo.size = ctdo->dataByteCount;
+  bufferCreateInfo.queueFamilyIndexCount = 0;
+  bufferCreateInfo.pQueueFamilyIndices = nullptr;
+  bufferCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+  bufferCreateInfo.flags = 0;
+  result = vk::vkCreateBuffer(device, &bufferCreateInfo, nullptr, &stagingBuffer);
+  assert(result == VK_SUCCESS);
+
+  VkMemoryRequirements memReqs = {};
+  vk::vkGetBufferMemoryRequirements(device, stagingBuffer, &memReqs);
+  VkMemoryAllocateInfo memAllocInfo = {};
+  memAllocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+  memAllocInfo.pNext = nullptr;
+  memAllocInfo.memoryTypeIndex = 0;
+  memAllocInfo.allocationSize = memReqs.size;
+  memoryTypeFromProperties(memoryroperties, memReqs.memoryTypeBits,
+                           VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+                           &memAllocInfo.memoryTypeIndex);
+
+  VkDeviceMemory stagingMemory;
+  result = vk::vkAllocateMemory(device, &memAllocInfo, nullptr, &stagingMemory);
+  assert(result == VK_SUCCESS);
+  result = vk::vkBindBufferMemory(device, stagingBuffer, stagingMemory, 0);
+  uint8_t *pData;
+  vk::vkMapMemory(device, stagingMemory, 0, memReqs.size, 0, (void **) (&pData));
+  memcpy(pData, ctdo->data, memReqs.size);
+  vk::vkUnmapMemory(device, stagingMemory);
+
+  VkBufferImageCopy bufferCopyRegion = {};
+  bufferCopyRegion.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+  bufferCopyRegion.imageSubresource.mipLevel = 0;
+  bufferCopyRegion.imageSubresource.baseArrayLayer = 0;
+  bufferCopyRegion.imageSubresource.layerCount = 1;
+  bufferCopyRegion.imageExtent.width = ctdo->width;
+  bufferCopyRegion.imageExtent.height = ctdo->height;
+  bufferCopyRegion.imageExtent.depth = 1;
+  bufferCopyRegion.bufferOffset = 0;
+
+  VkCommandBufferBeginInfo cmd_buf_info = {};
+  cmd_buf_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+  cmd_buf_info.pNext = nullptr;
+  cmd_buf_info.flags = 0;
+  cmd_buf_info.pInheritanceInfo = nullptr;
+
+  const VkCommandBuffer cmd_bufs[] = {cmdBuffer};
+  VkSubmitInfo submit_info[1] = {};
+  submit_info[0].pNext = nullptr;
+  submit_info[0].sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+  submit_info[0].waitSemaphoreCount = 0;
+  submit_info[0].pWaitSemaphores = VK_NULL_HANDLE;
+  submit_info[0].pWaitDstStageMask = VK_NULL_HANDLE;
+  submit_info[0].commandBufferCount = 1;
+  submit_info[0].pCommandBuffers = cmd_bufs;
+  submit_info[0].signalSemaphoreCount = 0;
+  submit_info[0].pSignalSemaphores = nullptr;
+
+  VkFenceCreateInfo fenceInfo;
+  VkFence copyFence;
+  fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+  fenceInfo.pNext = nullptr;
+  fenceInfo.flags = 0;
+  vk::vkCreateFence(device, &fenceInfo, nullptr, &copyFence);
+
+  vk::vkResetCommandBuffer(cmdBuffer, 0);
+  result = vk::vkBeginCommandBuffer(cmdBuffer, &cmd_buf_info);
+  setImageLayout(cmdBuffer, textureImage, VK_IMAGE_ASPECT_COLOR_BIT,
+                 VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+  vk::vkCmdCopyBufferToImage(
+      cmdBuffer, stagingBuffer, textureImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &bufferCopyRegion);
+  setImageLayout(cmdBuffer, textureImage, VK_IMAGE_ASPECT_COLOR_BIT,
+                 VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+  for (int32_t i = 1; i < levels; ++i) {                                  // 遍历所有mipmap级数
+    VkImageBlit imageBlit{};                                              // 创建图像blit实例
+    imageBlit.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;      // 使用方面
+    imageBlit.srcSubresource.layerCount = 1;                              // 源资源的层数量
+    imageBlit.srcSubresource.mipLevel = i - 1;                            // 源资源的mipmap级别
+    imageBlit.srcOffsets[1].x = int32_t(ctdo->width >> (i - 1));          // 源资源的x偏移量
+    imageBlit.srcOffsets[1].y = int32_t(ctdo->height >> (i - 1));         // 源资源的y偏移量
+    imageBlit.srcOffsets[1].z = 1;                                        // 源资源的z偏移量
+    imageBlit.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;      // 使用方面
+    imageBlit.dstSubresource.layerCount = 1;                              // 目标资源的层数量
+    imageBlit.dstSubresource.mipLevel = i;                                // 目标资源的mipmap级别
+    imageBlit.dstOffsets[1].x = int32_t(ctdo->width >> i);                // 目标资源的x偏移量
+    imageBlit.dstOffsets[1].y = int32_t(ctdo->height >> i);               // 目标资源的y偏移量
+    imageBlit.dstOffsets[1].z = 1;                                        // 目标资源的z偏移量
+    vk::vkCmdBlitImage(                                                   // 从源资源生成目标资源(即通过上一层纹理数据生成下一层纹理数据)
+        cmdBuffer,                                                        // 命令缓冲
+        textureImage,                                                     // 源图像
+        VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,                             // 源图像瓦片组织方式
+        textureImage,                                                     // 目标图像
+        VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,                             // 目标图像瓦片组织方式
+        1,                                                                // 图像blit实例数量
+        &imageBlit,                                                       // 图像blit实例列表
+        VK_FILTER_LINEAR                                                  // 要应用的纹理采样过滤器
+    );
+  }
+
+  result = vk::vkEndCommandBuffer(cmdBuffer);                             // 结束命令缓冲(停止记录命令)
+  result = vk::vkQueueSubmit(queueGraphics, 1, submit_info, copyFence);   // 提交给队列执行
+  do {
+    result = vk::vkWaitForFences(device, 1, &copyFence, VK_TRUE, 100000000);
+  } while (result == VK_TIMEOUT);
+  vk::vkDestroyBuffer(device, stagingBuffer, nullptr);
+  vk::vkFreeMemory(device, stagingMemory, nullptr);
+  vk::vkDestroyFence(device, copyFence, nullptr);
+
+  VkImageViewCreateInfo view_info = {};
+  view_info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+  view_info.pNext = nullptr;
+  view_info.viewType = VK_IMAGE_VIEW_TYPE_2D;
+  view_info.format = VK_FORMAT_R8G8B8A8_UNORM;
+  view_info.components.r = VK_COMPONENT_SWIZZLE_R;
+  view_info.components.g = VK_COMPONENT_SWIZZLE_G;
+  view_info.components.b = VK_COMPONENT_SWIZZLE_B;
+  view_info.components.a = VK_COMPONENT_SWIZZLE_A;
+  view_info.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+  view_info.subresourceRange.baseMipLevel = 0;
+  view_info.subresourceRange.levelCount = levels;
+  view_info.subresourceRange.baseArrayLayer = 0;
+  view_info.subresourceRange.layerCount = 1;
+  view_info.image = textureImageList[texName];
+
+  VkImageView viewTexture;
+  result = vk::vkCreateImageView(device, &view_info, nullptr, &viewTexture);
+  viewTextureList[texName] = viewTexture;
+
+  VkDescriptorImageInfo texImageInfo;
+  texImageInfo.imageView = viewTexture;
+  texImageInfo.sampler = samplerList[0];
+  texImageInfo.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
+  texImageInfoList[texName] = texImageInfo;
+
+  delete ctdo;
+}
+
 void TextureManager::initTextures(VkDevice &device,
                                   VkPhysicalDevice &gpu,
                                   VkPhysicalDeviceMemoryProperties &memoryroperties,
                                   VkCommandBuffer &cmdBuffer,
                                   VkQueue &queueGraphics) {
   initSampler(device, gpu);                                         // 初始化采样器
+
+  /// Sample6_5 ************************************************** start
+  VkFormatProperties formatProps;                                         // 指定格式纹理的格式属性
+  vk::vkGetPhysicalDeviceFormatProperties(gpu, VK_FORMAT_R8G8B8A8_UNORM, &formatProps); // 获取指定格式纹理的格式属性
+  assert(formatProps.optimalTilingFeatures & VK_FORMAT_FEATURE_BLIT_SRC_BIT); // 检查是否支持生成mipmap所需的BLIT类型的源和目标
+  assert(formatProps.optimalTilingFeatures & VK_FORMAT_FEATURE_BLIT_DST_BIT);
+  /// Sample6_5 **************************************************** end
+
   for (int i = 0; i < texNames.size(); ++i) {                             // 遍历纹理文件名称列表
 //    imageSampler[texNames[i]] = i;                                        // Sample6_3-设置对应纹理的采样器索引
-    imageSampler[texNames[i]] = i % 2;                                    // Sample6_4
+//    imageSampler[texNames[i]] = i % 2;                                    // Sample6_4
     TexDataObject *ctdo = FileUtil::loadCommonTexData(texNames[i]); // 加载纹理文件数据
-    LOGI("%s: width=%d height=%d", texNames[i].c_str(), ctdo->width, ctdo->height); // 打印纹理数据信息
-    init_SPEC_2D_Textures(                                                // 加载2D纹理
-        texNames[i], device, gpu, memoryroperties, cmdBuffer, queueGraphics, VK_FORMAT_R8G8B8A8_UNORM, ctdo);
+    int levels = floor(log2(max(ctdo->width, ctdo->height))) + 1;         // Sample6_5-计算mipmap层次数
+    LOGI("%s: width=%d height=%d lod=%d", texNames[i].c_str(), ctdo->width, ctdo->height, levels); // 打印纹理数据信息
+//    init_SPEC_2D_Textures(                                                // 加载2D纹理
+//        texNames[i], device, gpu, memoryroperties, cmdBuffer, queueGraphics, VK_FORMAT_R8G8B8A8_UNORM, ctdo);
+    init_SPEC_Textures_ForMipMap(                                         // Sample6_5-加载2D纹理并生成MipMap
+        texNames[i], device, gpu, memoryroperties, cmdBuffer, queueGraphics, VK_FORMAT_R8G8B8A8_UNORM, ctdo, levels);
   }
 }
 

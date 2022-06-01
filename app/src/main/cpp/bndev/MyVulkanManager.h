@@ -107,6 +107,9 @@ class MyVulkanManager {
   static int smallType;                                   // 小矩形的纹理采样方式(0-最近点采样,1-线性采样)
   static int bigType;                                     // 大矩形的纹理采样方式(0-最近点采样,1-线性采样)
 
+  /// Sample6_5 MipMap
+  static DrawableObjectCommon *texRect;
+
   static void init_vulkan_instance();                     // 创建Vulkan实例
   static void enumerate_vulkan_phy_devices();             // 初始化物理设备
   static void create_vulkan_devices();                    // 创建逻辑设备

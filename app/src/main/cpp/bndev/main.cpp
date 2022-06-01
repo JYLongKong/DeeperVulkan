@@ -149,17 +149,17 @@ static int32_t engine_handle_input(struct android_app *app, AInputEvent *event) 
 //          yPre = y;
           /// Sample5_6 **************************************************** end
 
-          /// Sample6_1、6_3 ********************************************** start
-//          xDis = x - xPre;
-//          yDis = y - yPre;
-//          MyVulkanManager::yAngle += xDis * 180.0 / 600;
-//          MyVulkanManager::zAngle += yDis * 180.0 / 600;
-//          xPre = x;
-//          yPre = y;
-//          if (abs((int) xDis) > 10 || abs((int) yDis) > 10) {
-//            isClick = false;
-//          }
-          /// Sample6_1、6_3 *********************************************** end
+          /// Sample6_1、6_3、6_5 ***************************************** start
+          xDis = x - xPre;
+          yDis = y - yPre;
+          MyVulkanManager::yAngle += xDis * 180.0 / 600;
+          MyVulkanManager::zAngle += yDis * 180.0 / 600;
+          xPre = x;
+          yPre = y;
+          if (abs((int) xDis) > 10 || abs((int) yDis) > 10) {
+            isClick = false;
+          }
+          /// Sample6_1、6_3、6_5 ******************************************* end
 
           break;
         case AMOTION_EVENT_ACTION_UP:   // 触摸点抬起
@@ -202,24 +202,24 @@ static int32_t engine_handle_input(struct android_app *app, AInputEvent *event) 
           /// Sample6_3 **************************************************** end
 
           /// Sample6_4 ************************************************** start
-          if (isClick) {
-            switch (pressType) {
-              case 0:MyVulkanManager::smallType = 0;
-                MyVulkanManager::bigType = 1;
-                break;
-              case 1:MyVulkanManager::smallType = 1;
-                MyVulkanManager::bigType = 0;
-                break;
-              case 2:MyVulkanManager::smallType = 0;
-                MyVulkanManager::bigType = 0;
-                break;
-              case 3:MyVulkanManager::smallType = 1;
-                MyVulkanManager::bigType = 1;
-                break;
-              default:break;
-            }
-            pressType = (++pressType % 4);
-          }
+//          if (isClick) {
+//            switch (pressType) {
+//              case 0:MyVulkanManager::smallType = 0;
+//                MyVulkanManager::bigType = 1;
+//                break;
+//              case 1:MyVulkanManager::smallType = 1;
+//                MyVulkanManager::bigType = 0;
+//                break;
+//              case 2:MyVulkanManager::smallType = 0;
+//                MyVulkanManager::bigType = 0;
+//                break;
+//              case 3:MyVulkanManager::smallType = 1;
+//                MyVulkanManager::bigType = 1;
+//                break;
+//              default:break;
+//            }
+//            pressType = (++pressType % 4);
+//          }
           /// Sample6_4 **************************************************** end
 
           break;
