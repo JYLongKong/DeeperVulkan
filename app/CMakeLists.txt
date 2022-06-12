@@ -26,12 +26,16 @@ add_library(
         src/main/cpp/util/LightManager.cpp
         src/main/cpp/util/TexDataObject.cpp
         src/main/cpp/util/TextureManager.cpp
+        src/main/cpp/util/ColorObject.cpp
+        src/main/cpp/util/CameraUtil.cpp
 
         src/main/cpp/bndev/ShaderCompileUtil.cpp
         src/main/cpp/bndev/ShaderQueueSuit_Common.cpp
         src/main/cpp/bndev/MyVulkanManager.cpp
         src/main/cpp/bndev/ThreadTask.cpp
         src/main/cpp/bndev/main.cpp
+        src/main/cpp/bndev/ShaderQueueSuit_Earth.cpp
+        src/main/cpp/bndev/ShaderQueueSuit_Moon.cpp
 
         src/main/cpp/bndev/TriangleData.cpp
         src/main/cpp/bndev/SixPointedStar.cpp
@@ -43,8 +47,9 @@ add_library(
         src/main/cpp/bndev/Cube.cpp
         src/main/cpp/bndev/BallData.cpp
         src/main/cpp/bndev/FlatData.cpp
+        src/main/cpp/bndev/SkyData.cpp
+        src/main/cpp/bndev/PlanetData.cpp
 )
-
 
 target_link_libraries(
         bn-vulkan-lib

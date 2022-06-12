@@ -1,10 +1,10 @@
 #include "ShaderQueueSuit_Common.h"
 #include <assert.h>
-#include "HelpFunction.h"
 #include "mylog.h"
-#include "../util/FileUtil.h"
 #include "MyVulkanManager.h"
 #include "ShaderCompileUtil.h"
+#include "../util/HelpFunction.h"
+#include "../util/FileUtil.h"
 #include "../util/TextureManager.h"
 
 ShaderQueueSuit_Common::ShaderQueueSuit_Common(VkDevice *deviceIn,
@@ -133,24 +133,24 @@ void ShaderQueueSuit_Common::create_pipeline_layout(VkDevice &device) {
       device, &descriptor_layout, nullptr, descLayouts.data());
   assert(result == VK_SUCCESS);                                           // 检查描述集布局创建是否成功
 
-  /// Sample4_2、Sample5_2、Sample6_1 ***************************** start
-//  const unsigned push_constant_range_count = 1;                           // 推送常量块数量
-//  VkPushConstantRange push_constant_ranges[push_constant_range_count] = {}; // 推送常量范围列表
-//  push_constant_ranges[0].stageFlags = VK_SHADER_STAGE_VERTEX_BIT;        // 对应着色器阶段
-//  push_constant_ranges[0].offset = 0;                                     // 推送常量数据起始偏移量
-//  push_constant_ranges[0].size = sizeof(float) * 16;                      // 推送常量数据总字节数
-////  push_constant_ranges[0].size = sizeof(float) * 32;                      // Sample5_2
-  /// Sample4_2、Sample5_2、Sample6_1 ******************************* end
+  /// Sample4_2、5_2、6_1、6_6 ************************************ start
+  const unsigned push_constant_range_count = 1;                           // 推送常量块数量
+  VkPushConstantRange push_constant_ranges[push_constant_range_count] = {}; // 推送常量范围列表
+  push_constant_ranges[0].stageFlags = VK_SHADER_STAGE_VERTEX_BIT;        // 对应着色器阶段
+  push_constant_ranges[0].offset = 0;                                     // 推送常量数据起始偏移量
+  push_constant_ranges[0].size = sizeof(float) * 16;                      // 推送常量数据总字节数
+//  push_constant_ranges[0].size = sizeof(float) * 32;                      // Sample5_2
+  /// Sample4_2、5_2、6_1、6_6 ************************************** end
 
   /// Sample6_5 ************************************************** start
-  const unsigned push_constant_range_count = 2;
-  VkPushConstantRange push_constant_ranges[push_constant_range_count] = {};
-  push_constant_ranges[0].stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-  push_constant_ranges[0].offset = 0;
-  push_constant_ranges[0].size = sizeof(float) * 16;
-  push_constant_ranges[1].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-  push_constant_ranges[1].offset = sizeof(float) * 16;
-  push_constant_ranges[1].size = sizeof(float) * 1;
+//  const unsigned push_constant_range_count = 2;
+//  VkPushConstantRange push_constant_ranges[push_constant_range_count] = {};
+//  push_constant_ranges[0].stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+//  push_constant_ranges[0].offset = 0;
+//  push_constant_ranges[0].size = sizeof(float) * 16;
+//  push_constant_ranges[1].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+//  push_constant_ranges[1].offset = sizeof(float) * 16;
+//  push_constant_ranges[1].size = sizeof(float) * 1;
   /// Sample6_5 **************************************************** end
 
   VkPipelineLayoutCreateInfo pPipelineLayoutCreateInfo = {};              // 构建管线布局创建信息结构体实例
@@ -258,9 +258,11 @@ void ShaderQueueSuit_Common::create_shader(VkDevice &device) {
 //  std::string vertStr = FileUtil::loadAssetStr("shader/sample5_9.vert");  // Sample5_9
 //  std::string fragStr = FileUtil::loadAssetStr("shader/sample5_9.frag");  // Sample5_9
 //  std::string fragStr = FileUtil::loadAssetStr("shader/sample5_10.frag"); // Sample5_10
-  std::string vertStr = FileUtil::loadAssetStr("shader/sample6_1.vert");  // Sample6_1、Sample6_5
+//  std::string vertStr = FileUtil::loadAssetStr("shader/sample6_1.vert");  // Sample6_1、Sample6_5
 //  std::string fragStr = FileUtil::loadAssetStr("shader/sample6_1.frag");  // Sample6_1
-  std::string fragStr = FileUtil::loadAssetStr("shader/sample6_5.frag");  // Sample6_5
+//  std::string fragStr = FileUtil::loadAssetStr("shader/sample6_5.frag");  // Sample6_5
+  std::string vertStr = FileUtil::loadAssetStr("shader/sample6_6-star.vert"); // Sample6_6
+  std::string fragStr = FileUtil::loadAssetStr("shader/commonTexLight.frag"); // Sample6_6
 
   // 给出顶点着色器对应的管线着色器阶段创建信息结构体实例的各项所需属性
   shaderStages[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -324,7 +326,8 @@ void ShaderQueueSuit_Common::initVertexAttributeInfo() {
 //  vertexBinding.stride = sizeof(float) * 6;                               // 每组数据的跨度字节数(x,y,z,R,G,B 6个分量)
 //  vertexBinding.stride = sizeof(float) * 3;                               // Sample5_1-球
 //  vertexBinding.stride = sizeof(float) * 6;                               // Sample5_3-顶点+法向共6个分量
-  vertexBinding.stride = sizeof(float) * 5;                               // Sample6_1-顶点+纹理共5个分量
+//  vertexBinding.stride = sizeof(float) * 5;                               // Sample6_1-顶点+纹理共5个分量
+  vertexBinding.stride = sizeof(float) * 6;                               // Sample6_6
 
   vertexAttribs[0].binding = 0;                                           // 第1个顶点输入属性的绑定点
   vertexAttribs[0].location = 0;                                          // 第1个顶点输入属性的位置索引
@@ -337,18 +340,18 @@ void ShaderQueueSuit_Common::initVertexAttributeInfo() {
 //  // 由于第1个顶点输入属性包含3个float分量，每个float分量4个字节，偏移量以字节计
 //  vertexAttribs[1].offset = 12;                                           // 第2个顶点输入属性的偏移量
 
-  /// Sample5_3 ************************************************** start
-//  vertexAttribs[1].binding = 0;                                           // 法向量输入属性的绑定点
-//  vertexAttribs[1].location = 1;                                          // 法向量输入属性的位置索引
-//  vertexAttribs[1].format = VK_FORMAT_R32G32B32_SFLOAT;                   // 法向量输入属性的数据格式
-//  vertexAttribs[1].offset = 12;                                           // 法向量输入属性的偏移量
-  /// Sample5_3 **************************************************** end
+  /// Sample5_3、Sample6_6 *************************************** start
+  vertexAttribs[1].binding = 0;                                           // 法向量输入属性的绑定点
+  vertexAttribs[1].location = 1;                                          // 法向量输入属性的位置索引
+  vertexAttribs[1].format = VK_FORMAT_R32G32B32_SFLOAT;                   // 法向量输入属性的数据格式
+  vertexAttribs[1].offset = 12;                                           // 法向量输入属性的偏移量
+  /// Sample5_3、Sample6_6 ***************************************** end
 
   /// Sample6_1 ************************************************** start
-  vertexAttribs[1].binding = 0;
-  vertexAttribs[1].location = 1;
-  vertexAttribs[1].format = VK_FORMAT_R32G32_SFLOAT;
-  vertexAttribs[1].offset = 12;
+//  vertexAttribs[1].binding = 0;
+//  vertexAttribs[1].location = 1;
+//  vertexAttribs[1].format = VK_FORMAT_R32G32_SFLOAT;
+//  vertexAttribs[1].offset = 12;
   /// Sample6_1 **************************************************** end
 }
 
@@ -394,8 +397,9 @@ void ShaderQueueSuit_Common::create_pipe_line(VkDevice &device, VkRenderPass &re
   ia.pNext = nullptr;
   ia.flags = 0;
   ia.primitiveRestartEnable = VK_FALSE;                                   // 关闭图元重启
-  ia.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;                      // 采用三角形图元列表模式进行图元组装
+//  ia.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;                      // 采用三角形图元列表模式进行图元组装
 //  ia.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN;                       // Sample4_10、Sample4_16
+  ia.topology = VK_PRIMITIVE_TOPOLOGY_POINT_LIST;                         // Sample6_6
 
   /// Sample4_7 ************************************************** start
 //  VkPipelineInputAssemblyStateCreateInfo ia[topologyCount];               // 管线图元组装状态创建信息数组
@@ -464,8 +468,8 @@ void ShaderQueueSuit_Common::create_pipe_line(VkDevice &device, VkRenderPass &re
   viewports.maxDepth = 1.0f;                                              // 视口最大深度
   viewports.x = 0;                                                        // 视口x坐标
   viewports.y = 0;                                                        // 视口y坐标
-  viewports.width = MyVulkanManager::screenWidth;                         // 视口宽度
-  viewports.height = MyVulkanManager::screenHeight;                       // 视口高度
+  viewports.width = (float) MyVulkanManager::screenWidth;                 // 视口宽度
+  viewports.height = (float) MyVulkanManager::screenHeight;               // 视口高度
 
   VkRect2D scissor;                                                       // 剪裁窗口信息
   scissor.extent.width = MyVulkanManager::screenWidth;                    // 剪裁窗口的宽度

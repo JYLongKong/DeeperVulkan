@@ -10,6 +10,10 @@
 #include "ShaderQueueSuit_Common.h"
 #include "Cube.h"
 #include "TexDataObject.h"
+#include "ShaderQueueSuit_Earth.h"
+#include "ShaderQueueSuit_Moon.h"
+#include "ColorObject.h"
+#include "PlanetData.h"
 
 #define FENCE_TIMEOUT 100000000                           // 栅栏的超时时间
 
@@ -109,6 +113,13 @@ class MyVulkanManager {
 
   /// Sample6_5 MipMap
   static DrawableObjectCommon *texRect;
+
+  /// Sample6_6 日月
+  static ShaderQueueSuit_Moon *sqsSTL;
+  static ShaderQueueSuit_Earth *sqsDTL;
+  static ColorObject *skyForDrawBig;
+  static ColorObject *skyForDrawSmall;
+  static DrawableObjectCommon *planetForDraw;
 
   static void init_vulkan_instance();                     // 创建Vulkan实例
   static void enumerate_vulkan_phy_devices();             // 初始化物理设备

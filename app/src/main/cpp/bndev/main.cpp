@@ -8,6 +8,7 @@
 #include "MyVulkanManager.h"
 #include "mylog.h"
 #include "LightManager.h"
+#include "CameraUtil.h"
 
 extern "C"
 {
@@ -87,11 +88,11 @@ static int32_t engine_handle_input(struct android_app *app, AInputEvent *event) 
           /// Sample4_2 **************************************************** end
 
           /// Sample4_7、Sample6_4 *************************************** start
-          xDis = x - xPre;
-          yDis = y - yPre;
-          if (abs((int) xDis) > 10 || abs((int) yDis) > 10) {
-            isClick = false;
-          }
+//          xDis = x - xPre;
+//          yDis = y - yPre;
+//          if (abs((int) xDis) > 10 || abs((int) yDis) > 10) {
+//            isClick = false;
+//          }
           /// Sample4_7、Sample6_4 ***************************************** end
 
           /// Sample4_11 ************************************************* start
@@ -150,16 +151,25 @@ static int32_t engine_handle_input(struct android_app *app, AInputEvent *event) 
           /// Sample5_6 **************************************************** end
 
           /// Sample6_1、6_3、6_5 ***************************************** start
+//          xDis = x - xPre;
+//          yDis = y - yPre;
+//          MyVulkanManager::yAngle += xDis * 180.0 / 600;
+//          MyVulkanManager::zAngle += yDis * 180.0 / 600;
+//          xPre = x;
+//          yPre = y;
+//          if (abs((int) xDis) > 10 || abs((int) yDis) > 10) {
+//            isClick = false;
+//          }
+          /// Sample6_1、6_3、6_5 ******************************************* end
+
+          /// Sample6_6 ************************************************** start
           xDis = x - xPre;
           yDis = y - yPre;
-          MyVulkanManager::yAngle += xDis * 180.0 / 600;
-          MyVulkanManager::zAngle += yDis * 180.0 / 600;
+          CameraUtil::calCamera(float(-yDis * 180 / 1000.0), 0); // 更新摄像机9参数
+          LightManager::move(float(xDis * 180 / 1000.0)); // 移动光源
           xPre = x;
           yPre = y;
-          if (abs((int) xDis) > 10 || abs((int) yDis) > 10) {
-            isClick = false;
-          }
-          /// Sample6_1、6_3、6_5 ******************************************* end
+          /// Sample6_6 **************************************************** end
 
           break;
         case AMOTION_EVENT_ACTION_UP:   // 触摸点抬起

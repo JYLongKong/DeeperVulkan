@@ -20,9 +20,9 @@ DrawableObjectCommon::DrawableObjectCommon(
     VkPhysicalDeviceMemoryProperties &memoryroperties
 ) {
 //  pushConstantData = new float[16];                                       // Sample4_2、6_1-推送常量数据数组的初始化(4X4的最终变换矩阵)
-//  pushConstantData = new float[32];                                       // Sample5_1
-  pushConstantDataVertex = new float[16];                                 // Sample6_5
-  pushConstantDataFrag = new float[1];                                    // Sample6_5
+  pushConstantData = new float[32];                                       // Sample5_1、6_6
+//  pushConstantDataVertex = new float[16];                                 // Sample6_5
+//  pushConstantDataFrag = new float[1];                                    // Sample6_5
 
   this->devicePointer = &device;                                          // 接收逻辑设备指针并保存
   this->vdata = vdataIn;                                                  // 接收顶点数据数组首地址指针并保存
@@ -295,6 +295,7 @@ void DrawableObjectCommon::initDrawCmdbuf(VkDevice &device, VkPhysicalDeviceMemo
 
 DrawableObjectCommon::~DrawableObjectCommon() {
   delete[] vdata;                                                         // 释放顶点数据内存
+  delete[] pushConstantData;                                              // Sample4_2
 
   /// Sample6_5 ************************************************** start
   delete[] pushConstantDataVertex;
@@ -323,7 +324,7 @@ void DrawableObjectCommon::drawSelf(
     VkCommandBuffer &cmd,
     VkPipelineLayout &pipelineLayout,
     VkPipeline &pipeline,
-    VkDescriptorSet *desSetPointer,
+    VkDescriptorSet *desSetPointer
 
     /// Sample4_10
 //    uint32_t sIndex,
@@ -333,7 +334,7 @@ void DrawableObjectCommon::drawSelf(
 //    int cmdDataOffset
 
     /// Sample6_5
-    float lodLevel
+//    float lodLevel
 ) {
   // VK_PIPELINE_BIND_POINT_GRAPHICS表示绑定的管线为图形渲染管线
   vk::vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);  // 将当前使用的命令缓冲与指定管线绑定
@@ -355,23 +356,22 @@ void DrawableObjectCommon::drawSelf(
 //                         VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(float) * 16, pushConstantData);
   /// Sample4_2、Sample6_1 ***************************************** end
 
-  /// Sample5_2 ************************************************** start
-//  float *mvp = MatrixState3D::getFinalMatrix();
-//  float *mm = MatrixState3D::getMMatrix();
-//  memcpy(pushConstantData, mvp, sizeof(float) * 16);
-//  memcpy(pushConstantData + 16, mm, sizeof(float) * 16);
-//  vk::vkCmdPushConstants(cmd, pipelineLayout,
-//                         VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(float) * 32, pushConstantData);
-  /// Sample5_2 **************************************************** end
+  /// Sample5_2、6_6 ********************************************* start
+  float *mvp = MatrixState3D::getFinalMatrix();
+  float *mm = MatrixState3D::getMMatrix();
+  memcpy(pushConstantData, mvp, sizeof(float) * 16);
+  memcpy(pushConstantData + 16, mm, sizeof(float) * 16);
+  vk::vkCmdPushConstants(cmd, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(float) * 32, pushConstantData);
+  /// Sample5_2、6_6 *********************************************** end
 
   /// Sample6_5 ************************************************** start
-  float *mvp = MatrixState3D::getFinalMatrix();
-  memcpy(pushConstantDataVertex, mvp, sizeof(float) * 16);
-  vk::vkCmdPushConstants(cmd, pipelineLayout,
-                         VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(float) * 16, pushConstantDataVertex);
-  pushConstantDataFrag[0] = lodLevel;                                     // 纹理采样细节级别数据
-  vk::vkCmdPushConstants(cmd, pipelineLayout,                             // 将纹理采样细节级别数据送入推送常量
-                         VK_SHADER_STAGE_FRAGMENT_BIT, sizeof(float) * 16, sizeof(float) * 1, pushConstantDataFrag);
+//  float *mvp = MatrixState3D::getFinalMatrix();
+//  memcpy(pushConstantDataVertex, mvp, sizeof(float) * 16);
+//  vk::vkCmdPushConstants(cmd, pipelineLayout,
+//                         VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(float) * 16, pushConstantDataVertex);
+//  pushConstantDataFrag[0] = lodLevel;                                     // 纹理采样细节级别数据
+//  vk::vkCmdPushConstants(cmd, pipelineLayout,                             // 将纹理采样细节级别数据送入推送常量
+//                         VK_SHADER_STAGE_FRAGMENT_BIT, sizeof(float) * 16, sizeof(float) * 1, pushConstantDataFrag);
   /// Sample6_5 **************************************************** end
 
   vk::vkCmdDraw(cmd, vCount, 1, 0, 0);                                    // 执行绘制

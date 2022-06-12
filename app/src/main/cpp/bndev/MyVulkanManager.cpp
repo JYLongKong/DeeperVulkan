@@ -22,6 +22,8 @@
 #include "BallData.h"
 #include "LightManager.h"
 #include "FlatData.h"
+#include "SkyData.h"
+#include "CameraUtil.h"
 
 // 静态成员实现
 android_app *MyVulkanManager::Android_application;
@@ -126,6 +128,13 @@ int MyVulkanManager::bigType = 1;
 
 /// Sample6_5
 DrawableObjectCommon *MyVulkanManager::texRect;
+
+/// Sample6_6
+ShaderQueueSuit_Moon *MyVulkanManager::sqsSTL;
+ShaderQueueSuit_Earth *MyVulkanManager::sqsDTL;
+ColorObject *MyVulkanManager::skyForDrawBig;
+ColorObject *MyVulkanManager::skyForDrawSmall;
+DrawableObjectCommon *MyVulkanManager::planetForDraw;
 
 /**
  * 创建Vulkan实例的方法
@@ -898,17 +907,29 @@ void MyVulkanManager::createDrawableObject() {
   /// Sample6_4 **************************************************** end
 
   /// Sample6_5 ************************************************** start
-  const float span = 4;
-  float *vdataIn = new float[30]{
-      -span, span, 0, 0, 0,
-      -span, -span, 0, 0, 1,
-      span, -span, 0, 1, 1,
-      -span, span, 0, 0, 0,
-      span, -span, 0, 1, 1,
-      span, span, 0, 1, 0
-  };
-  texRect = new DrawableObjectCommon(vdataIn, 30 * 4, 6, device, memoryroperties);
+//  const float span = 4;
+//  float *vdataIn = new float[30]{
+//      -span, span, 0, 0, 0,
+//      -span, -span, 0, 0, 1,
+//      span, -span, 0, 1, 1,
+//      -span, span, 0, 0, 0,
+//      span, -span, 0, 1, 1,
+//      span, span, 0, 1, 0
+//  };
+//  texRect = new DrawableObjectCommon(vdataIn, 30 * 4, 6, device, memoryroperties);
   /// Sample6_5 **************************************************** end
+
+  /// Sample6_6 ************************************************** start
+  PlanetData::genPlanetData(3);
+  planetForDraw = new DrawableObjectCommon(
+      PlanetData::vdata, PlanetData::dataByteCount, PlanetData::vCount, device, memoryroperties);
+  SkyData::genSkyData(400);
+  skyForDrawBig = new ColorObject(
+      SkyData::vdata, SkyData::dataByteCount, SkyData::vCount, device, memoryroperties, 4.0f);
+  SkyData::genSkyData(1600);
+  skyForDrawSmall = new ColorObject(
+      SkyData::vdata, SkyData::dataByteCount, SkyData::vCount, device, memoryroperties, 2.0f);
+  /// Sample6_6 **************************************************** end
 }
 
 /**
@@ -943,7 +964,11 @@ void MyVulkanManager::destroyDrawableObject() {
 //  delete texTri;
 
   /// Sample6_5
-  delete texRect;
+//  delete texRect;
+
+  /// Sample6_6
+  delete skyForDrawBig;
+  delete skyForDrawSmall;
 }
 
 /**
@@ -1001,18 +1026,20 @@ void MyVulkanManager::initMatrixAndLight() {
 //  MatrixState3D::setCamera(0, 0, 200, 0, 0, 0, 0, 1, 0); // Sample4_7
 //  MatrixState3D::setCamera(0, 0, 3, 0, 0, 0, 0, 1, 0);  // Sample5_1
 //  MatrixState3D::setCamera(0, 0, 30.0f, 0, 0, 0, 0, 1, 0);  // Sample5_2
-  MatrixState3D::setCamera(0, 0, 22, 0, 0, 0, 0, 1, 0);  // Sample6_5
+//  MatrixState3D::setCamera(0, 0, 22, 0, 0, 0, 0, 1, 0);  // Sample6_5
+  CameraUtil::calCamera(0, 0);                               // Sample6_6
 
   MatrixState3D::setInitStack();                                          // 初始化基本变换矩阵
   float ratio = (float) screenWidth / (float) screenHeight;               // 求屏幕宽高比
 
   // 设置投影参数
-  MatrixState3D::setProjectFrustum(-ratio, ratio, -1, 1, 1.5f, 1000); // Sample4_14、Sample4_16、Sample5_1、Sample6_1
+//  MatrixState3D::setProjectFrustum(-ratio, ratio, -1, 1, 1.5f, 1000); // Sample4_14、Sample4_16、Sample5_1、Sample6_1
 //  MatrixState3D::setProjectOrtho(-ratio, ratio, -1, 1, 1.0f, 20); // Sample4_2-设置正交投影参数
 //  MatrixState3D::setProjectFrustum(-ratio * 0.4, ratio * 0.4, -1 * 0.4, 1 * 0.4, 1.0f, 20); // Sample4_3-设置透视投影参数
 //  MatrixState3D::setProjectFrustum(-ratio * 0.8f, ratio * 1.2f, -1, 1, 20, 100); // Sample4_4
 //  MatrixState3D::setProjectFrustum(-ratio, ratio, -1, 1, 1.5f, 1000); // Sample4_7
 //  MatrixState3D::setProjectFrustum(-ratio, ratio, -1, 1, 20.0f, 1000);  // Sample5_2
+  MatrixState3D::setProjectFrustum(-ratio, ratio, -1, 1, 4.0f, 5000); // Sample6_6
 
   /// Sample4_11 ************************************************* start
 //  if (ViewPara) { // 合理的视角
@@ -1050,6 +1077,12 @@ void MyVulkanManager::initMatrixAndLight() {
 //  LightManager::setLightAmbient(0.1f, 0.1f, 0.1f, 0.1f);  // 设置环境光强度
 //  LightManager::setLightDiffuse(0.6f, 0.6f, 0.6f, 0.6f);  // 设置散射光强度
 //  LightManager::setLightSpecular(0.4f, 0.4f, 0.4f, 0.4f); // 设置镜面光强度
+
+  /// Sample6_6
+  LightManager::setLightPosition(0, 100, 100);
+  LightManager::setLightAmbient(0.1f, 0.1f, 0.1f, 0.1f);
+  LightManager::setLightDiffuse(0.9f, 0.9f, 0.5f, 0.8f);
+  LightManager::setLightSpecular(0.4f, 0.4f, 0.25f, 0.4f);
 }
 
 /**
@@ -1119,15 +1152,39 @@ void MyVulkanManager::flushUniformBuffer() {
 //  };
 
   /// Sample6_1-纹理三角形
-  float fragmentUniformData[1] = {0.9};                                   // 亮度调节系数,与片元着色器中brightFactor对应
+//  float fragmentUniformData[1] = {0.9};                                   // 亮度调节系数,与片元着色器中brightFactor对应
 
-  uint8_t *pData;                                                         // CPU访问设备内存时的辅助指针
-  VkResult result = vk::vkMapMemory(                                      // 将设备内存映射为CPU可访问
-      device, sqsCL->memUniformBuf, 0, sqsCL->bufferByteCount, 0, (void **) &pData);
-  assert(result == VK_SUCCESS);                                           // 检查映射是否成功
-//  memcpy(pData, vertexUniformData, sqsCL->bufferByteCount);               // 将最终矩阵数据复制进设备内存
-  memcpy(pData, fragmentUniformData, sqsCL->bufferByteCount);             // Sample6_1-将数据拷贝进设备内存
-  vk::vkUnmapMemory(device, sqsCL->memUniformBuf);                        // 解除内存映射
+  /// Sample6_6-日月
+  float vertexUniformData[20] = {
+      CameraUtil::camera9Para[0], CameraUtil::camera9Para[1], CameraUtil::camera9Para[2], 1.0,
+      LightManager::lx, LightManager::ly, LightManager::lz, 1.0,
+      LightManager::lightAmbientR, LightManager::lightAmbientG, LightManager::lightAmbientB,
+      LightManager::lightAmbientA,
+      LightManager::lightDiffuseR, LightManager::lightDiffuseG, LightManager::lightDiffuseB,
+      LightManager::lightDiffuseA,
+      LightManager::lightSpecularR, LightManager::lightSpecularG, LightManager::lightSpecularB,
+      LightManager::lightSpecularA
+  };
+
+//  uint8_t *pData;                                                         // CPU访问设备内存时的辅助指针
+//  VkResult result = vk::vkMapMemory(                                      // 将设备内存映射为CPU可访问
+//      device, sqsCL->memUniformBuf, 0, sqsCL->bufferByteCount, 0, (void **) &pData);
+//  assert(result == VK_SUCCESS);                                           // 检查映射是否成功
+////  memcpy(pData, vertexUniformData, sqsCL->bufferByteCount);               // 将最终矩阵数据复制进设备内存
+//  memcpy(pData, fragmentUniformData, sqsCL->bufferByteCount);             // Sample6_1-将数据拷贝进设备内存
+//  vk::vkUnmapMemory(device, sqsCL->memUniformBuf);                        // 解除内存映射
+
+  /// Sample6_6 ************************************************** start
+  uint8_t *pData;
+  VkResult result = vk::vkMapMemory(device, sqsSTL->memUniformBuf, 0, sqsSTL->bufferByteCount, 0, (void **) &pData);
+  assert(result == VK_SUCCESS);
+  memcpy(pData, vertexUniformData, sqsSTL->bufferByteCount);
+  vk::vkUnmapMemory(device, sqsSTL->memUniformBuf);
+  result = vk::vkMapMemory(device, sqsDTL->memUniformBuf, 0, sqsDTL->bufferByteCount, 0, (void **) &pData);
+  assert(result == VK_SUCCESS);
+  memcpy(pData, vertexUniformData, sqsDTL->bufferByteCount);
+  vk::vkUnmapMemory(device, sqsDTL->memUniformBuf);
+  /// Sample6_6 **************************************************** end
 }
 
 /**
@@ -1138,13 +1195,32 @@ void MyVulkanManager::flushTexToDesSet() {
 //  vk::vkUpdateDescriptorSets(device, 1, sqsCL->writes, 0, nullptr);       // 更新描述集
 
   /// Sample6_1 将纹理等数据与描述集关联******************************* start
-  for (int i = 0; i < TextureManager::texNames.size(); ++i) {             // 遍历所有纹理
-    sqsCL->writes[0].dstSet = sqsCL->descSet[i];                          // 更新描述集对应的写入属性0(一致变量)
-    sqsCL->writes[1].dstSet = sqsCL->descSet[i];                          // 更新描述集对应的写入属性1(纹理)
-    sqsCL->writes[1].pImageInfo = &(TextureManager::texImageInfoList[TextureManager::texNames[i]]); // 写入属性1对应的纹理图像信息
-    vk::vkUpdateDescriptorSets(device, 2, sqsCL->writes, 0, nullptr);     // 更新描述集
-  }
+//  for (int i = 0; i < TextureManager::texNames.size(); ++i) {             // 遍历所有纹理
+//    sqsCL->writes[0].dstSet = sqsCL->descSet[i];                          // 更新描述集对应的写入属性0(一致变量)
+//    sqsCL->writes[1].dstSet = sqsCL->descSet[i];                          // 更新描述集对应的写入属性1(纹理)
+//    sqsCL->writes[1].pImageInfo = &(TextureManager::texImageInfoList[TextureManager::texNames[i]]); // 写入属性1对应的纹理图像信息
+//    vk::vkUpdateDescriptorSets(device, 2, sqsCL->writes, 0, nullptr);     // 更新描述集
+//  }
   /// Sample6_1 **************************************************** end
+
+  /// Sample6_6 ************************************************** start
+  for (int i = 0; i < TextureManager::texNamesSingle.size(); ++i) {
+    sqsSTL->writes[0].dstSet = sqsSTL->descSet[i];
+    sqsSTL->writes[1].dstSet = sqsSTL->descSet[i];
+    sqsSTL->writes[1].pImageInfo = &(TextureManager::texImageInfoList[TextureManager::texNamesSingle[i]]);
+    vk::vkUpdateDescriptorSets(device, 2, sqsSTL->writes, 0, nullptr);
+  }
+  for (int i = 0; i < TextureManager::texNamesPair.size() / 2; ++i) {     // 遍历所有地球纹理组
+    sqsDTL->writes[0].dstSet = sqsDTL->descSet[i];                        // 更新描述集对应的写入属性0(一致变量)
+    sqsDTL->writes[1].dstSet = sqsDTL->descSet[i];                        // 更新描述集对应的写入属性1(纹理)
+    sqsDTL->writes[1].pImageInfo =                                        // 写入属性1对应的纹理图像信息(白天)
+        &(TextureManager::texImageInfoList[TextureManager::texNamesPair[i * 2]]);
+    sqsDTL->writes[2].dstSet = sqsDTL->descSet[i];                        // 更新描述集对应的写入属性2(纹理)
+    sqsDTL->writes[2].pImageInfo =                                        // 写入属性2对应的纹理图像信息(黑夜)
+        &(TextureManager::texImageInfoList[TextureManager::texNamesPair[i * 2 + 1]]);
+    vk::vkUpdateDescriptorSets(device, 3, sqsDTL->writes, 0, nullptr);    // 更新描述集
+  }
+  /// Sample6_6 **************************************************** end
 }
 
 /**
@@ -1159,9 +1235,25 @@ void MyVulkanManager::drawObject() {
 //  vpCenterY = screenHeight / 2;
   /// Sample4_1 **************************************************** end
 
+  /// Sample6_6 ************************************************** start
+  float eAngle = 0;                                                       // 地球自转角
+  float mAngle = 0;                                                       // 月球自转角
+  float sAngle = 0;                                                       // 星空自转角
+  /// Sample6_6 **************************************************** end
+
   while (MyVulkanManager::loopDrawFlag) {                                 // 每循环一次绘制一帧画面
     FPSUtil::calFPS();                                                    // 计算FPS
     FPSUtil::before();                                                    // 一帧开始
+
+    /// Sample6_6 ************************************************** start
+    eAngle = float(eAngle + 0.4);                                         // 更新地球自转角
+    if (eAngle >= 360) eAngle = 0;
+    mAngle = float(mAngle + 0.4);                                         // 更新月球自转角
+    if (mAngle >= 360) mAngle = 0;
+    sAngle = float(sAngle + 0.02);                                        // 更新星空自转角
+    if (sAngle >= 360) sAngle = 0;
+    CameraUtil::flushCameraToMatrix();
+    /// Sample6_6 **************************************************** end
 
     VkResult result = vk::vkAcquireNextImageKHR(                          // 获取交换链中的当前帧索引
         device, swapChain, UINT64_MAX, imageAcquiredSemaphore, VK_NULL_HANDLE, &currentBuffer);
@@ -1435,24 +1527,44 @@ void MyVulkanManager::drawObject() {
     /// Sample6_4 **************************************************** end
 
     /// Sample6_5 ************************************************** start
-    float currLodLevel = -1;                                              // 纹理采样细节级别
-    const float SPAN = 10;                                                // 正方形相互之间的间隔
-    float startX = -SPAN;                                                 // x坐标初始值
-    float startY = SPAN;                                                  // y坐标初始值
-    for (int i = 0; i < 3; ++i) {                                         // 循环列
-      for (int j = 0; j < 3; ++j) {                                       // 循环行
-        currLodLevel++;                                                   // 纹理采样细节级别加1
-        MatrixState3D::pushMatrix();
-        MatrixState3D::translate(startX + SPAN * j, startY - i * SPAN, 0); // 沿x轴、y轴平移
-        MatrixState3D::rotate(yAngle, 0, 1, 0);
-        MatrixState3D::rotate(zAngle, 0, 0, 1);
-        texRect->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, // 绘制正方形
-                          &(sqsCL->descSet[TextureManager::getVkDescriptorSetIndex("texture/mipmap.bntex")]),
-                          currLodLevel);                                  // 传入纹理采样细节级别
-        MatrixState3D::popMatrix();
-      }
-    }
+//    float currLodLevel = -1;                                              // 纹理采样细节级别
+//    const float SPAN = 10;                                                // 正方形相互之间的间隔
+//    float startX = -SPAN;                                                 // x坐标初始值
+//    float startY = SPAN;                                                  // y坐标初始值
+//    for (int i = 0; i < 3; ++i) {                                         // 循环列
+//      for (int j = 0; j < 3; ++j) {                                       // 循环行
+//        currLodLevel++;                                                   // 纹理采样细节级别加1
+//        MatrixState3D::pushMatrix();
+//        MatrixState3D::translate(startX + SPAN * j, startY - i * SPAN, 0); // 沿x轴、y轴平移
+//        MatrixState3D::rotate(yAngle, 0, 1, 0);
+//        MatrixState3D::rotate(zAngle, 0, 0, 1);
+//        texRect->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, // 绘制正方形
+//                          &(sqsCL->descSet[TextureManager::getVkDescriptorSetIndex("texture/mipmap.bntex")]),
+//                          currLodLevel);                                  // 传入纹理采样细节级别
+//        MatrixState3D::popMatrix();
+//      }
+//    }
     /// Sample6_5 **************************************************** end
+
+    /// Sample6_6 ************************************************** start
+    MatrixState3D::pushMatrix();
+    MatrixState3D::rotate(eAngle, 0, 1, 0);                       // 绕y轴旋转(地球自转)
+    MatrixState3D::pushMatrix();
+    MatrixState3D::scale(3, 3, 3);                                // 进行缩放(地球比月球大)
+    planetForDraw->drawSelf(cmdBuffer, sqsDTL->pipelineLayout,      // 绘制地球
+                            sqsDTL->pipeline, &(sqsDTL->descSet[0]));
+    MatrixState3D::popMatrix();
+    MatrixState3D::translate(180, 0, 0);                          // 沿x轴平移(地月距离)
+    MatrixState3D::rotate(mAngle, 0, 1, 0);                       // 绕y轴旋转(月球自转)
+    planetForDraw->drawSelf(cmdBuffer, sqsSTL->pipelineLayout, sqsSTL->pipeline, // 绘制月球
+                            &(sqsSTL->descSet[TextureManager::getVkDescriptorSetIndex("texture/moon.bntex")]));
+    MatrixState3D::popMatrix();
+    MatrixState3D::pushMatrix();
+    MatrixState3D::rotate(sAngle, 0, 1, 0);                       // 绕y轴旋转(星空缓慢自转)
+    skyForDrawBig->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline); // 绘制星空(大)
+    skyForDrawSmall->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline); // 绘制星空(小)
+    MatrixState3D::popMatrix();
+    /// Sample6_6 **************************************************** end
 
 //    triForDraw->drawSelf(                                                 // 绘制三色三角形、Sample4_14-卷绕和背面剪裁
 //        cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, &(sqsCL->descSet[0]));
@@ -1482,6 +1594,11 @@ void MyVulkanManager::drawObject() {
  */
 void MyVulkanManager::initPipeline() {
   sqsCL = new ShaderQueueSuit_Common(&device, renderPass, memoryroperties); // 创建封装了渲染管线相关的对象
+
+  /// Sample6_6 ************************************************** start
+  sqsDTL = new ShaderQueueSuit_Earth(&device, renderPass, memoryroperties);
+  sqsSTL = new ShaderQueueSuit_Moon(&device, renderPass, memoryroperties);
+  /// Sample6_6 **************************************************** end
 }
 
 /**
@@ -1489,6 +1606,10 @@ void MyVulkanManager::initPipeline() {
  */
 void MyVulkanManager::destroyPipeline() {
   delete sqsCL;
+
+  /// Sample6_6
+  delete sqsDTL;
+  delete sqsSTL;
 }
 
 /**

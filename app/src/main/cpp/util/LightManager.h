@@ -9,6 +9,9 @@ class LightManager {
   static float lightDiffuseR, lightDiffuseG, lightDiffuseB, lightDiffuseA;  // 散射光强度RGBA分量
   static float lightSpecularR, lightSpecularG, lightSpecularB, lightSpecularA;  // 镜面光强度RGBA分量
 
+  /// Sample6_6
+  static float lightFWJ;  // 光源方位角
+
   /**
    * 设置定位光光源位置
    */
@@ -48,6 +51,12 @@ class LightManager {
       float lightSpecularBIn,
       float lightSpecularAIn
   );
+
+  /**
+   * 移动光源
+   * Sample6_6
+   */
+   static void move(float fwjSpan);
 };
 
 #endif // DEEPERVULKAN_LIGHTMANAGER_H

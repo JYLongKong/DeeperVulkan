@@ -1,4 +1,5 @@
 #include "LightManager.h"
+#include <math.h>
 
 float LightManager::lx = 0;
 float LightManager::ly = 0;
@@ -22,6 +23,8 @@ float LightManager::lightSpecularR = 0;
 float LightManager::lightSpecularG = 0;
 float LightManager::lightSpecularB = 0;
 float LightManager::lightSpecularA = 0;
+
+float LightManager::lightFWJ;
 
 void LightManager::setLightPosition(float lxIn, float lyIn, float lzIn) {
   lx = lxIn;
@@ -69,4 +72,14 @@ void LightManager::setLightSpecular(
   lightSpecularG = lightSpecularGIn;
   lightSpecularB = lightSpecularBIn;
   lightSpecularA = lightSpecularAIn;
+}
+
+void LightManager::move(float fwjSpan) {
+  lightFWJ = lightFWJ + fwjSpan; // 光源方位角
+  float tempLx = float(sin(lightFWJ / 180 * 3.14150265) * 300); // 计算光源坐标X分量
+  float tempLz = float(cos(lightFWJ / 180 * 3.14150265) * 300); // 计算光源坐标Z分量
+  LightManager::setLightPosition(tempLx, 0, tempLz); // 设置光源位置
+  if (lightFWJ >= 360) {
+    lightFWJ = 0;
+  }
 }
