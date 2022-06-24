@@ -1,5 +1,8 @@
 # DeeperVulkan
 
+![](https://github.com/JYLongKong/DeeperVulkan/blob/main/screenshot/Sample6_6.gif)
+![](https://github.com/JYLongKong/DeeperVulkan/blob/main/screenshot/Sample5_5.gif)
+
 ##### 本项目是DeeperAndroid系列之DeeperVulkan
 
 本人通过《Vulkan开发实战详解》案例学习，并延伸拓展了基于Android平台的Vulkan开发教程
