@@ -27,6 +27,12 @@ class FileUtil {
    * Sample6_1
    */
   static TexDataObject *loadCommonTexData(string fname);
+
+  /**
+   * 加载ETC2格式压缩纹理文件(后缀为pkm的文件)中数据
+   * Sample6_7
+   */
+  static TexDataObject *load_RGBA8_ETC2_EAC_TexData(string fname);
 };
 
 #endif

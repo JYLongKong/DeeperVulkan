@@ -34,8 +34,8 @@ class DrawableObjectCommon {
   /// Sample4_15 *************************************************** end
 
   /// Sample6_5 ************************************************** start
-  float *pushConstantDataVertex;
-  float *pushConstantDataFrag;
+//  float *pushConstantDataVertex;
+//  float *pushConstantDataFrag;
   /// Sample6_5 **************************************************** end
 
   DrawableObjectCommon(

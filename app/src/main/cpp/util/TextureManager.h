@@ -8,11 +8,9 @@
 #include "../vksysutil/vulkan_wrapper.h"
 #include "TexDataObject.h"
 
-//#define SAMPLER_COUNT 1 // 采样器数量
+#define SAMPLER_COUNT 1 // 采样器数量
 //#define SAMPLER_COUNT 4 // Sample6_3-四种纹理拉伸方式的采样器
 //#define SAMPLER_COUNT 2 // Sample6_4-两种纹理采样方式的采样器
-//#define SAMPLER_COUNT 1 // Sample6_5-MipMap
-#define SAMPLER_COUNT 1 // Sample6_6
 
 class TextureManager {
  public:

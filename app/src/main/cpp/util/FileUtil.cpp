@@ -40,7 +40,7 @@ SpvData &FileUtil::loadSPV(string fname) {
   assert(size > 0);                                                       // 检查总字节数是否大于0
   SpvData spvData;                                                        // 构建SpvData结构体实例
   spvData.size = size;                                                    // 设置SPIR-V数据总字节数
-  spvData.data = (uint32_t * )(malloc(size));                             // 分配相应字节数的内存
+  spvData.data = (uint32_t *) (malloc(size));                             // 分配相应字节数的内存
   AAsset_read(asset, spvData.data, size);                                 // 从文件中加载数据进入内存
   AAsset_close(asset);                                                    // 关闭AAsset对象
   return spvData;                                                         // 返回spvData结构体实例
@@ -77,3 +77,33 @@ TexDataObject *FileUtil::loadCommonTexData(string fname) {
   return ctdo;
 }
 /// Sample6_1 **************************************************** end
+
+/// Sample6_7 ************************************************** start
+int fromBytesToShort(unsigned char *buff) {
+  int k = 0;
+  unsigned char *temp = (unsigned char *) (&k);
+  temp[0] = buff[1];
+  temp[1] = buff[0];
+  temp[2] = 0;
+  temp[3] = 0;
+  return k;
+}
+
+/**
+ * 加载ETC2格式压缩纹理文件(后缀为pkm的文件)中数据
+ */
+TexDataObject *FileUtil::load_RGBA8_ETC2_EAC_TexData(string fname) {
+  AAsset *asset = AAssetManager_open(aam, fname.c_str(), AASSET_MODE_UNKNOWN);  // 创建AAsset对象
+  int byteCount = AAsset_getLength(asset) - 16;                           // 纹理数据字节数
+  unsigned char *buf = new unsigned char[8];                              // 开辟长度为8字节的内存
+  AAsset_read(asset, (void *) buf, 8);                              // 读取文件头前8个字节抛弃
+  AAsset_read(asset, (void *) buf, 4);                              // 再读取4个字节抛弃
+  AAsset_read(asset, (void *) buf, 2);                              // 读取纹理宽度数据字节
+  int width = fromBytesToShort(buf);                                      // 转换为int型数值
+  AAsset_read(asset, (void *) buf, 2);                              // 读取纹理高度数据字节
+  int height = fromBytesToShort(buf);                                     // 转换为int型数值
+  unsigned char *data = new unsigned char[byteCount];                     // 开辟纹理数据存储内存
+  AAsset_read(asset, (void *) data, byteCount);                           // 读取纹理数据
+  return new TexDataObject(width, height, data, byteCount);               // 返回结果
+}
+/// Sample6_7 **************************************************** end

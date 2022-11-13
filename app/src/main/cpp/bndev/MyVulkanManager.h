@@ -98,7 +98,7 @@ class MyVulkanManager {
   /// Sample5_1 球
   static DrawableObjectCommon *ballForDraw;
 
-  /// Sample6_1 纹理三角形
+  /// Sample6_1、Sample6_7 纹理三角形
   static DrawableObjectCommon *texTri;
 
   /// Sample6_3 纹理拉伸方式

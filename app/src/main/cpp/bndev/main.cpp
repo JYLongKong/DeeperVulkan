@@ -150,25 +150,25 @@ static int32_t engine_handle_input(struct android_app *app, AInputEvent *event) 
 //          yPre = y;
           /// Sample5_6 **************************************************** end
 
-          /// Sample6_1、6_3、6_5 ***************************************** start
-//          xDis = x - xPre;
-//          yDis = y - yPre;
-//          MyVulkanManager::yAngle += xDis * 180.0 / 600;
-//          MyVulkanManager::zAngle += yDis * 180.0 / 600;
-//          xPre = x;
-//          yPre = y;
-//          if (abs((int) xDis) > 10 || abs((int) yDis) > 10) {
-//            isClick = false;
-//          }
-          /// Sample6_1、6_3、6_5 ******************************************* end
-
-          /// Sample6_6 ************************************************** start
+          /// Sample6_1、6_3、6_5、6_7 ************************************ start
           xDis = x - xPre;
           yDis = y - yPre;
-          CameraUtil::calCamera(float(-yDis * 180 / 1000.0), 0); // 更新摄像机9参数
-          LightManager::move(float(xDis * 180 / 1000.0)); // 移动光源
+          MyVulkanManager::yAngle += xDis * 180.0 / 600;
+          MyVulkanManager::zAngle += yDis * 180.0 / 600;
           xPre = x;
           yPre = y;
+          if (abs((int) xDis) > 10 || abs((int) yDis) > 10) {
+            isClick = false;
+          }
+          /// Sample6_1、6_3、6_5、6_7 ************************************** end
+
+          /// Sample6_6 ************************************************** start
+//          xDis = x - xPre;
+//          yDis = y - yPre;
+//          CameraUtil::calCamera(float(-yDis * 180 / 1000.0), 0); // 更新摄像机9参数
+//          LightManager::move(float(xDis * 180 / 1000.0)); // 移动光源
+//          xPre = x;
+//          yPre = y;
           /// Sample6_6 **************************************************** end
 
           break;

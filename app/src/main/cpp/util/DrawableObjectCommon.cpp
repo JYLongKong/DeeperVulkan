@@ -19,8 +19,8 @@ DrawableObjectCommon::DrawableObjectCommon(
     VkDevice &device,
     VkPhysicalDeviceMemoryProperties &memoryroperties
 ) {
-//  pushConstantData = new float[16];                                       // Sample4_2、6_1-推送常量数据数组的初始化(4X4的最终变换矩阵)
-  pushConstantData = new float[32];                                       // Sample5_1、6_6
+  pushConstantData = new float[16];                                       // Sample4_2、6_1、6_7-推送常量数据数组的初始化(4X4的最终变换矩阵)
+//  pushConstantData = new float[32];                                       // Sample5_1、6_6
 //  pushConstantDataVertex = new float[16];                                 // Sample6_5
 //  pushConstantDataFrag = new float[1];                                    // Sample6_5
 
@@ -298,8 +298,8 @@ DrawableObjectCommon::~DrawableObjectCommon() {
   delete[] pushConstantData;                                              // Sample4_2
 
   /// Sample6_5 ************************************************** start
-  delete[] pushConstantDataVertex;
-  delete[] pushConstantDataFrag;
+//  delete[] pushConstantDataVertex;
+//  delete[] pushConstantDataFrag;
   /// Sample6_5 **************************************************** end
 
   vk::vkDestroyBuffer(*devicePointer, vertexDatabuf, nullptr);            // 销毁顶点数据缓冲
@@ -349,19 +349,19 @@ void DrawableObjectCommon::drawSelf(
       offsetsVertex                                                       // 各个顶点数据缓冲的内部偏移量
   );
 
-  /// Sample4_2、Sample6_1 *************************************** start
-//  float *mvp = MatrixState3D::getFinalMatrix();                           // 获取最终变换矩阵
-//  memcpy(pushConstantData, mvp, sizeof(float) * 16);           // 将最终变换矩阵复制进推送常量数据数组
-//  vk::vkCmdPushConstants(cmd, pipelineLayout,                             // 将推送常量数据送入管线
-//                         VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(float) * 16, pushConstantData);
-  /// Sample4_2、Sample6_1 ***************************************** end
+  /// Sample4_2、Sample6_1、Sample6_7 ***************************** start
+  float *mvp = MatrixState3D::getFinalMatrix();                           // 获取最终变换矩阵
+  memcpy(pushConstantData, mvp, sizeof(float) * 16);           // 将最终变换矩阵复制进推送常量数据数组
+  vk::vkCmdPushConstants(cmd, pipelineLayout,                             // 将推送常量数据送入管线
+                         VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(float) * 16, pushConstantData);
+  /// Sample4_2、Sample6_1、Sample6_7 ****************************** end
 
   /// Sample5_2、6_6 ********************************************* start
-  float *mvp = MatrixState3D::getFinalMatrix();
-  float *mm = MatrixState3D::getMMatrix();
-  memcpy(pushConstantData, mvp, sizeof(float) * 16);
-  memcpy(pushConstantData + 16, mm, sizeof(float) * 16);
-  vk::vkCmdPushConstants(cmd, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(float) * 32, pushConstantData);
+//  float *mvp = MatrixState3D::getFinalMatrix();
+//  float *mm = MatrixState3D::getMMatrix();
+//  memcpy(pushConstantData, mvp, sizeof(float) * 16);
+//  memcpy(pushConstantData + 16, mm, sizeof(float) * 16);
+//  vk::vkCmdPushConstants(cmd, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(float) * 32, pushConstantData);
   /// Sample5_2、6_6 *********************************************** end
 
   /// Sample6_5 ************************************************** start
