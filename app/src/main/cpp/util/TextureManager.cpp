@@ -23,7 +23,8 @@ std::map<std::string, int> TextureManager::imageSampler;                  // Sam
 std::vector<std::string> TextureManager::texNamesSingle = {"texture/moon.bntex"};
 std::vector<std::string> TextureManager::texNamesPair = {"texture/earth.bntex", "texture/earthn.bntex"};
 
-std::vector<std::string> TextureManager::texNames = {"texture/wall.pkm"}; // Sample6_7
+//std::vector<std::string> TextureManager::texNames = {"texture/wall.pkm"}; // Sample6_7
+std::vector<std::string> TextureManager::texNames = {"texture/fp.bntex"}; // Sample6_8
 
 void setImageLayout(VkCommandBuffer cmd,
                     VkImage image,
@@ -600,13 +601,13 @@ void TextureManager::initTextures(VkDevice &device,
   for (int i = 0; i < texNames.size(); ++i) {                             // 遍历纹理文件名称列表
 //    imageSampler[texNames[i]] = i;                                        // Sample6_3-设置对应纹理的采样器索引
 //    imageSampler[texNames[i]] = i % 2;                                    // Sample6_4
-//    TexDataObject *ctdo = FileUtil::loadCommonTexData(texNames[i]); // 加载纹理文件数据
-    TexDataObject *ctdo = FileUtil::load_RGBA8_ETC2_EAC_TexData(texNames[i]); // Sample6_7-加载ETC2压缩格式纹理文件数据
+    TexDataObject *ctdo = FileUtil::loadCommonTexData(texNames[i]); // 加载纹理文件数据
+//    TexDataObject *ctdo = FileUtil::load_RGBA8_ETC2_EAC_TexData(texNames[i]); // Sample6_7-加载ETC2压缩格式纹理文件数据
     LOGI("%s: width=%d height=%d", texNames[i].c_str(), ctdo->width, ctdo->height); // 打印纹理数据信息
-//    init_SPEC_2D_Textures(                                                // 加载2D纹理
-//        texNames[i], device, gpu, memoryroperties, cmdBuffer, queueGraphics, VK_FORMAT_R8G8B8A8_UNORM, ctdo);
-    init_SPEC_2D_Textures(                                                // Sample6_7-加载ETC2压缩格式2D纹理
-        texNames[i], device, gpu, memoryroperties, cmdBuffer, queueGraphics, VK_FORMAT_ETC2_R8G8B8A8_UNORM_BLOCK, ctdo);
+    init_SPEC_2D_Textures(                                                // 加载2D纹理
+        texNames[i], device, gpu, memoryroperties, cmdBuffer, queueGraphics, VK_FORMAT_R8G8B8A8_UNORM, ctdo);
+//    init_SPEC_2D_Textures(                                                // Sample6_7-加载ETC2压缩格式2D纹理
+//        texNames[i], device, gpu, memoryroperties, cmdBuffer, queueGraphics, VK_FORMAT_ETC2_R8G8B8A8_UNORM_BLOCK, ctdo);
 //    int levels = floor(log2(max(ctdo->width, ctdo->height))) + 1;         // Sample6_5-计算mipmap层次数
 //    LOGI("%s: width=%d height=%d lod=%d", texNames[i].c_str(), ctdo->width, ctdo->height, levels); // Sample6_5
 //    init_SPEC_Textures_ForMipMap(                                         // Sample6_5-加载2D纹理并生成MipMap

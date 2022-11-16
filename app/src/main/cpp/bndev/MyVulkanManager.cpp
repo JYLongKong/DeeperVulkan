@@ -1039,9 +1039,10 @@ void MyVulkanManager::initMatrixAndLight() {
 //  MatrixState3D::setCamera(-16, 8, 45, 0, 0, 0, 0, 1.0, 0.0); // Sample4_4
 //  MatrixState3D::setCamera(0, 0, 200, 0, 0, 0, 0, 1, 0); // Sample4_7
 //  MatrixState3D::setCamera(0, 0, 3, 0, 0, 0, 0, 1, 0);  // Sample5_1
-  MatrixState3D::setCamera(0, 0, 30.0f, 0, 0, 0, 0, 1, 0);  // Sample5_2、Sample6_7
+//  MatrixState3D::setCamera(0, 0, 30.0f, 0, 0, 0, 0, 1, 0);  // Sample5_2、Sample6_7
 //  MatrixState3D::setCamera(0, 0, 22, 0, 0, 0, 0, 1, 0);  // Sample6_5
 //  CameraUtil::calCamera(0, 0);                               // Sample6_6
+  MatrixState3D::setCamera(0, 0, 50, 0, 0, 0, 0, 1, 0); // Sample6_8
 
   MatrixState3D::setInitStack();                                          // 初始化基本变换矩阵
   float ratio = (float) screenWidth / (float) screenHeight;               // 求屏幕宽高比

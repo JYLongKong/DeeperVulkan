@@ -258,11 +258,13 @@ void ShaderQueueSuit_Common::create_shader(VkDevice &device) {
 //  std::string vertStr = FileUtil::loadAssetStr("shader/sample5_9.vert");  // Sample5_9
 //  std::string fragStr = FileUtil::loadAssetStr("shader/sample5_9.frag");  // Sample5_9
 //  std::string fragStr = FileUtil::loadAssetStr("shader/sample5_10.frag"); // Sample5_10
-  std::string vertStr = FileUtil::loadAssetStr("shader/sample6_1.vert");  // Sample6_1、Sample6_5、Sample6_7
-  std::string fragStr = FileUtil::loadAssetStr("shader/sample6_1.frag");  // Sample6_1、Sample6_7
+//  std::string vertStr = FileUtil::loadAssetStr("shader/sample6_1.vert");  // Sample6_1、Sample6_5、Sample6_7
+//  std::string fragStr = FileUtil::loadAssetStr("shader/sample6_1.frag");  // Sample6_1、Sample6_7
 //  std::string fragStr = FileUtil::loadAssetStr("shader/sample6_5.frag");  // Sample6_5
 //  std::string vertStr = FileUtil::loadAssetStr("shader/sample6_6-star.vert"); // Sample6_6
 //  std::string fragStr = FileUtil::loadAssetStr("shader/commonTexLight.frag"); // Sample6_6
+  std::string vertStr = FileUtil::loadAssetStr("shader/sample6_8.vert");  // Sample6_8
+  std::string fragStr = FileUtil::loadAssetStr("shader/sample6_8.frag");  // Sample6_8
 
   // 给出顶点着色器对应的管线着色器阶段创建信息结构体实例的各项所需属性
   shaderStages[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
