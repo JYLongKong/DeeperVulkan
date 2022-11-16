@@ -326,8 +326,9 @@ void ShaderQueueSuit_Common::initVertexAttributeInfo() {
 //  vertexBinding.stride = sizeof(float) * 6;                               // 每组数据的跨度字节数(x,y,z,R,G,B 6个分量)
 //  vertexBinding.stride = sizeof(float) * 3;                               // Sample5_1-球
 //  vertexBinding.stride = sizeof(float) * 6;                               // Sample5_3-顶点+法向共6个分量
-  vertexBinding.stride = sizeof(float) * 5;                               // Sample6_1、Sample6_7-顶点+纹理共5个分量
+//  vertexBinding.stride = sizeof(float) * 5;                               // Sample6_1、Sample6_7-顶点+纹理共5个分量
 //  vertexBinding.stride = sizeof(float) * 6;                               // Sample6_6
+  vertexBinding.stride = sizeof(float) * 3;                               // Sample6_8
 
   vertexAttribs[0].binding = 0;                                           // 第1个顶点输入属性的绑定点
   vertexAttribs[0].location = 0;                                          // 第1个顶点输入属性的位置索引
@@ -348,10 +349,10 @@ void ShaderQueueSuit_Common::initVertexAttributeInfo() {
   /// Sample5_3、Sample6_6 ***************************************** end
 
   /// Sample6_1、Sample6_7 *************************************** start
-  vertexAttribs[1].binding = 0;
-  vertexAttribs[1].location = 1;
-  vertexAttribs[1].format = VK_FORMAT_R32G32_SFLOAT;
-  vertexAttribs[1].offset = 12;
+//  vertexAttribs[1].binding = 0;
+//  vertexAttribs[1].location = 1;
+//  vertexAttribs[1].format = VK_FORMAT_R32G32_SFLOAT;
+//  vertexAttribs[1].offset = 12;
   /// Sample6_1、Sample6_7 ***************************************** end
 }
 
@@ -388,8 +389,8 @@ void ShaderQueueSuit_Common::create_pipe_line(VkDevice &device, VkRenderPass &re
   vi.flags = 0;
   vi.vertexBindingDescriptionCount = 1;                                   // 顶点输入绑定描述数量
   vi.pVertexBindingDescriptions = &vertexBinding;                         // 顶点输入绑定描述列表
-  vi.vertexAttributeDescriptionCount = 2;                                 // 顶点输入属性描述数量
-//  vi.vertexAttributeDescriptionCount = 1;                                 // Sample5_1-球
+//  vi.vertexAttributeDescriptionCount = 2;                                 // 顶点输入属性描述数量
+  vi.vertexAttributeDescriptionCount = 1;                                 // Sample5_1、Sample6_8
   vi.pVertexAttributeDescriptions = vertexAttribs;                        // 顶点输入属性描述列表
 
   VkPipelineInputAssemblyStateCreateInfo ia;                              // 管线图元组装状态创建信息
@@ -397,9 +398,9 @@ void ShaderQueueSuit_Common::create_pipe_line(VkDevice &device, VkRenderPass &re
   ia.pNext = nullptr;
   ia.flags = 0;
   ia.primitiveRestartEnable = VK_FALSE;                                   // 关闭图元重启
-  ia.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;                      // 采用三角形图元列表模式进行图元组装
+//  ia.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;                      // 采用三角形图元列表模式进行图元组装
 //  ia.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN;                       // Sample4_10、Sample4_16
-//  ia.topology = VK_PRIMITIVE_TOPOLOGY_POINT_LIST;                         // Sample6_6
+  ia.topology = VK_PRIMITIVE_TOPOLOGY_POINT_LIST;                         // Sample6_6、Sample6_8
 
   /// Sample4_7 ************************************************** start
 //  VkPipelineInputAssemblyStateCreateInfo ia[topologyCount];               // 管线图元组装状态创建信息数组

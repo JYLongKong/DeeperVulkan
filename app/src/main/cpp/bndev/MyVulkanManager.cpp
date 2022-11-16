@@ -859,12 +859,12 @@ void MyVulkanManager::createDrawableObject() {
   /// Sample5_9 **************************************************** end
 
   /// Sample6_1、Sample6_7 **************************************** start
-  float *vdataIn = new float[15]{                                         // 顶点数据数组
-      0, 10, 0, 0.5, 0,                                                   // 第1个顶点的位置和纹理(x, y, z, s, t)
-      -9, -5, 0, 0, 1,                                                    // 第2个顶点的数据
-      9, -5, 0, 1, 1                                                      // 第3个顶点的数据
-  };
-  texTri = new DrawableObjectCommon(vdataIn, 15 * 4, 3, device, memoryroperties); // 创建三角形绘制物体
+//  float *vdataIn = new float[15]{                                         // 顶点数据数组
+//      0, 10, 0, 0.5, 0,                                                   // 第1个顶点的位置和纹理(x, y, z, s, t)
+//      -9, -5, 0, 0, 1,                                                    // 第2个顶点的数据
+//      9, -5, 0, 1, 1                                                      // 第3个顶点的数据
+//  };
+//  texTri = new DrawableObjectCommon(vdataIn, 15 * 4, 3, device, memoryroperties); // 创建三角形绘制物体
   /// Sample6_1、Sample6_7 ***************************************** end
 
   /// Sample6_3 ************************************************** start
@@ -930,6 +930,20 @@ void MyVulkanManager::createDrawableObject() {
 //  skyForDrawSmall = new ColorObject(
 //      SkyData::vdata, SkyData::dataByteCount, SkyData::vCount, device, memoryroperties, 2.0f);
   /// Sample6_6 **************************************************** end
+
+  /// Sample6_8 ************************************************** start
+  int vcount = 7;
+  float *vdataIn = new float[vcount * 3]{
+      0, 20, 0,
+      -10, 10, 0,
+      10, 10, 0,
+      0, 0, 0,
+      -10, -10, 0,
+      10, -10, 0,
+      0, -20, 0
+  };
+  texTri = new DrawableObjectCommon(vdataIn, vcount * 3 * 4, vcount, device, memoryroperties);
+  /// Sample6_8 **************************************************** end
 }
 
 /**
@@ -1464,13 +1478,13 @@ void MyVulkanManager::drawObject() {
     /// Sample5_9 **************************************************** end
 
     /// Sample6_1、Sample6_7 **************************************** start
-    MatrixState3D::pushMatrix();
-    MatrixState3D::rotate(yAngle, 0, 1, 0);
-    MatrixState3D::rotate(zAngle, 0, 0, 1);
-    texTri->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, // 绘制纹理三角形
-//                     &(sqsCL->descSet[TextureManager::getVkDescriptorSetIndex("texture/wall.bntex")]));
-                     &(sqsCL->descSet[TextureManager::getVkDescriptorSetIndex("texture/wall.pkm")])); // Sample6_7
-    MatrixState3D::popMatrix();
+//    MatrixState3D::pushMatrix();
+//    MatrixState3D::rotate(yAngle, 0, 1, 0);
+//    MatrixState3D::rotate(zAngle, 0, 0, 1);
+//    texTri->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, // 绘制纹理三角形
+////                     &(sqsCL->descSet[TextureManager::getVkDescriptorSetIndex("texture/wall.bntex")]));
+//                     &(sqsCL->descSet[TextureManager::getVkDescriptorSetIndex("texture/wall.pkm")])); // Sample6_7
+//    MatrixState3D::popMatrix();
     /// Sample6_1、Sample6_7 ***************************************** end
 
     /// Sample6_3 ************************************************** start
@@ -1566,6 +1580,23 @@ void MyVulkanManager::drawObject() {
 //    skyForDrawSmall->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline); // 绘制星空(小)
 //    MatrixState3D::popMatrix();
     /// Sample6_6 **************************************************** end
+
+    /// Sample6_8 ************************************************** start
+    MatrixState3D::pushMatrix();
+    MatrixState3D::translate(-10, 0, 0);
+    MatrixState3D::rotate(yAngle, 0, 1, 0);
+    MatrixState3D::rotate(zAngle, 0, 0, 1);
+    texTri->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, // 绘制左侧点精灵
+                     &(sqsCL->descSet[TextureManager::getVkDescriptorSetIndex("texture/fp.bntex")]));
+    MatrixState3D::popMatrix();
+    MatrixState3D::pushMatrix();
+    MatrixState3D::translate(10, 0, 0);
+    MatrixState3D::rotate(yAngle, 0, 1, 0);
+    MatrixState3D::rotate(zAngle, 0, 0, 1);
+    texTri->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, // 绘制右侧点精灵
+                     &(sqsCL->descSet[TextureManager::getVkDescriptorSetIndex("texture/fp.bntex")]));
+    MatrixState3D::popMatrix();
+    /// Sample6_8 **************************************************** end
 
 //    triForDraw->drawSelf(                                                 // 绘制三色三角形、Sample4_14-卷绕和背面剪裁
 //        cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, &(sqsCL->descSet[0]));
