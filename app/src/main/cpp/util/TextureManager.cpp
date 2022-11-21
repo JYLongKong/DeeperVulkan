@@ -639,3 +639,173 @@ int TextureManager::getVkDescriptorSetIndex(std::string texName) {
   assert(result != -1);
   return result;
 }
+
+void TextureManager::init_SPEC_3D_Textures(
+    std::string texName,
+    VkDevice &device,
+    VkPhysicalDevice &gpu,
+    VkPhysicalDeviceMemoryProperties &memoryProperties,
+    VkCommandBuffer &cmdBuffer,
+    VkQueue &queueGraphics,
+    VkFormat format,
+    ThreeDTexDataObject *ctdo) {
+  // 创建缓冲，将纹理数据首先搞进缓冲，然后传输进纹理
+  VkBuffer stagingBuffer;
+  VkBufferCreateInfo bufferCreateInfo = {};
+  bufferCreateInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+  bufferCreateInfo.pNext = nullptr;
+  bufferCreateInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+  bufferCreateInfo.size = ctdo->dataByteCount;
+  bufferCreateInfo.queueFamilyIndexCount = 0;
+  bufferCreateInfo.pQueueFamilyIndices = nullptr;
+  bufferCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+  bufferCreateInfo.flags = 0;
+  VkResult result = vk::vkCreateBuffer(device, &bufferCreateInfo, nullptr, &stagingBuffer);
+  assert(result == VK_SUCCESS);
+
+  VkMemoryRequirements memReqs = {};
+  vk::vkGetBufferMemoryRequirements(device, stagingBuffer, &memReqs);
+  VkMemoryAllocateInfo memAllocInfo = {};
+  memAllocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+  memAllocInfo.pNext = nullptr;
+  memAllocInfo.memoryTypeIndex = 0;
+  memAllocInfo.allocationSize = memReqs.size;
+  memoryTypeFromProperties(memoryProperties,
+                           memReqs.memoryTypeBits,
+                           VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+                           &memAllocInfo.memoryTypeIndex);
+  VkDeviceMemory stagingMemory;
+  result = vk::vkAllocateMemory(device, &memAllocInfo, nullptr, &stagingMemory);
+  assert(result == VK_SUCCESS);
+  result = vk::vkBindBufferMemory(device, stagingBuffer, stagingMemory, 0);
+  assert(result == VK_SUCCESS);
+
+  uint8_t *pData;
+  vk::vkMapMemory(device, stagingMemory, 0, memReqs.size, 0, (void **) (&pData));
+  memcpy(pData, ctdo->data, memReqs.size);
+  vk::vkUnmapMemory(device, stagingMemory);
+
+  VkImageCreateInfo image_create_info = {};                               // 构建图像创建信息结构体实例
+  image_create_info.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+  image_create_info.pNext = nullptr;
+  image_create_info.imageType = VK_IMAGE_TYPE_3D;                         // 图像类型
+  image_create_info.format = format;                                      // 图像像素格式
+  image_create_info.extent.width = ctdo->width;                           // 图像宽度
+  image_create_info.extent.height = ctdo->height;                         // 图像高度
+  image_create_info.extent.depth = ctdo->depth;                           // 图像深度
+  image_create_info.mipLevels = 1;
+  image_create_info.arrayLayers = 1;
+  image_create_info.samples = VK_SAMPLE_COUNT_1_BIT;
+  image_create_info.tiling = VK_IMAGE_TILING_OPTIMAL;
+  image_create_info.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+  image_create_info.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+  image_create_info.queueFamilyIndexCount = 0;
+  image_create_info.pQueueFamilyIndices = nullptr;
+  image_create_info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+  image_create_info.flags = 0;
+  VkImage textureImage;
+  result = vk::vkCreateImage(device, &image_create_info, nullptr, &textureImage);
+  assert(result == VK_SUCCESS);
+  textureImageList[texName] = textureImage;
+
+  VkMemoryAllocateInfo mem_alloc = {};
+  mem_alloc.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+  mem_alloc.pNext = nullptr;
+  mem_alloc.allocationSize = 0;
+  mem_alloc.memoryTypeIndex = 0;
+  VkMemoryRequirements mem_reqs;
+  vk::vkGetImageMemoryRequirements(device, textureImage, &mem_reqs);
+  mem_alloc.allocationSize = mem_reqs.size;
+  bool flag = memoryTypeFromProperties(memoryProperties, mem_reqs.memoryTypeBits, 0, &mem_alloc.memoryTypeIndex);
+  VkDeviceMemory textureMemory;
+  result = vk::vkAllocateMemory(device, &mem_alloc, nullptr, &textureMemory);
+  textureMemoryList[texName] = textureMemory;
+  result = vk::vkBindImageMemory(device, textureImage, textureMemory, 0);
+
+  VkBufferImageCopy bufferCopyRegion = {};                                // 构建缓冲图像拷贝结构体实例
+  bufferCopyRegion.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT; // 使用方面
+  bufferCopyRegion.imageSubresource.mipLevel = 0;                         // mipmap级别
+  bufferCopyRegion.imageSubresource.baseArrayLayer = 0;                   // 基础数组层
+  bufferCopyRegion.imageSubresource.layerCount = 1;                       // 数组层的数量
+  bufferCopyRegion.imageExtent.width = ctdo->width;                       // 图像宽度
+  bufferCopyRegion.imageExtent.height = ctdo->height;                     // 图像高度
+  bufferCopyRegion.imageExtent.depth = ctdo->depth;                       // 图像深度
+
+  VkCommandBufferBeginInfo cmd_buf_info = {};
+  cmd_buf_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+  cmd_buf_info.pNext = nullptr;
+  cmd_buf_info.flags = 0;
+  cmd_buf_info.pInheritanceInfo = nullptr;
+
+  const VkCommandBuffer cmd_bufs[] = {cmdBuffer};
+  VkSubmitInfo submit_info[1] = {};
+  submit_info[0].pNext = nullptr;
+  submit_info[0].sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+  submit_info[0].waitSemaphoreCount = 0;
+  submit_info[0].pWaitSemaphores = VK_NULL_HANDLE;
+  submit_info[0].pWaitDstStageMask = VK_NULL_HANDLE;
+  submit_info[0].commandBufferCount = 1;
+  submit_info[0].pCommandBuffers = cmd_bufs;
+  submit_info[0].signalSemaphoreCount = 0;
+  submit_info[0].pSignalSemaphores = nullptr;
+
+  VkFenceCreateInfo fenceInfo;
+  VkFence copyFence;
+  fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+  fenceInfo.pNext = nullptr;
+  fenceInfo.flags = 0;
+  vk::vkCreateFence(device, &fenceInfo, nullptr, &copyFence);
+  vk::vkResetCommandBuffer(cmdBuffer, 0);
+  result = vk::vkBeginCommandBuffer(cmdBuffer, &cmd_buf_info);
+  setImageLayout(cmdBuffer,
+                 textureImage,
+                 VK_IMAGE_ASPECT_COLOR_BIT,
+                 VK_IMAGE_LAYOUT_UNDEFINED,
+                 VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+  vk::vkCmdCopyBufferToImage(cmdBuffer,
+                             stagingBuffer,
+                             textureImage,
+                             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                             1,
+                             &bufferCopyRegion);
+  setImageLayout(cmdBuffer,
+                 textureImage,
+                 VK_IMAGE_ASPECT_COLOR_BIT,
+                 VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+  result = vk::vkEndCommandBuffer(cmdBuffer);
+  result = vk::vkQueueSubmit(queueGraphics, 1, submit_info, copyFence);
+  do {
+    result = vk::vkWaitForFences(device, 1, &copyFence, VK_TRUE, 100000000);
+  } while (result == VK_TIMEOUT);
+
+  delete ctdo;
+  vk::vkDestroyBuffer(device, stagingBuffer, nullptr);
+  vk::vkFreeMemory(device, stagingMemory, nullptr);
+  vk::vkDestroyFence(device, copyFence, nullptr);
+
+  VkImageViewCreateInfo view_info = {};                                   // 构建图像视图创建信息结构体实例
+  view_info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+  view_info.pNext = nullptr;
+  view_info.viewType = VK_IMAGE_VIEW_TYPE_3D;                             // 图像视图的类型
+  view_info.format = VK_FORMAT_R8G8B8A8_UNORM;                            // 图像视图的像素格式
+  view_info.components.r = VK_COMPONENT_SWIZZLE_R;
+  view_info.components.g = VK_COMPONENT_SWIZZLE_G;
+  view_info.components.b = VK_COMPONENT_SWIZZLE_B;
+  view_info.components.a = VK_COMPONENT_SWIZZLE_A;
+  view_info.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+  view_info.subresourceRange.baseMipLevel = 0;
+  view_info.subresourceRange.levelCount = 1;
+  view_info.subresourceRange.baseArrayLayer = 0;
+  view_info.subresourceRange.layerCount = 1;
+  view_info.image = textureImageList[texName];
+  VkImageView viewTexture;
+  result = vk::vkCreateImageView(device, &view_info, nullptr, &viewTexture);
+  viewTextureList[texName] = viewTexture;
+
+  VkDescriptorImageInfo texImageInfo;
+  texImageInfo.imageView = viewTexture;
+  texImageInfo.sampler = samplerList[0];
+  texImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+  texImageInfoList[texName] = texImageInfo;
+}
