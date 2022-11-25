@@ -263,8 +263,10 @@ void ShaderQueueSuit_Common::create_shader(VkDevice &device) {
 //  std::string fragStr = FileUtil::loadAssetStr("shader/sample6_5.frag");  // Sample6_5
 //  std::string vertStr = FileUtil::loadAssetStr("shader/sample6_6-star.vert"); // Sample6_6
 //  std::string fragStr = FileUtil::loadAssetStr("shader/commonTexLight.frag"); // Sample6_6
-  std::string vertStr = FileUtil::loadAssetStr("shader/sample6_8.vert");  // Sample6_8
-  std::string fragStr = FileUtil::loadAssetStr("shader/sample6_8.frag");  // Sample6_8
+//  std::string vertStr = FileUtil::loadAssetStr("shader/sample6_8.vert");  // Sample6_8
+//  std::string fragStr = FileUtil::loadAssetStr("shader/sample6_8.frag");  // Sample6_8
+  std::string vertStr = FileUtil::loadAssetStr("shader/sample6_9.vert");  // Sample6_9
+  std::string fragStr = FileUtil::loadAssetStr("shader/sample6_9.frag");  // Sample6_9
 
   // 给出顶点着色器对应的管线着色器阶段创建信息结构体实例的各项所需属性
   shaderStages[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -400,9 +402,9 @@ void ShaderQueueSuit_Common::create_pipe_line(VkDevice &device, VkRenderPass &re
   ia.pNext = nullptr;
   ia.flags = 0;
   ia.primitiveRestartEnable = VK_FALSE;                                   // 关闭图元重启
-//  ia.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;                      // 采用三角形图元列表模式进行图元组装
+  ia.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;                      // 采用三角形图元列表模式进行图元组装
 //  ia.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN;                       // Sample4_10、Sample4_16
-  ia.topology = VK_PRIMITIVE_TOPOLOGY_POINT_LIST;                         // Sample6_6、Sample6_8
+//  ia.topology = VK_PRIMITIVE_TOPOLOGY_POINT_LIST;                         // Sample6_6、Sample6_8
 
   /// Sample4_7 ************************************************** start
 //  VkPipelineInputAssemblyStateCreateInfo ia[topologyCount];               // 管线图元组装状态创建信息数组
@@ -430,8 +432,8 @@ void ShaderQueueSuit_Common::create_pipe_line(VkDevice &device, VkRenderPass &re
   rs.pNext = nullptr;
   rs.flags = 0;
   rs.polygonMode = VK_POLYGON_MODE_FILL;                                  // 绘制方式为填充
-  rs.cullMode = VK_CULL_MODE_NONE;                                        // 不使用背面剪裁
-//  rs.cullMode = VK_CULL_MODE_BACK_BIT;                                    // Sample4_14-开启背面剪裁
+//  rs.cullMode = VK_CULL_MODE_NONE;                                        // 不使用背面剪裁
+  rs.cullMode = VK_CULL_MODE_BACK_BIT;                                    // Sample4_14、Sample6_9-开启背面剪裁
   rs.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;                         // 卷绕方向为逆时针
   rs.depthClampEnable = VK_TRUE;                                          // 深度截取
   rs.rasterizerDiscardEnable = VK_FALSE;                                  // 启用光栅化操作(若为TRUE则光栅化不产生任何片元)

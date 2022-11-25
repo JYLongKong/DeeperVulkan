@@ -107,3 +107,22 @@ TexDataObject *FileUtil::load_RGBA8_ETC2_EAC_TexData(string fname) {
   return new TexDataObject(width, height, data, byteCount);               // 返回结果
 }
 /// Sample6_7 **************************************************** end
+
+/**
+ * 加载3D纹理文件数据
+ * Sample6_9
+ */
+ThreeDTexDataObject *FileUtil::load3DTexData(string fname) {
+  AAsset *asset = AAssetManager_open(aam, fname.c_str(), AASSET_MODE_UNKNOWN);
+  unsigned char *buf = new unsigned char[4];
+  AAsset_read(asset, (void *) buf, 4);
+  int width = fromBytesToInt(buf);
+  AAsset_read(asset, (void *) buf, 4);
+  int height = fromBytesToInt(buf);
+  AAsset_read(asset, (void *) buf, 4);
+  int depth = fromBytesToInt(buf);
+  unsigned char *data = new unsigned char[width * height * depth * 4];
+  AAsset_read(asset, (void *) data, width * height * depth * 4);
+  ThreeDTexDataObject *ctdo = new ThreeDTexDataObject(width, height, depth, data);
+  return ctdo;
+}

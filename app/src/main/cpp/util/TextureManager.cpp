@@ -24,7 +24,9 @@ std::vector<std::string> TextureManager::texNamesSingle = {"texture/moon.bntex"}
 std::vector<std::string> TextureManager::texNamesPair = {"texture/earth.bntex", "texture/earthn.bntex"};
 
 //std::vector<std::string> TextureManager::texNames = {"texture/wall.pkm"}; // Sample6_7
-std::vector<std::string> TextureManager::texNames = {"texture/fp.bntex"}; // Sample6_8
+//std::vector<std::string> TextureManager::texNames = {"texture/fp.bntex"}; // Sample6_8
+std::vector<std::string>                                                  // Sample6_9
+    TextureManager::texNames = {"texture/boardRed.bn3dtex", "texture/boardGreen.bn3dtex"};
 
 void setImageLayout(VkCommandBuffer cmd,
                     VkImage image,
@@ -96,8 +98,8 @@ void TextureManager::initSampler(VkDevice &device, VkPhysicalDevice &gpu) {
   samplerCreateInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;        // 结构体的类型
 
   /// 纹理采样方式
-  samplerCreateInfo.magFilter = VK_FILTER_LINEAR;                         // 放大时的纹理采样方式
-//  samplerCreateInfo.magFilter = VK_FILTER_NEAREST;                        // Sample6_5
+//  samplerCreateInfo.magFilter = VK_FILTER_LINEAR;                         // 放大时的纹理采样方式
+  samplerCreateInfo.magFilter = VK_FILTER_NEAREST;                        // Sample6_5、Sample6_9
   samplerCreateInfo.minFilter = VK_FILTER_NEAREST;                        // 缩小时的纹理采样方式
   /// Sample6_4 ************************************************** start
 //  for (int i = 0; i < SAMPLER_COUNT; ++i) {                               // 循环设置不同的采样方式
@@ -601,17 +603,24 @@ void TextureManager::initTextures(VkDevice &device,
   for (int i = 0; i < texNames.size(); ++i) {                             // 遍历纹理文件名称列表
 //    imageSampler[texNames[i]] = i;                                        // Sample6_3-设置对应纹理的采样器索引
 //    imageSampler[texNames[i]] = i % 2;                                    // Sample6_4
-    TexDataObject *ctdo = FileUtil::loadCommonTexData(texNames[i]); // 加载纹理文件数据
+//    TexDataObject *ctdo = FileUtil::loadCommonTexData(texNames[i]); // 加载纹理文件数据
 //    TexDataObject *ctdo = FileUtil::load_RGBA8_ETC2_EAC_TexData(texNames[i]); // Sample6_7-加载ETC2压缩格式纹理文件数据
-    LOGI("%s: width=%d height=%d", texNames[i].c_str(), ctdo->width, ctdo->height); // 打印纹理数据信息
-    init_SPEC_2D_Textures(                                                // 加载2D纹理
-        texNames[i], device, gpu, memoryroperties, cmdBuffer, queueGraphics, VK_FORMAT_R8G8B8A8_UNORM, ctdo);
+//    LOGI("%s: width=%d height=%d", texNames[i].c_str(), ctdo->width, ctdo->height); // 打印纹理数据信息
+//    init_SPEC_2D_Textures(                                                // 加载2D纹理
+//        texNames[i], device, gpu, memoryroperties, cmdBuffer, queueGraphics, VK_FORMAT_R8G8B8A8_UNORM, ctdo);
 //    init_SPEC_2D_Textures(                                                // Sample6_7-加载ETC2压缩格式2D纹理
 //        texNames[i], device, gpu, memoryroperties, cmdBuffer, queueGraphics, VK_FORMAT_ETC2_R8G8B8A8_UNORM_BLOCK, ctdo);
 //    int levels = floor(log2(max(ctdo->width, ctdo->height))) + 1;         // Sample6_5-计算mipmap层次数
 //    LOGI("%s: width=%d height=%d lod=%d", texNames[i].c_str(), ctdo->width, ctdo->height, levels); // Sample6_5
 //    init_SPEC_Textures_ForMipMap(                                         // Sample6_5-加载2D纹理并生成MipMap
 //        texNames[i], device, gpu, memoryroperties, cmdBuffer, queueGraphics, VK_FORMAT_R8G8B8A8_UNORM, ctdo, levels);
+
+    /// Sample6_9 ************************************************** start
+    ThreeDTexDataObject *ctdo = FileUtil::load3DTexData(texNames[i]);
+    LOGI("%s: width=%d height=%d depth=%d", texNames[i].c_str(), ctdo->width, ctdo->height, ctdo->depth);
+    init_SPEC_3D_Textures(
+        texNames[i], device, gpu, memoryroperties, cmdBuffer, queueGraphics, VK_FORMAT_R8G8B8A8_UNORM, ctdo);
+    /// Sample6_9 **************************************************** end
   }
 }
 

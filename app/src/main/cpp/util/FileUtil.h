@@ -4,6 +4,7 @@
 #include "android/asset_manager.h"
 #include "android/asset_manager_jni.h"
 #include <string>
+#include "ThreeDTexDataObject.h"
 
 /// Sample6_1
 #include "TexDataObject.h"
@@ -33,6 +34,12 @@ class FileUtil {
    * Sample6_7
    */
   static TexDataObject *load_RGBA8_ETC2_EAC_TexData(string fname);
+
+  /**
+   * 加载3D纹理文件数据
+   * Sample6_9
+   */
+  static ThreeDTexDataObject *load3DTexData(string fname);
 };
 
 #endif
