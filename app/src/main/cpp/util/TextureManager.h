@@ -10,9 +10,9 @@
 #include "ThreeDTexDataObject.h"
 #include "TexArrayDataObject.h"
 
-#define SAMPLER_COUNT 1 // 采样器数量
+//#define SAMPLER_COUNT 1 // 采样器数量
 //#define SAMPLER_COUNT 4 // Sample6_3-四种纹理拉伸方式的采样器
-//#define SAMPLER_COUNT 2 // Sample6_4-两种纹理采样方式的采样器
+#define SAMPLER_COUNT 2 // Sample6_4、Sample6_11-两种纹理采样方式的采样器
 
 class TextureManager {
  public:
@@ -70,6 +70,9 @@ class TextureManager {
   /**
    * Sample6_5
    * 加载2D纹理并生成MipMap
+   *
+   * Sample6_11
+   * 各向异性过滤
    */
   static void init_SPEC_Textures_ForMipMap(
       std::string texName,
@@ -80,7 +83,8 @@ class TextureManager {
       VkQueue &queueGraphics,
       VkFormat format,
       TexDataObject *ctdo,
-      int levels
+      int levels,
+      int samplerIndex // Sample6_11
   );
 
   /**
@@ -91,7 +95,7 @@ class TextureManager {
    * 加载2D纹理数组
    */
 //  static void init_SPEC_3D_Textures(
-  static void init_SPEC_2DArray_Textures(
+  static void init_SPEC_2DArray_Textures( // Sample6_10
       std::string texName,
       VkDevice &device,
       VkPhysicalDevice &gpu,
@@ -100,7 +104,7 @@ class TextureManager {
       VkQueue &queueGraphics,
       VkFormat format,
 //      ThreeDTexDataObject *ctdo
-      TexArrayDataObject *ctdo
+      TexArrayDataObject *ctdo // Sample6_10
   );
 };
 

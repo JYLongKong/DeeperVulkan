@@ -134,25 +134,25 @@ void ShaderQueueSuit_Common::create_pipeline_layout(VkDevice &device) {
   assert(result == VK_SUCCESS);                                           // 检查描述集布局创建是否成功
 
   /// Sample4_2、5_2、6_1、6_6、6_10 ******************************* start
-  const unsigned push_constant_range_count = 1;                           // 推送常量块数量
-  VkPushConstantRange push_constant_ranges[push_constant_range_count] = {}; // 推送常量范围列表
-  push_constant_ranges[0].stageFlags = VK_SHADER_STAGE_VERTEX_BIT;        // 对应着色器阶段
-  push_constant_ranges[0].offset = 0;                                     // 推送常量数据起始偏移量
-//  push_constant_ranges[0].size = sizeof(float) * 16;                      // 推送常量数据总字节数
-//  push_constant_ranges[0].size = sizeof(float) * 32;                      // Sample5_2
-  push_constant_ranges[0].size = sizeof(float) * 17;                      // Sample6_10
+//  const unsigned push_constant_range_count = 1;                           // 推送常量块数量
+//  VkPushConstantRange push_constant_ranges[push_constant_range_count] = {}; // 推送常量范围列表
+//  push_constant_ranges[0].stageFlags = VK_SHADER_STAGE_VERTEX_BIT;        // 对应着色器阶段
+//  push_constant_ranges[0].offset = 0;                                     // 推送常量数据起始偏移量
+////  push_constant_ranges[0].size = sizeof(float) * 16;                      // 推送常量数据总字节数
+////  push_constant_ranges[0].size = sizeof(float) * 32;                      // Sample5_2
+//  push_constant_ranges[0].size = sizeof(float) * 17;                      // Sample6_10
   /// Sample4_2、5_2、6_1、6_6、6_10 ******************************** end
 
-  /// Sample6_5 ************************************************** start
-//  const unsigned push_constant_range_count = 2;
-//  VkPushConstantRange push_constant_ranges[push_constant_range_count] = {};
-//  push_constant_ranges[0].stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-//  push_constant_ranges[0].offset = 0;
-//  push_constant_ranges[0].size = sizeof(float) * 16;
-//  push_constant_ranges[1].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-//  push_constant_ranges[1].offset = sizeof(float) * 16;
-//  push_constant_ranges[1].size = sizeof(float) * 1;
-  /// Sample6_5 **************************************************** end
+  /// Sample6_5、Sample6_11 *************************************** start
+  const unsigned push_constant_range_count = 2;
+  VkPushConstantRange push_constant_ranges[push_constant_range_count] = {};
+  push_constant_ranges[0].stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+  push_constant_ranges[0].offset = 0;
+  push_constant_ranges[0].size = sizeof(float) * 16;
+  push_constant_ranges[1].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+  push_constant_ranges[1].offset = sizeof(float) * 16;
+  push_constant_ranges[1].size = sizeof(float) * 1;
+  /// Sample6_5、Sample6_11 ***************************************** end
 
   VkPipelineLayoutCreateInfo pPipelineLayoutCreateInfo = {};              // 构建管线布局创建信息结构体实例
   pPipelineLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -259,17 +259,17 @@ void ShaderQueueSuit_Common::create_shader(VkDevice &device) {
 //  std::string vertStr = FileUtil::loadAssetStr("shader/sample5_9.vert");  // Sample5_9
 //  std::string fragStr = FileUtil::loadAssetStr("shader/sample5_9.frag");  // Sample5_9
 //  std::string fragStr = FileUtil::loadAssetStr("shader/sample5_10.frag"); // Sample5_10
-//  std::string vertStr = FileUtil::loadAssetStr("shader/sample6_1.vert");  // Sample6_1、Sample6_5、Sample6_7
+  std::string vertStr = FileUtil::loadAssetStr("shader/sample6_1.vert");  // Sample6_1、Sample6_5、Sample6_7、Sample6_11
 //  std::string fragStr = FileUtil::loadAssetStr("shader/sample6_1.frag");  // Sample6_1、Sample6_7
-//  std::string fragStr = FileUtil::loadAssetStr("shader/sample6_5.frag");  // Sample6_5
+  std::string fragStr = FileUtil::loadAssetStr("shader/sample6_5.frag");  // Sample6_5、Sample6_11
 //  std::string vertStr = FileUtil::loadAssetStr("shader/sample6_6-star.vert"); // Sample6_6
 //  std::string fragStr = FileUtil::loadAssetStr("shader/commonTexLight.frag"); // Sample6_6
 //  std::string vertStr = FileUtil::loadAssetStr("shader/sample6_8.vert");  // Sample6_8
 //  std::string fragStr = FileUtil::loadAssetStr("shader/sample6_8.frag");  // Sample6_8
 //  std::string vertStr = FileUtil::loadAssetStr("shader/sample6_9.vert");  // Sample6_9
 //  std::string fragStr = FileUtil::loadAssetStr("shader/sample6_9.frag");  // Sample6_9
-  std::string vertStr = FileUtil::loadAssetStr("shader/sample6_10.vert");  // Sample6_10
-  std::string fragStr = FileUtil::loadAssetStr("shader/sample6_10.frag");  // Sample6_10
+//  std::string vertStr = FileUtil::loadAssetStr("shader/sample6_10.vert");  // Sample6_10
+//  std::string fragStr = FileUtil::loadAssetStr("shader/sample6_10.frag");  // Sample6_10
 
   // 给出顶点着色器对应的管线着色器阶段创建信息结构体实例的各项所需属性
   shaderStages[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;

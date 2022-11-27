@@ -16,5 +16,6 @@ layout (location = 0) in vec2 inTexCoor;// 接收的顶点纹理坐标
 layout (location = 0) out vec4 outColor;// 输出到管线的片元颜色
 
 void main() {
-    outColor = myBufferVals.brightFactor * textureLod(tex, inTexCoor, myConstantValsFrag.lodLevel);
+    // outColor = myBufferVals.brightFactor * textureLod(tex, inTexCoor, myConstantValsFrag.lodLevel);
+    outColor = myBufferVals.brightFactor * texture(tex, inTexCoor); // Sample6_11-各向异性过滤
 }
