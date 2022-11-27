@@ -29,6 +29,7 @@ add_library(
         src/main/cpp/util/ColorObject.cpp
         src/main/cpp/util/CameraUtil.cpp
         src/main/cpp/util/ThreeDTexDataObject.cpp
+        src/main/cpp/util/TexArrayDataObject.cpp
 
         src/main/cpp/bndev/ShaderCompileUtil.cpp
         src/main/cpp/bndev/ShaderQueueSuit_Common.cpp

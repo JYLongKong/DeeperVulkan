@@ -841,9 +841,9 @@ void MyVulkanManager::createDrawableObject() {
   /// Sample4_13 *************************************************** end
 
   /// Sample5_1、Sample6_9 *************************************** start
-  BallData::genBallData(9);                                      // 生成球面的顶点数据
-  ballForDraw = new DrawableObjectCommon(                                 // 创建绘制用球对象
-      BallData::vdata, BallData::dataByteCount, BallData::vCount, device, memoryroperties);
+//  BallData::genBallData(9);                                      // 生成球面的顶点数据
+//  ballForDraw = new DrawableObjectCommon(                                 // 创建绘制用球对象
+//      BallData::vdata, BallData::dataByteCount, BallData::vCount, device, memoryroperties);
   /// Sample5_1、Sample6_9 ***************************************** end
 
   /// Sample5_7 ************************************************** start
@@ -858,14 +858,14 @@ void MyVulkanManager::createDrawableObject() {
 //      FlatData::vdata, FlatData::dataByteCount, FlatData::vCount, device, memoryroperties);
   /// Sample5_9 **************************************************** end
 
-  /// Sample6_1、Sample6_7 **************************************** start
-//  float *vdataIn = new float[15]{                                         // 顶点数据数组
-//      0, 10, 0, 0.5, 0,                                                   // 第1个顶点的位置和纹理(x, y, z, s, t)
-//      -9, -5, 0, 0, 1,                                                    // 第2个顶点的数据
-//      9, -5, 0, 1, 1                                                      // 第3个顶点的数据
-//  };
-//  texTri = new DrawableObjectCommon(vdataIn, 15 * 4, 3, device, memoryroperties); // 创建三角形绘制物体
-  /// Sample6_1、Sample6_7 ***************************************** end
+  /// Sample6_1、Sample6_7、Sample6_10 **************************** start
+  float *vdataIn = new float[15]{                                         // 顶点数据数组
+      0, 10, 0, 0.5, 0,                                                   // 第1个顶点的位置和纹理(x, y, z, s, t)
+      -9, -5, 0, 0, 1,                                                    // 第2个顶点的数据
+      9, -5, 0, 1, 1                                                      // 第3个顶点的数据
+  };
+  texTri = new DrawableObjectCommon(vdataIn, 15 * 4, 3, device, memoryroperties); // 创建三角形绘制物体
+  /// Sample6_1、Sample6_7、Sample6_10 ****************************** end
 
   /// Sample6_3 ************************************************** start
 //  float *vdataIn = new float[30]{                                         // 顶点数据数组(x, y, z, s, t)
@@ -972,10 +972,10 @@ void MyVulkanManager::destroyDrawableObject() {
 //  delete colorRectY;
 
   /// Sample5_1、Sample6_9
-  delete ballForDraw;
+//  delete ballForDraw;
 
-  /// Sample6_1、Sample6_7
-//  delete texTri;
+  /// Sample6_1、Sample6_7、Sample6_10
+  delete texTri;
 
   /// Sample6_5
 //  delete texRect;
@@ -1039,24 +1039,23 @@ void MyVulkanManager::initMatrixAndLight() {
 //  MatrixState3D::setCamera(-16, 8, 45, 0, 0, 0, 0, 1.0, 0.0); // Sample4_4
 //  MatrixState3D::setCamera(0, 0, 200, 0, 0, 0, 0, 1, 0); // Sample4_7
 //  MatrixState3D::setCamera(0, 0, 3, 0, 0, 0, 0, 1, 0);  // Sample5_1
-//  MatrixState3D::setCamera(0, 0, 30.0f, 0, 0, 0, 0, 1, 0);  // Sample5_2、Sample6_7
+  MatrixState3D::setCamera(0, 0, 30.0f, 0, 0, 0, 0, 1, 0);  // Sample5_2、Sample6_7、Sample6_10
 //  MatrixState3D::setCamera(0, 0, 22, 0, 0, 0, 0, 1, 0);  // Sample6_5
 //  CameraUtil::calCamera(0, 0);                               // Sample6_6
 //  MatrixState3D::setCamera(0, 0, 50, 0, 0, 0, 0, 1, 0); // Sample6_8
-  MatrixState3D::setCamera(0, 0, 70, 0, 0, 0, 0, 1, 0); // Sample6_9
+//  MatrixState3D::setCamera(0, 0, 70, 0, 0, 0, 0, 1, 0); // Sample6_9
 
   MatrixState3D::setInitStack();                                          // 初始化基本变换矩阵
   float ratio = (float) screenWidth / (float) screenHeight;               // 求屏幕宽高比
 
   // 设置投影参数
-//  MatrixState3D::setProjectFrustum(-ratio, ratio, -1, 1, 1.5f, 1000); // Sample4_14、4_16、5_1、6_1、6_7
+  MatrixState3D::setProjectFrustum(-ratio, ratio, -1, 1, 1.5f, 1000); // Sample4_7、4_14、4_16、5_1、6_1、6_7、6_10
 //  MatrixState3D::setProjectOrtho(-ratio, ratio, -1, 1, 1.0f, 20); // Sample4_2-设置正交投影参数
 //  MatrixState3D::setProjectFrustum(-ratio * 0.4, ratio * 0.4, -1 * 0.4, 1 * 0.4, 1.0f, 20); // Sample4_3-设置透视投影参数
 //  MatrixState3D::setProjectFrustum(-ratio * 0.8f, ratio * 1.2f, -1, 1, 20, 100); // Sample4_4
-//  MatrixState3D::setProjectFrustum(-ratio, ratio, -1, 1, 1.5f, 1000); // Sample4_7
 //  MatrixState3D::setProjectFrustum(-ratio, ratio, -1, 1, 20.0f, 1000);  // Sample5_2
 //  MatrixState3D::setProjectFrustum(-ratio, ratio, -1, 1, 4.0f, 5000); // Sample6_6
-  MatrixState3D::setProjectFrustum(-ratio, ratio, -1, 1, 4.0f, 1000); // Sample6_9
+//  MatrixState3D::setProjectFrustum(-ratio, ratio, -1, 1, 4.0f, 1000); // Sample6_9
 
   /// Sample4_11 ************************************************* start
 //  if (ViewPara) { // 合理的视角
@@ -1584,38 +1583,46 @@ void MyVulkanManager::drawObject() {
 //    MatrixState3D::popMatrix();
     /// Sample6_6 **************************************************** end
 
-    /// Sample6_8 ************************************************** start
-//    MatrixState3D::pushMatrix();
-//    MatrixState3D::translate(-10, 0, 0);
-//    MatrixState3D::rotate(yAngle, 0, 1, 0);
-//    MatrixState3D::rotate(zAngle, 0, 0, 1);
-//    texTri->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, // 绘制左侧点精灵
+    /// Sample6_8、Sample6_10 *************************************** start
+    MatrixState3D::pushMatrix();
+    MatrixState3D::translate(-10, 0, 0);
+    MatrixState3D::rotate(yAngle, 0, 1, 0);
+    MatrixState3D::rotate(zAngle, 0, 0, 1);
+    texTri->drawSelf(cmdBuffer,
+                     sqsCL->pipelineLayout,
+                     sqsCL->pipeline,
 //                     &(sqsCL->descSet[TextureManager::getVkDescriptorSetIndex("texture/fp.bntex")]));
-//    MatrixState3D::popMatrix();
-//    MatrixState3D::pushMatrix();
-//    MatrixState3D::translate(10, 0, 0);
-//    MatrixState3D::rotate(yAngle, 0, 1, 0);
-//    MatrixState3D::rotate(zAngle, 0, 0, 1);
-//    texTri->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, // 绘制右侧点精灵
+                     &(sqsCL->descSet[TextureManager::getVkDescriptorSetIndex("texture/vulkan.bntexa")]), // Sample6_10
+                     0);                                          // Sample6_10
+    MatrixState3D::popMatrix();
+    MatrixState3D::pushMatrix();
+    MatrixState3D::translate(10, 0, 0);
+    MatrixState3D::rotate(yAngle, 0, 1, 0);
+    MatrixState3D::rotate(zAngle, 0, 0, 1);
+    texTri->drawSelf(cmdBuffer,
+                     sqsCL->pipelineLayout,
+                     sqsCL->pipeline,
 //                     &(sqsCL->descSet[TextureManager::getVkDescriptorSetIndex("texture/fp.bntex")]));
-//    MatrixState3D::popMatrix();
-    /// Sample6_8 **************************************************** end
+                     &(sqsCL->descSet[TextureManager::getVkDescriptorSetIndex("texture/vulkan.bntexa")]), // Sample6_10
+                     1);                                          // Sample6_10
+    MatrixState3D::popMatrix();
+    /// Sample6_8、Sample6_10 **************************************** end
 
     /// Sample6_9 ************************************************** start
-    MatrixState3D::pushMatrix();
-    MatrixState3D::translate(-15, 0, 0);
-    MatrixState3D::rotate(yAngle, 0, 1, 0);
-    MatrixState3D::rotate(zAngle, 0, 0, 1);
-    ballForDraw->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline,
-                          &(sqsCL->descSet[TextureManager::getVkDescriptorSetIndex("texture/boardRed.bn3dtex")]));
-    MatrixState3D::popMatrix();
-    MatrixState3D::pushMatrix();
-    MatrixState3D::translate(15, 0, 0);
-    MatrixState3D::rotate(yAngle, 0, 1, 0);
-    MatrixState3D::rotate(zAngle, 0, 0, 1);
-    ballForDraw->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline,
-                          &(sqsCL->descSet[TextureManager::getVkDescriptorSetIndex("texture/boardGreen.bn3dtex")]));
-    MatrixState3D::popMatrix();
+//    MatrixState3D::pushMatrix();
+//    MatrixState3D::translate(-15, 0, 0);
+//    MatrixState3D::rotate(yAngle, 0, 1, 0);
+//    MatrixState3D::rotate(zAngle, 0, 0, 1);
+//    ballForDraw->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline,
+//                          &(sqsCL->descSet[TextureManager::getVkDescriptorSetIndex("texture/boardRed.bn3dtex")]));
+//    MatrixState3D::popMatrix();
+//    MatrixState3D::pushMatrix();
+//    MatrixState3D::translate(15, 0, 0);
+//    MatrixState3D::rotate(yAngle, 0, 1, 0);
+//    MatrixState3D::rotate(zAngle, 0, 0, 1);
+//    ballForDraw->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline,
+//                          &(sqsCL->descSet[TextureManager::getVkDescriptorSetIndex("texture/boardGreen.bn3dtex")]));
+//    MatrixState3D::popMatrix();
     /// Sample6_9 **************************************************** end
 
 //    triForDraw->drawSelf(                                                 // 绘制三色三角形、Sample4_14-卷绕和背面剪裁

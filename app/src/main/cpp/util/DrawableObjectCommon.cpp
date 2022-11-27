@@ -324,7 +324,7 @@ void DrawableObjectCommon::drawSelf(
     VkCommandBuffer &cmd,
     VkPipelineLayout &pipelineLayout,
     VkPipeline &pipeline,
-    VkDescriptorSet *desSetPointer
+    VkDescriptorSet *desSetPointer,
 
     /// Sample4_10
 //    uint32_t sIndex,
@@ -335,6 +335,9 @@ void DrawableObjectCommon::drawSelf(
 
     /// Sample6_5
 //    float lodLevel
+
+    /// Sample6_10
+    int texArrayIndex
 ) {
   // VK_PIPELINE_BIND_POINT_GRAPHICS表示绑定的管线为图形渲染管线
   vk::vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);  // 将当前使用的命令缓冲与指定管线绑定
@@ -349,12 +352,14 @@ void DrawableObjectCommon::drawSelf(
       offsetsVertex                                                       // 各个顶点数据缓冲的内部偏移量
   );
 
-  /// Sample4_2、Sample6_1、Sample6_7 ***************************** start
+  /// Sample4_2、6_1、6_7、6_10 ********************************** start
   float *mvp = MatrixState3D::getFinalMatrix();                           // 获取最终变换矩阵
   memcpy(pushConstantData, mvp, sizeof(float) * 16);           // 将最终变换矩阵复制进推送常量数据数组
+  pushConstantData[16] = texArrayIndex;                                   // Sample6_10-将纹理数组索引数据送入推送常量数据
   vk::vkCmdPushConstants(cmd, pipelineLayout,                             // 将推送常量数据送入管线
-                         VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(float) * 16, pushConstantData);
-  /// Sample4_2、Sample6_1、Sample6_7 ****************************** end
+//                         VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(float) * 16, pushConstantData);
+                         VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(float) * 17, pushConstantData); // Sample6_10
+  /// Sample4_2、6_1、6_7、6_10 ************************************ end
 
   /// Sample5_2、6_6 ********************************************* start
 //  float *mvp = MatrixState3D::getFinalMatrix();

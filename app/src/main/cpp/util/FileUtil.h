@@ -5,6 +5,7 @@
 #include "android/asset_manager_jni.h"
 #include <string>
 #include "ThreeDTexDataObject.h"
+#include "TexArrayDataObject.h"
 
 /// Sample6_1
 #include "TexDataObject.h"
@@ -40,6 +41,12 @@ class FileUtil {
    * Sample6_9
    */
   static ThreeDTexDataObject *load3DTexData(string fname);
+
+  /**
+   * 加载2D纹理数组文件数据
+   * Sample6_10
+   */
+  static TexArrayDataObject *load2DArrayTexData(string fname);
 };
 
 #endif

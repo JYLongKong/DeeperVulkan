@@ -126,3 +126,22 @@ ThreeDTexDataObject *FileUtil::load3DTexData(string fname) {
   ThreeDTexDataObject *ctdo = new ThreeDTexDataObject(width, height, depth, data);
   return ctdo;
 }
+
+/**
+ * 加载2D纹理数组文件数据
+ * Sample6_10
+ */
+TexArrayDataObject *FileUtil::load2DArrayTexData(string fname) {
+  AAsset *asset = AAssetManager_open(aam, fname.c_str(), AASSET_MODE_UNKNOWN);
+  unsigned char *buf = new unsigned char[4];
+  AAsset_read(asset, (void *) buf, 4);
+  int width = fromBytesToInt(buf);
+  AAsset_read(asset, (void *) buf, 4);
+  int height = fromBytesToInt(buf);
+  AAsset_read(asset, (void *) buf, 4);
+  int length = fromBytesToInt(buf);
+  unsigned char *data = new unsigned char[width * height * length * 4];
+  AAsset_read(asset, (void *) data, width * height * length * 4);
+  TexArrayDataObject *ctdo = new TexArrayDataObject(width, height, length, data);
+  return ctdo;
+}

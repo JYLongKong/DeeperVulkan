@@ -133,14 +133,15 @@ void ShaderQueueSuit_Common::create_pipeline_layout(VkDevice &device) {
       device, &descriptor_layout, nullptr, descLayouts.data());
   assert(result == VK_SUCCESS);                                           // 检查描述集布局创建是否成功
 
-  /// Sample4_2、5_2、6_1、6_6 ************************************ start
+  /// Sample4_2、5_2、6_1、6_6、6_10 ******************************* start
   const unsigned push_constant_range_count = 1;                           // 推送常量块数量
   VkPushConstantRange push_constant_ranges[push_constant_range_count] = {}; // 推送常量范围列表
   push_constant_ranges[0].stageFlags = VK_SHADER_STAGE_VERTEX_BIT;        // 对应着色器阶段
   push_constant_ranges[0].offset = 0;                                     // 推送常量数据起始偏移量
-  push_constant_ranges[0].size = sizeof(float) * 16;                      // 推送常量数据总字节数
+//  push_constant_ranges[0].size = sizeof(float) * 16;                      // 推送常量数据总字节数
 //  push_constant_ranges[0].size = sizeof(float) * 32;                      // Sample5_2
-  /// Sample4_2、5_2、6_1、6_6 ************************************** end
+  push_constant_ranges[0].size = sizeof(float) * 17;                      // Sample6_10
+  /// Sample4_2、5_2、6_1、6_6、6_10 ******************************** end
 
   /// Sample6_5 ************************************************** start
 //  const unsigned push_constant_range_count = 2;
@@ -265,8 +266,10 @@ void ShaderQueueSuit_Common::create_shader(VkDevice &device) {
 //  std::string fragStr = FileUtil::loadAssetStr("shader/commonTexLight.frag"); // Sample6_6
 //  std::string vertStr = FileUtil::loadAssetStr("shader/sample6_8.vert");  // Sample6_8
 //  std::string fragStr = FileUtil::loadAssetStr("shader/sample6_8.frag");  // Sample6_8
-  std::string vertStr = FileUtil::loadAssetStr("shader/sample6_9.vert");  // Sample6_9
-  std::string fragStr = FileUtil::loadAssetStr("shader/sample6_9.frag");  // Sample6_9
+//  std::string vertStr = FileUtil::loadAssetStr("shader/sample6_9.vert");  // Sample6_9
+//  std::string fragStr = FileUtil::loadAssetStr("shader/sample6_9.frag");  // Sample6_9
+  std::string vertStr = FileUtil::loadAssetStr("shader/sample6_10.vert");  // Sample6_10
+  std::string fragStr = FileUtil::loadAssetStr("shader/sample6_10.frag");  // Sample6_10
 
   // 给出顶点着色器对应的管线着色器阶段创建信息结构体实例的各项所需属性
   shaderStages[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -330,9 +333,9 @@ void ShaderQueueSuit_Common::initVertexAttributeInfo() {
 //  vertexBinding.stride = sizeof(float) * 6;                               // 每组数据的跨度字节数(x,y,z,R,G,B 6个分量)
 //  vertexBinding.stride = sizeof(float) * 3;                               // Sample5_1-球
 //  vertexBinding.stride = sizeof(float) * 6;                               // Sample5_3-顶点+法向共6个分量
-//  vertexBinding.stride = sizeof(float) * 5;                               // Sample6_1、Sample6_7-顶点+纹理共5个分量
+  vertexBinding.stride = sizeof(float) * 5;                               // Sample6_1、6_7、6_10-顶点+纹理共5个分量
 //  vertexBinding.stride = sizeof(float) * 6;                               // Sample6_6
-  vertexBinding.stride = sizeof(float) * 3;                               // Sample6_8
+//  vertexBinding.stride = sizeof(float) * 3;                               // Sample6_8
 
   vertexAttribs[0].binding = 0;                                           // 第1个顶点输入属性的绑定点
   vertexAttribs[0].location = 0;                                          // 第1个顶点输入属性的位置索引
@@ -352,12 +355,12 @@ void ShaderQueueSuit_Common::initVertexAttributeInfo() {
 //  vertexAttribs[1].offset = 12;                                           // 法向量输入属性的偏移量
   /// Sample5_3、Sample6_6 ***************************************** end
 
-  /// Sample6_1、Sample6_7 *************************************** start
-//  vertexAttribs[1].binding = 0;
-//  vertexAttribs[1].location = 1;
-//  vertexAttribs[1].format = VK_FORMAT_R32G32_SFLOAT;
-//  vertexAttribs[1].offset = 12;
-  /// Sample6_1、Sample6_7 ***************************************** end
+  /// Sample6_1、Sample6_7、Sample6_10 **************************** start
+  vertexAttribs[1].binding = 0;
+  vertexAttribs[1].location = 1;
+  vertexAttribs[1].format = VK_FORMAT_R32G32_SFLOAT;
+  vertexAttribs[1].offset = 12;
+  /// Sample6_1、Sample6_7、Sample6_10 ****************************** end
 }
 
 /**
@@ -393,8 +396,8 @@ void ShaderQueueSuit_Common::create_pipe_line(VkDevice &device, VkRenderPass &re
   vi.flags = 0;
   vi.vertexBindingDescriptionCount = 1;                                   // 顶点输入绑定描述数量
   vi.pVertexBindingDescriptions = &vertexBinding;                         // 顶点输入绑定描述列表
-//  vi.vertexAttributeDescriptionCount = 2;                                 // 顶点输入属性描述数量
-  vi.vertexAttributeDescriptionCount = 1;                                 // Sample5_1、Sample6_8
+  vi.vertexAttributeDescriptionCount = 2;                                 // 顶点输入属性描述数量
+//  vi.vertexAttributeDescriptionCount = 1;                                 // Sample5_1、Sample6_8
   vi.pVertexAttributeDescriptions = vertexAttribs;                        // 顶点输入属性描述列表
 
   VkPipelineInputAssemblyStateCreateInfo ia;                              // 管线图元组装状态创建信息
@@ -432,8 +435,8 @@ void ShaderQueueSuit_Common::create_pipe_line(VkDevice &device, VkRenderPass &re
   rs.pNext = nullptr;
   rs.flags = 0;
   rs.polygonMode = VK_POLYGON_MODE_FILL;                                  // 绘制方式为填充
-//  rs.cullMode = VK_CULL_MODE_NONE;                                        // 不使用背面剪裁
-  rs.cullMode = VK_CULL_MODE_BACK_BIT;                                    // Sample4_14、Sample6_9-开启背面剪裁
+  rs.cullMode = VK_CULL_MODE_NONE;                                        // 不使用背面剪裁
+//  rs.cullMode = VK_CULL_MODE_BACK_BIT;                                    // Sample4_14、Sample6_9-开启背面剪裁
   rs.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;                         // 卷绕方向为逆时针
   rs.depthClampEnable = VK_TRUE;                                          // 深度截取
   rs.rasterizerDiscardEnable = VK_FALSE;                                  // 启用光栅化操作(若为TRUE则光栅化不产生任何片元)

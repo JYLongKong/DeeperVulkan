@@ -8,6 +8,7 @@
 #include "../vksysutil/vulkan_wrapper.h"
 #include "TexDataObject.h"
 #include "ThreeDTexDataObject.h"
+#include "TexArrayDataObject.h"
 
 #define SAMPLER_COUNT 1 // 采样器数量
 //#define SAMPLER_COUNT 4 // Sample6_3-四种纹理拉伸方式的采样器
@@ -85,8 +86,12 @@ class TextureManager {
   /**
    * Sample6_9
    * 加载3D纹理
+   *
+   * Sample6_10
+   * 加载2D纹理数组
    */
-  static void init_SPEC_3D_Textures(
+//  static void init_SPEC_3D_Textures(
+  static void init_SPEC_2DArray_Textures(
       std::string texName,
       VkDevice &device,
       VkPhysicalDevice &gpu,
@@ -94,7 +99,8 @@ class TextureManager {
       VkCommandBuffer &cmdBuffer,
       VkQueue &queueGraphics,
       VkFormat format,
-      ThreeDTexDataObject *ctdo
+//      ThreeDTexDataObject *ctdo
+      TexArrayDataObject *ctdo
   );
 };
 

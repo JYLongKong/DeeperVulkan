@@ -25,14 +25,19 @@ std::vector<std::string> TextureManager::texNamesPair = {"texture/earth.bntex", 
 
 //std::vector<std::string> TextureManager::texNames = {"texture/wall.pkm"}; // Sample6_7
 //std::vector<std::string> TextureManager::texNames = {"texture/fp.bntex"}; // Sample6_8
-std::vector<std::string>                                                  // Sample6_9
-    TextureManager::texNames = {"texture/boardRed.bn3dtex", "texture/boardGreen.bn3dtex"};
+//std::vector<std::string>                                                  // Sample6_9
+//TextureManager::texNames = {"texture/boardRed.bn3dtex", "texture/boardGreen.bn3dtex"};
+std::vector<std::string> TextureManager::texNames = {"texture/vulkan.bntexa"}; // Sample6_10
 
+/**
+ * 设置图像布局
+ */
 void setImageLayout(VkCommandBuffer cmd,
                     VkImage image,
                     VkImageAspectFlags aspectMask,
                     VkImageLayout old_image_layout,
-                    VkImageLayout new_image_layout) {
+                    VkImageLayout new_image_layout,
+                    int32_t layerCount = 1) {                             // Sample6_10
   VkImageMemoryBarrier image_memory_barrier = {};                         // 构建图像内存屏障结构体实例
   image_memory_barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
   image_memory_barrier.pNext = nullptr;
@@ -47,7 +52,8 @@ void setImageLayout(VkCommandBuffer cmd,
   image_memory_barrier.subresourceRange.baseMipLevel = 0;                 // 基础mipmap级别
   image_memory_barrier.subresourceRange.levelCount = 1;                   // mipmap级别的数量
   image_memory_barrier.subresourceRange.baseArrayLayer = 0;               // 基础数组层
-  image_memory_barrier.subresourceRange.layerCount = 1;                   // 数组层的数量
+//  image_memory_barrier.subresourceRange.layerCount = 1;                   // 数组层的数量
+  image_memory_barrier.subresourceRange.layerCount = layerCount;          // Sample6_10
 
   // 根据不同的新布局或旧布局预设值设置了源访问掩码或目标访问掩码
   if (old_image_layout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL) {
@@ -98,8 +104,8 @@ void TextureManager::initSampler(VkDevice &device, VkPhysicalDevice &gpu) {
   samplerCreateInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;        // 结构体的类型
 
   /// 纹理采样方式
-//  samplerCreateInfo.magFilter = VK_FILTER_LINEAR;                         // 放大时的纹理采样方式
-  samplerCreateInfo.magFilter = VK_FILTER_NEAREST;                        // Sample6_5、Sample6_9
+  samplerCreateInfo.magFilter = VK_FILTER_LINEAR;                         // 放大时的纹理采样方式
+//  samplerCreateInfo.magFilter = VK_FILTER_NEAREST;                        // Sample6_5、Sample6_9
   samplerCreateInfo.minFilter = VK_FILTER_NEAREST;                        // 缩小时的纹理采样方式
   /// Sample6_4 ************************************************** start
 //  for (int i = 0; i < SAMPLER_COUNT; ++i) {                               // 循环设置不同的采样方式
@@ -616,11 +622,18 @@ void TextureManager::initTextures(VkDevice &device,
 //        texNames[i], device, gpu, memoryroperties, cmdBuffer, queueGraphics, VK_FORMAT_R8G8B8A8_UNORM, ctdo, levels);
 
     /// Sample6_9 ************************************************** start
-    ThreeDTexDataObject *ctdo = FileUtil::load3DTexData(texNames[i]);
-    LOGI("%s: width=%d height=%d depth=%d", texNames[i].c_str(), ctdo->width, ctdo->height, ctdo->depth);
-    init_SPEC_3D_Textures(
-        texNames[i], device, gpu, memoryroperties, cmdBuffer, queueGraphics, VK_FORMAT_R8G8B8A8_UNORM, ctdo);
+//    ThreeDTexDataObject *ctdo = FileUtil::load3DTexData(texNames[i]);
+//    LOGI("%s: width=%d height=%d depth=%d", texNames[i].c_str(), ctdo->width, ctdo->height, ctdo->depth);
+//    init_SPEC_3D_Textures(
+//        texNames[i], device, gpu, memoryroperties, cmdBuffer, queueGraphics, VK_FORMAT_R8G8B8A8_UNORM, ctdo);
     /// Sample6_9 **************************************************** end
+
+    /// Sample6_10 ************************************************* start
+    TexArrayDataObject *ctdo = FileUtil::load2DArrayTexData(texNames[i]);
+    LOGI("%s: width=%d height=%d length=%d", texNames[i].c_str(), ctdo->width, ctdo->height, ctdo->length);
+    init_SPEC_2DArray_Textures(
+        texNames[i], device, gpu, memoryroperties, cmdBuffer, queueGraphics, VK_FORMAT_R8G8B8A8_UNORM, ctdo);
+    /// Sample6_10 *************************************************** end
   }
 }
 
@@ -649,7 +662,8 @@ int TextureManager::getVkDescriptorSetIndex(std::string texName) {
   return result;
 }
 
-void TextureManager::init_SPEC_3D_Textures(
+//void TextureManager::init_SPEC_3D_Textures(                               // Sample6_9-加载3D纹理
+void TextureManager::init_SPEC_2DArray_Textures(                          // Sample6_10-加载2D纹理数组
     std::string texName,
     VkDevice &device,
     VkPhysicalDevice &gpu,
@@ -657,7 +671,8 @@ void TextureManager::init_SPEC_3D_Textures(
     VkCommandBuffer &cmdBuffer,
     VkQueue &queueGraphics,
     VkFormat format,
-    ThreeDTexDataObject *ctdo) {
+//    ThreeDTexDataObject *ctdo) {                                          // Sample6_9-加载3D纹理
+    TexArrayDataObject *ctdo) {                                           // Sample6_10-加载2D纹理数组
   // 创建缓冲，将纹理数据首先搞进缓冲，然后传输进纹理
   VkBuffer stagingBuffer;
   VkBufferCreateInfo bufferCreateInfo = {};
@@ -697,13 +712,16 @@ void TextureManager::init_SPEC_3D_Textures(
   VkImageCreateInfo image_create_info = {};                               // 构建图像创建信息结构体实例
   image_create_info.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
   image_create_info.pNext = nullptr;
-  image_create_info.imageType = VK_IMAGE_TYPE_3D;                         // 图像类型
+//  image_create_info.imageType = VK_IMAGE_TYPE_3D;                         // 图像类型
+  image_create_info.imageType = VK_IMAGE_TYPE_2D;                         // Sample6_10-2D纹理数组
   image_create_info.format = format;                                      // 图像像素格式
   image_create_info.extent.width = ctdo->width;                           // 图像宽度
   image_create_info.extent.height = ctdo->height;                         // 图像高度
-  image_create_info.extent.depth = ctdo->depth;                           // 图像深度
+//  image_create_info.extent.depth = ctdo->depth;                           // 图像深度
+  image_create_info.extent.depth = 1;                                     // Sample6_10
   image_create_info.mipLevels = 1;
-  image_create_info.arrayLayers = 1;
+//  image_create_info.arrayLayers = 1;
+  image_create_info.arrayLayers = ctdo->length;                           // Sample6_10-图像数组层数量
   image_create_info.samples = VK_SAMPLE_COUNT_1_BIT;
   image_create_info.tiling = VK_IMAGE_TILING_OPTIMAL;
   image_create_info.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
@@ -725,20 +743,24 @@ void TextureManager::init_SPEC_3D_Textures(
   VkMemoryRequirements mem_reqs;
   vk::vkGetImageMemoryRequirements(device, textureImage, &mem_reqs);
   mem_alloc.allocationSize = mem_reqs.size;
+  LOGI("mem_reqs.size = %d", (int) mem_reqs.size);
   bool flag = memoryTypeFromProperties(memoryProperties, mem_reqs.memoryTypeBits, 0, &mem_alloc.memoryTypeIndex);
   VkDeviceMemory textureMemory;
   result = vk::vkAllocateMemory(device, &mem_alloc, nullptr, &textureMemory);
   textureMemoryList[texName] = textureMemory;
   result = vk::vkBindImageMemory(device, textureImage, textureMemory, 0);
+  assert(result == VK_SUCCESS);
 
   VkBufferImageCopy bufferCopyRegion = {};                                // 构建缓冲图像拷贝结构体实例
   bufferCopyRegion.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT; // 使用方面
   bufferCopyRegion.imageSubresource.mipLevel = 0;                         // mipmap级别
   bufferCopyRegion.imageSubresource.baseArrayLayer = 0;                   // 基础数组层
-  bufferCopyRegion.imageSubresource.layerCount = 1;                       // 数组层的数量
+//  bufferCopyRegion.imageSubresource.layerCount = 1;                       // 数组层的数量
+  bufferCopyRegion.imageSubresource.layerCount = ctdo->length;            // Sample6_10
   bufferCopyRegion.imageExtent.width = ctdo->width;                       // 图像宽度
   bufferCopyRegion.imageExtent.height = ctdo->height;                     // 图像高度
-  bufferCopyRegion.imageExtent.depth = ctdo->depth;                       // 图像深度
+//  bufferCopyRegion.imageExtent.depth = ctdo->depth;                       // 图像深度
+  bufferCopyRegion.imageExtent.depth = 1;                                 // Sample6_10
 
   VkCommandBufferBeginInfo cmd_buf_info = {};
   cmd_buf_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -770,7 +792,8 @@ void TextureManager::init_SPEC_3D_Textures(
                  textureImage,
                  VK_IMAGE_ASPECT_COLOR_BIT,
                  VK_IMAGE_LAYOUT_UNDEFINED,
-                 VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+                 VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                 ctdo->length);                                           // Sample6_10
   vk::vkCmdCopyBufferToImage(cmdBuffer,
                              stagingBuffer,
                              textureImage,
@@ -781,14 +804,14 @@ void TextureManager::init_SPEC_3D_Textures(
                  textureImage,
                  VK_IMAGE_ASPECT_COLOR_BIT,
                  VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-                 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+                 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                 ctdo->length);                                           // Sample6_10
   result = vk::vkEndCommandBuffer(cmdBuffer);
   result = vk::vkQueueSubmit(queueGraphics, 1, submit_info, copyFence);
   do {
     result = vk::vkWaitForFences(device, 1, &copyFence, VK_TRUE, 100000000);
   } while (result == VK_TIMEOUT);
 
-  delete ctdo;
   vk::vkDestroyBuffer(device, stagingBuffer, nullptr);
   vk::vkFreeMemory(device, stagingMemory, nullptr);
   vk::vkDestroyFence(device, copyFence, nullptr);
@@ -796,7 +819,8 @@ void TextureManager::init_SPEC_3D_Textures(
   VkImageViewCreateInfo view_info = {};                                   // 构建图像视图创建信息结构体实例
   view_info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
   view_info.pNext = nullptr;
-  view_info.viewType = VK_IMAGE_VIEW_TYPE_3D;                             // 图像视图的类型
+//  view_info.viewType = VK_IMAGE_VIEW_TYPE_3D;                             // 图像视图的类型
+  view_info.viewType = VK_IMAGE_VIEW_TYPE_2D_ARRAY;                       // Sample6_10
   view_info.format = VK_FORMAT_R8G8B8A8_UNORM;                            // 图像视图的像素格式
   view_info.components.r = VK_COMPONENT_SWIZZLE_R;
   view_info.components.g = VK_COMPONENT_SWIZZLE_G;
@@ -806,10 +830,12 @@ void TextureManager::init_SPEC_3D_Textures(
   view_info.subresourceRange.baseMipLevel = 0;
   view_info.subresourceRange.levelCount = 1;
   view_info.subresourceRange.baseArrayLayer = 0;
-  view_info.subresourceRange.layerCount = 1;
+//  view_info.subresourceRange.layerCount = 1;
+  view_info.subresourceRange.layerCount = ctdo->length;                   // Sample6_10
   view_info.image = textureImageList[texName];
   VkImageView viewTexture;
   result = vk::vkCreateImageView(device, &view_info, nullptr, &viewTexture);
+  assert(result == VK_SUCCESS);
   viewTextureList[texName] = viewTexture;
 
   VkDescriptorImageInfo texImageInfo;
@@ -817,4 +843,6 @@ void TextureManager::init_SPEC_3D_Textures(
   texImageInfo.sampler = samplerList[0];
   texImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
   texImageInfoList[texName] = texImageInfo;
+
+  delete ctdo;
 }
