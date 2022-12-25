@@ -1108,6 +1108,12 @@ void MyVulkanManager::initMatrixAndLight() {
 //  LightManager::setLightAmbient(0.1f, 0.1f, 0.1f, 0.1f);
 //  LightManager::setLightDiffuse(0.9f, 0.9f, 0.5f, 0.8f);
 //  LightManager::setLightSpecular(0.4f, 0.4f, 0.25f, 0.4f);
+
+  /// Sample7_2
+  LightManager::setLightPosition(40, 10, 20);
+  LightManager::setLightAmbient(0.1f, 0.1f, 0.1f, 1.0f);
+  LightManager::setLightDiffuse(0.7f, 0.7f, 0.7f, 1.0f);
+  LightManager::setLightSpecular(0.3f, 0.3f, 0.3f, 1.0f);
 }
 
 /**
@@ -1163,21 +1169,21 @@ void MyVulkanManager::flushUniformBuffer() {
 //      LightManager::lightSpecularB, LightManager::lightSpecularA
 //  };
 
-  /// Sample5_5、Sample5_6-三光合一
-//  float vertexUniformData[20] = {
-//      MatrixState3D::cx, MatrixState3D::cy, MatrixState3D::cz, 1.0,
-//      LightManager::lx, LightManager::ly, LightManager::lz, 1.0,          // Sample5_5-定位光
-////      LightManager::ldx, LightManager::ldy, LightManager::ldz, 1.0,       // Sample5_6-定向光
-//      LightManager::lightAmbientR, LightManager::lightAmbientG, LightManager::lightAmbientB,
-//      LightManager::lightAmbientA,
-//      LightManager::lightDiffuseR, LightManager::lightDiffuseG, LightManager::lightDiffuseB,
-//      LightManager::lightDiffuseA,
-//      LightManager::lightSpecularR, LightManager::lightSpecularG, LightManager::lightSpecularB,
-//      LightManager::lightSpecularA
-//  };
+  /// Sample5_5、Sample5_6、Sample7_2-三光合一
+  float vertexUniformData[20] = {
+      MatrixState3D::cx, MatrixState3D::cy, MatrixState3D::cz, 1.0,
+      LightManager::lx, LightManager::ly, LightManager::lz, 1.0,          // Sample5_5、Sample7_2-定位光
+//      LightManager::ldx, LightManager::ldy, LightManager::ldz, 1.0,       // Sample5_6-定向光
+      LightManager::lightAmbientR, LightManager::lightAmbientG, LightManager::lightAmbientB,
+      LightManager::lightAmbientA,
+      LightManager::lightDiffuseR, LightManager::lightDiffuseG, LightManager::lightDiffuseB,
+      LightManager::lightDiffuseA,
+      LightManager::lightSpecularR, LightManager::lightSpecularG, LightManager::lightSpecularB,
+      LightManager::lightSpecularA
+  };
 
   /// Sample6_1、Sample6_7-纹理三角形
-  float fragmentUniformData[1] = {0.9};                                   // 亮度调节系数,与片元着色器中brightFactor对应
+//  float fragmentUniformData[1] = {0.9};                                   // 亮度调节系数,与片元着色器中brightFactor对应
 
   /// Sample6_6-日月
 //  float vertexUniformData[20] = {
@@ -1195,8 +1201,8 @@ void MyVulkanManager::flushUniformBuffer() {
   VkResult result = vk::vkMapMemory(                                      // 将设备内存映射为CPU可访问
       device, sqsCL->memUniformBuf, 0, sqsCL->bufferByteCount, 0, (void **) &pData);
   assert(result == VK_SUCCESS);                                           // 检查映射是否成功
-////  memcpy(pData, vertexUniformData, sqsCL->bufferByteCount);               // 将最终矩阵数据复制进设备内存
-  memcpy(pData, fragmentUniformData, sqsCL->bufferByteCount);             // Sample6_1、Sample6_7-将数据拷贝进设备内存
+  memcpy(pData, vertexUniformData, sqsCL->bufferByteCount);               // 将最终矩阵数据复制进设备内存
+//  memcpy(pData, fragmentUniformData, sqsCL->bufferByteCount);             // Sample6_1、Sample6_7-将数据拷贝进设备内存
   vk::vkUnmapMemory(device, sqsCL->memUniformBuf);                        // 解除内存映射
 
   /// Sample6_6 ************************************************** start

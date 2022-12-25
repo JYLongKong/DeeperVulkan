@@ -19,8 +19,8 @@ DrawableObjectCommon::DrawableObjectCommon(
     VkDevice &device,
     VkPhysicalDeviceMemoryProperties &memoryroperties
 ) {
-  pushConstantData = new float[16];                                       // Sample4_2、6_1、6_7-推送常量数据数组的初始化(4X4的最终变换矩阵)
-//  pushConstantData = new float[32];                                       // Sample5_1、6_6
+//  pushConstantData = new float[16];                                       // Sample4_2、6_1、6_7-推送常量数据数组的初始化(4X4的最终变换矩阵)
+  pushConstantData = new float[32];                                       // Sample5_1、6_6、7_2
 //  pushConstantDataVertex = new float[16];                                 // Sample6_5
 //  pushConstantDataFrag = new float[1];                                    // Sample6_5
 
@@ -353,21 +353,21 @@ void DrawableObjectCommon::drawSelf(
   );
 
   /// Sample4_2、6_1、6_7、6_10 ********************************** start
-  float *mvp = MatrixState3D::getFinalMatrix();                           // 获取最终变换矩阵
-  memcpy(pushConstantData, mvp, sizeof(float) * 16);           // 将最终变换矩阵复制进推送常量数据数组
-//  pushConstantData[16] = texArrayIndex;                                   // Sample6_10-将纹理数组索引数据送入推送常量数据
-  vk::vkCmdPushConstants(cmd, pipelineLayout,                             // 将推送常量数据送入管线
-                         VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(float) * 16, pushConstantData);
-//                         VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(float) * 17, pushConstantData); // Sample6_10
+//  float *mvp = MatrixState3D::getFinalMatrix();                           // 获取最终变换矩阵
+//  memcpy(pushConstantData, mvp, sizeof(float) * 16);           // 将最终变换矩阵复制进推送常量数据数组
+////  pushConstantData[16] = texArrayIndex;                                   // Sample6_10-将纹理数组索引数据送入推送常量数据
+//  vk::vkCmdPushConstants(cmd, pipelineLayout,                             // 将推送常量数据送入管线
+//                         VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(float) * 16, pushConstantData);
+////                         VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(float) * 17, pushConstantData); // Sample6_10
   /// Sample4_2、6_1、6_7、6_10 ************************************ end
 
-  /// Sample5_2、6_6 ********************************************* start
-//  float *mvp = MatrixState3D::getFinalMatrix();
-//  float *mm = MatrixState3D::getMMatrix();
-//  memcpy(pushConstantData, mvp, sizeof(float) * 16);
-//  memcpy(pushConstantData + 16, mm, sizeof(float) * 16);
-//  vk::vkCmdPushConstants(cmd, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(float) * 32, pushConstantData);
-  /// Sample5_2、6_6 *********************************************** end
+  /// Sample5_2、6_6、7_2 **************************************** start
+  float *mvp = MatrixState3D::getFinalMatrix();
+  float *mm = MatrixState3D::getMMatrix();
+  memcpy(pushConstantData, mvp, sizeof(float) * 16);
+  memcpy(pushConstantData + 16, mm, sizeof(float) * 16);
+  vk::vkCmdPushConstants(cmd, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(float) * 32, pushConstantData);
+  /// Sample5_2、6_6、7_2 ****************************************** end
 
   /// Sample6_5 ************************************************** start
 //  float *mvp = MatrixState3D::getFinalMatrix();
