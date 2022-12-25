@@ -61,7 +61,7 @@ class DrawableObjectCommon {
       VkCommandBuffer &secondary_cmd,
       VkPipelineLayout &pipelineLayout,
       VkPipeline &pipeline,
-      VkDescriptorSet *desSetPointer,
+      VkDescriptorSet *desSetPointer
 
       /// Sample4_10
 //      uint32_t sIndex,
@@ -74,7 +74,7 @@ class DrawableObjectCommon {
 //      float lodLevel
 
       /// Sample6_10
-      int texArrayIndex
+//      int texArrayIndex
   );
 
   /// Sample4_10 ************************************************* start

@@ -24,6 +24,7 @@
 #include "FlatData.h"
 #include "SkyData.h"
 #include "CameraUtil.h"
+#include "LoadUtil.h"
 
 // 静态成员实现
 android_app *MyVulkanManager::Android_application;
@@ -908,16 +909,16 @@ void MyVulkanManager::createDrawableObject() {
   /// Sample6_4 **************************************************** end
 
   /// Sample6_5、Sample6_11 *************************************** start
-  const float span = 4;
-  float *vdataIn = new float[30]{
-      -span, span, 0, 0, 0,
-      -span, -span, 0, 0, 1,
-      span, -span, 0, 1, 1,
-      -span, span, 0, 0, 0,
-      span, -span, 0, 1, 1,
-      span, span, 0, 1, 0
-  };
-  texRect = new DrawableObjectCommon(vdataIn, 30 * 4, 6, device, memoryroperties);
+//  const float span = 4;
+//  float *vdataIn = new float[30]{
+//      -span, span, 0, 0, 0,
+//      -span, -span, 0, 0, 1,
+//      span, -span, 0, 1, 1,
+//      -span, span, 0, 0, 0,
+//      span, -span, 0, 1, 1,
+//      span, span, 0, 1, 0
+//  };
+//  texRect = new DrawableObjectCommon(vdataIn, 30 * 4, 6, device, memoryroperties);
   /// Sample6_5、Sample6_11 **************************************** end
 
   /// Sample6_6 ************************************************** start
@@ -945,6 +946,10 @@ void MyVulkanManager::createDrawableObject() {
 //  };
 //  texTri = new DrawableObjectCommon(vdataIn, vcount * 3 * 4, vcount, device, memoryroperties);
   /// Sample6_8 **************************************************** end
+
+  /// Sample7_1 ************************************************** start
+  objForDraw = LoadUtil::loadFromFile("model/ch.obj", device, memoryroperties);
+  /// Sample7_1 **************************************************** end
 }
 
 /**
@@ -954,8 +959,8 @@ void MyVulkanManager::destroyDrawableObject() {
   /// Sample4_1、Sample4_14
 //  delete triForDraw;
 
-  /// Sample4_2、Sample5_7
-//  delete objForDraw;
+  /// Sample4_2、Sample5_7、Sample7_1
+  delete objForDraw;
 
   /// Sample4_8
 //  delete triForDraw;
@@ -979,7 +984,7 @@ void MyVulkanManager::destroyDrawableObject() {
 //  delete texTri;
 
   /// Sample6_5、Sample6_11
-  delete texRect;
+//  delete texRect;
 
   /// Sample6_6
 //  delete skyForDrawBig;
@@ -1045,19 +1050,21 @@ void MyVulkanManager::initMatrixAndLight() {
 //  CameraUtil::calCamera(0, 0);                               // Sample6_6
 //  MatrixState3D::setCamera(0, 0, 50, 0, 0, 0, 0, 1, 0); // Sample6_8
 //  MatrixState3D::setCamera(0, 0, 70, 0, 0, 0, 0, 1, 0); // Sample6_9
-  MatrixState3D::setCamera(0, 0, 11, 0, 0, 0, 0, 1, 0); // Sample6_11
+//  MatrixState3D::setCamera(0, 0, 11, 0, 0, 0, 0, 1, 0); // Sample6_11
+  MatrixState3D::setCamera(0, 0, 0, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f); // Sample7_1
 
   MatrixState3D::setInitStack();                                          // 初始化基本变换矩阵
   float ratio = (float) screenWidth / (float) screenHeight;               // 求屏幕宽高比
 
   // 设置投影参数
-  MatrixState3D::setProjectFrustum(-ratio, ratio, -1, 1, 1.5f, 1000); // Sample4_7、4_14、4_16、5_1、6_1、6_7、6_10
+//  MatrixState3D::setProjectFrustum(-ratio, ratio, -1, 1, 1.5f, 1000); // Sample4_7、4_14、4_16、5_1、6_1、6_7、6_10
 //  MatrixState3D::setProjectOrtho(-ratio, ratio, -1, 1, 1.0f, 20); // Sample4_2-设置正交投影参数
 //  MatrixState3D::setProjectFrustum(-ratio * 0.4, ratio * 0.4, -1 * 0.4, 1 * 0.4, 1.0f, 20); // Sample4_3-设置透视投影参数
 //  MatrixState3D::setProjectFrustum(-ratio * 0.8f, ratio * 1.2f, -1, 1, 20, 100); // Sample4_4
 //  MatrixState3D::setProjectFrustum(-ratio, ratio, -1, 1, 20.0f, 1000);  // Sample5_2
 //  MatrixState3D::setProjectFrustum(-ratio, ratio, -1, 1, 4.0f, 5000); // Sample6_6
 //  MatrixState3D::setProjectFrustum(-ratio, ratio, -1, 1, 4.0f, 1000); // Sample6_9
+  MatrixState3D::setProjectFrustum(-ratio, ratio, -1, 1, 2.0f, 100); // Sample7_1
 
   /// Sample4_11 ************************************************* start
 //  if (ViewPara) { // 合理的视角
@@ -1209,16 +1216,16 @@ void MyVulkanManager::flushUniformBuffer() {
  * 更新绘制用描述集
  */
 void MyVulkanManager::flushTexToDesSet() {
-//  sqsCL->writes[0].dstSet = sqsCL->descSet[0];                            // 更新描述集对应的写入属性
-//  vk::vkUpdateDescriptorSets(device, 1, sqsCL->writes, 0, nullptr);       // 更新描述集
+  sqsCL->writes[0].dstSet = sqsCL->descSet[0];                            // 更新描述集对应的写入属性
+  vk::vkUpdateDescriptorSets(device, 1, sqsCL->writes, 0, nullptr);       // 更新描述集
 
   /// Sample6_1、Sample6_7 将纹理等数据与描述集关联******************** start
-  for (int i = 0; i < TextureManager::texNames.size(); ++i) {             // 遍历所有纹理
-    sqsCL->writes[0].dstSet = sqsCL->descSet[i];                          // 更新描述集对应的写入属性0(一致变量)
-    sqsCL->writes[1].dstSet = sqsCL->descSet[i];                          // 更新描述集对应的写入属性1(纹理)
-    sqsCL->writes[1].pImageInfo = &(TextureManager::texImageInfoList[TextureManager::texNames[i]]); // 写入属性1对应的纹理图像信息
-    vk::vkUpdateDescriptorSets(device, 2, sqsCL->writes, 0, nullptr);     // 更新描述集
-  }
+//  for (int i = 0; i < TextureManager::texNames.size(); ++i) {             // 遍历所有纹理
+//    sqsCL->writes[0].dstSet = sqsCL->descSet[i];                          // 更新描述集对应的写入属性0(一致变量)
+//    sqsCL->writes[1].dstSet = sqsCL->descSet[i];                          // 更新描述集对应的写入属性1(纹理)
+//    sqsCL->writes[1].pImageInfo = &(TextureManager::texImageInfoList[TextureManager::texNames[i]]); // 写入属性1对应的纹理图像信息
+//    vk::vkUpdateDescriptorSets(device, 2, sqsCL->writes, 0, nullptr);     // 更新描述集
+//  }
   /// Sample6_1、Sample6_7 ***************************************** end
 
   /// Sample6_6 ************************************************** start
@@ -1628,38 +1635,47 @@ void MyVulkanManager::drawObject() {
     /// Sample6_9 **************************************************** end
 
     /// Sample6_11 ************************************************* start
-    float currLodLevel = -1;                                              // 纹理采样细节级别
-    const float SPAN = 5;                                                 // 正方形相互之间的间隔
-    float startX = -SPAN;                                                 // x坐标初始值
-    float startY = SPAN;                                                  // y坐标初始值
-    currLodLevel++;
-    MatrixState3D::pushMatrix();
-    MatrixState3D::translate(startX + SPAN * 2.4f, startY - 1 * SPAN, 0);
-    texRect->drawSelf(cmdBuffer,sqsCL->pipelineLayout,sqsCL->pipeline,
-                      &(sqsCL->descSet[TextureManager::getVkDescriptorSetIndex("texture/mipmapIsotropy.bntex")]),
-                      currLodLevel);
-    MatrixState3D::popMatrix();
-    MatrixState3D::pushMatrix();
-    MatrixState3D::translate(startX + SPAN * 1.35f, startY - 1 * SPAN, 0);
-    MatrixState3D::rotate(90, 0, 1, 0);
-    texRect->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline,
-                      &(sqsCL->descSet[TextureManager::getVkDescriptorSetIndex("texture/mipmapIsotropy.bntex")]),
-                      currLodLevel);
-    MatrixState3D::popMatrix();
-    MatrixState3D::pushMatrix();
-    MatrixState3D::translate(startX + SPAN * 0.65f, startY - 1 * SPAN, 0);
-    MatrixState3D::rotate(90, 0, 1, 0);
-    texRect->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline,
-                      &(sqsCL->descSet[TextureManager::getVkDescriptorSetIndex("texture/mipmapAnisotropy.bntex")]),
-                      currLodLevel);
-    MatrixState3D::popMatrix();
-    MatrixState3D::pushMatrix();
-    MatrixState3D::translate(startX + SPAN * -0.4f, startY - 1 * SPAN, 0);
-    texRect->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline,
-                      &(sqsCL->descSet[TextureManager::getVkDescriptorSetIndex("texture/mipmapAnisotropy.bntex")]),
-                      currLodLevel);
-    MatrixState3D::popMatrix();
+//    float currLodLevel = -1;                                              // 纹理采样细节级别
+//    const float SPAN = 5;                                                 // 正方形相互之间的间隔
+//    float startX = -SPAN;                                                 // x坐标初始值
+//    float startY = SPAN;                                                  // y坐标初始值
+//    currLodLevel++;
+//    MatrixState3D::pushMatrix();
+//    MatrixState3D::translate(startX + SPAN * 2.4f, startY - 1 * SPAN, 0);
+//    texRect->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline,
+//                      &(sqsCL->descSet[TextureManager::getVkDescriptorSetIndex("texture/mipmapIsotropy.bntex")]),
+//                      currLodLevel);
+//    MatrixState3D::popMatrix();
+//    MatrixState3D::pushMatrix();
+//    MatrixState3D::translate(startX + SPAN * 1.35f, startY - 1 * SPAN, 0);
+//    MatrixState3D::rotate(90, 0, 1, 0);
+//    texRect->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline,
+//                      &(sqsCL->descSet[TextureManager::getVkDescriptorSetIndex("texture/mipmapIsotropy.bntex")]),
+//                      currLodLevel);
+//    MatrixState3D::popMatrix();
+//    MatrixState3D::pushMatrix();
+//    MatrixState3D::translate(startX + SPAN * 0.65f, startY - 1 * SPAN, 0);
+//    MatrixState3D::rotate(90, 0, 1, 0);
+//    texRect->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline,
+//                      &(sqsCL->descSet[TextureManager::getVkDescriptorSetIndex("texture/mipmapAnisotropy.bntex")]),
+//                      currLodLevel);
+//    MatrixState3D::popMatrix();
+//    MatrixState3D::pushMatrix();
+//    MatrixState3D::translate(startX + SPAN * -0.4f, startY - 1 * SPAN, 0);
+//    texRect->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline,
+//                      &(sqsCL->descSet[TextureManager::getVkDescriptorSetIndex("texture/mipmapAnisotropy.bntex")]),
+//                      currLodLevel);
+//    MatrixState3D::popMatrix();
     /// Sample6_11 *************************************************** end
+
+    /// Sample7_1 ************************************************** start
+    MatrixState3D::pushMatrix();
+    MatrixState3D::translate(0, -2.0f, -25.0f);
+    MatrixState3D::rotate(yAngle, 0, 1, 0);
+    MatrixState3D::rotate(xAngle, 1, 0, 0);
+    objForDraw->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, &(sqsCL->descSet[0]));
+    MatrixState3D::popMatrix();
+    /// Sample7_1 **************************************************** end
 
 //    triForDraw->drawSelf(                                                 // 绘制三色三角形、Sample4_14-卷绕和背面剪裁
 //        cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, &(sqsCL->descSet[0]));

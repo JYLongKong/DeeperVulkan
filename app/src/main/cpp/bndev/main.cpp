@@ -78,14 +78,14 @@ static int32_t engine_handle_input(struct android_app *app, AInputEvent *event) 
           break;
         case AMOTION_EVENT_ACTION_MOVE: // 触摸点移动
 
-          /// Sample4_2 ************************************************** start
-//          xDis = x - xPre;                      // 计算触控点x位移
-//          yDis = y - yPre;                      // 计算触控点y位移
-//          MyVulkanManager::xAngle += yDis / 10; // 计算x轴旋转角
-//          MyVulkanManager::yAngle += xDis / 10; // 计算y轴旋转角
-//          xPre = x;                             // 记录触控点x坐标
-//          yPre = y;                             // 记录触控点y坐标
-          /// Sample4_2 **************************************************** end
+          /// Sample4_2、7_1 ********************************************* start
+          xDis = x - xPre;                      // 计算触控点x位移
+          yDis = y - yPre;                      // 计算触控点y位移
+          MyVulkanManager::xAngle += yDis / 10; // 计算x轴旋转角
+          MyVulkanManager::yAngle += xDis / 10; // 计算y轴旋转角
+          xPre = x;                             // 记录触控点x坐标
+          yPre = y;                             // 记录触控点y坐标
+          /// Sample4_2、7_1 *********************************************** end
 
           /// Sample4_7、Sample6_4 *************************************** start
 //          xDis = x - xPre;
@@ -151,15 +151,15 @@ static int32_t engine_handle_input(struct android_app *app, AInputEvent *event) 
           /// Sample5_6 **************************************************** end
 
           /// Sample6_1、6_3、6_5、6_7 ************************************ start
-          xDis = x - xPre;
-          yDis = y - yPre;
-          MyVulkanManager::yAngle += xDis * 180.0 / 600;
-          MyVulkanManager::zAngle += yDis * 180.0 / 600;
-          xPre = x;
-          yPre = y;
-          if (abs((int) xDis) > 10 || abs((int) yDis) > 10) {
-            isClick = false;
-          }
+//          xDis = x - xPre;
+//          yDis = y - yPre;
+//          MyVulkanManager::yAngle += xDis * 180.0 / 600;
+//          MyVulkanManager::zAngle += yDis * 180.0 / 600;
+//          xPre = x;
+//          yPre = y;
+//          if (abs((int) xDis) > 10 || abs((int) yDis) > 10) {
+//            isClick = false;
+//          }
           /// Sample6_1、6_3、6_5、6_7 ************************************** end
 
           /// Sample6_6 ************************************************** start
