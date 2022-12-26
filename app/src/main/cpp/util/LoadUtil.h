@@ -13,6 +13,11 @@ class LoadUtil {
   static DrawableObjectCommon *loadFromFile(const std::string &fname,
                                             VkDevice &device,
                                             VkPhysicalDeviceMemoryProperties &memoryProperties);
+
+  /**
+   * 向量规格化
+   */
+  static float *vectorNormal(float *vector);
 };
 
 #endif //DEEPERVULKAN_LOADUTIL_H_
