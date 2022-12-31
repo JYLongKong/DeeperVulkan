@@ -28,8 +28,9 @@ std::vector<std::string> TextureManager::texNamesPair = {"texture/earth.bntex", 
 //std::vector<std::string>                                                  // Sample6_9
 //TextureManager::texNames = {"texture/boardRed.bn3dtex", "texture/boardGreen.bn3dtex"};
 //std::vector<std::string> TextureManager::texNames = {"texture/vulkan.bntexa"}; // Sample6_10
-std::vector<std::string>                                                  // Sample6_11
-TextureManager::texNames = {"texture/mipmapIsotropy.bntex", "texture/mipmapAnisotropy.bntex"};
+//std::vector<std::string>                                                  // Sample6_11
+//TextureManager::texNames = {"texture/mipmapIsotropy.bntex", "texture/mipmapAnisotropy.bntex"};
+std::vector<std::string> TextureManager::texNames = {"texture/ghxp.bntex"}; // Sample7_4
 
 /**
  * 设置图像布局
@@ -106,8 +107,8 @@ void TextureManager::initSampler(VkDevice &device, VkPhysicalDevice &gpu) {
   samplerCreateInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;        // 结构体的类型
 
   /// 纹理采样方式
-//  samplerCreateInfo.magFilter = VK_FILTER_LINEAR;                         // 放大时的纹理采样方式
-  samplerCreateInfo.magFilter = VK_FILTER_NEAREST;                        // Sample6_5、Sample6_9、Sample6_11
+  samplerCreateInfo.magFilter = VK_FILTER_LINEAR;                         // 放大时的纹理采样方式
+//  samplerCreateInfo.magFilter = VK_FILTER_NEAREST;                        // Sample6_5、Sample6_9、Sample6_11
   samplerCreateInfo.minFilter = VK_FILTER_NEAREST;                        // 缩小时的纹理采样方式
   /// Sample6_4 ************************************************** start
 //  for (int i = 0; i < SAMPLER_COUNT; ++i) {                               // 循环设置不同的采样方式
@@ -121,13 +122,13 @@ void TextureManager::initSampler(VkDevice &device, VkPhysicalDevice &gpu) {
   /// Sample6_4 **************************************************** end
 
   /// MipMap模式
-//  samplerCreateInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;          // mipmap模式
-  samplerCreateInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;           // Sample6_5、Sample6_11
+  samplerCreateInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;          // mipmap模式
+//  samplerCreateInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;           // Sample6_5、Sample6_11
 
   /// 纹理拉伸方式
-//  samplerCreateInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE; // 纹理S轴的拉伸方式
-//  samplerCreateInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE; // 纹理T轴的拉伸方式
-//  samplerCreateInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE; // 纹理W轴的拉伸方式
+  samplerCreateInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE; // 纹理S轴的拉伸方式
+  samplerCreateInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE; // 纹理T轴的拉伸方式
+  samplerCreateInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE; // 纹理W轴的拉伸方式
 
   /// Sample6_3 ************************************************** start
 //  for (int i = 0; i < SAMPLER_COUNT; ++i) {                               // 循环设置各种拉伸方式
@@ -151,29 +152,29 @@ void TextureManager::initSampler(VkDevice &device, VkPhysicalDevice &gpu) {
   /// Sample6_3 **************************************************** end
 
   /// Sample6_11 ************************************************* start
-  samplerCreateInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-  samplerCreateInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-  samplerCreateInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+//  samplerCreateInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+//  samplerCreateInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+//  samplerCreateInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
   /// Sample6_11 *************************************************** end
 
   samplerCreateInfo.mipLodBias = 0.0;                                     // mipmap时的Lod调整值
   samplerCreateInfo.minLod = 0.0;                                         // 最小Lod值
-//  samplerCreateInfo.maxLod = 0.0;                                         // 最大Lod值
-  samplerCreateInfo.maxLod = 9.0;                                         // Sample6_5、Sample6_11
-//  samplerCreateInfo.anisotropyEnable = VK_FALSE;                          // 是否启用各向异性过滤
-//  samplerCreateInfo.maxAnisotropy = 1;                                    // 各向异性最大过滤值
-  samplerCreateInfo.anisotropyEnable = VK_TRUE;                           // Sample6_11
-  samplerCreateInfo.maxAnisotropy = 8;                                    // Sample6_11
+  samplerCreateInfo.maxLod = 0.0;                                         // 最大Lod值
+//  samplerCreateInfo.maxLod = 9.0;                                         // Sample6_5、Sample6_11
+  samplerCreateInfo.anisotropyEnable = VK_FALSE;                          // 是否启用各向异性过滤
+  samplerCreateInfo.maxAnisotropy = 1;                                    // 各向异性最大过滤值
+//  samplerCreateInfo.anisotropyEnable = VK_TRUE;                           // Sample6_11
+//  samplerCreateInfo.maxAnisotropy = 8;                                    // Sample6_11
   samplerCreateInfo.compareEnable = VK_FALSE;                             // 是否开启比较功能
   samplerCreateInfo.compareOp = VK_COMPARE_OP_NEVER;                      // 纹素数据比较操作
   samplerCreateInfo.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;     // 要使用的预定义边框颜色
 
   for (int i = 0; i < SAMPLER_COUNT; ++i) {                               // 循环创建指定数量的采样器
     /// Sample6_11 ************************************************* start
-    if (i != 0) {                                                         // 第二个采样器禁用各向异性过滤
-      samplerCreateInfo.anisotropyEnable = VK_FALSE;
-      samplerCreateInfo.maxAnisotropy = 1;
-    }
+//    if (i != 0) {                                                         // 第二个采样器禁用各向异性过滤
+//      samplerCreateInfo.anisotropyEnable = VK_FALSE;
+//      samplerCreateInfo.maxAnisotropy = 1;
+//    }
     /// Sample6_11 *************************************************** end
 
     VkSampler samplerTexture;                                             // 声明采样器对象
@@ -623,10 +624,10 @@ void TextureManager::initTextures(VkDevice &device,
   initSampler(device, gpu);                                         // 初始化采样器
 
   /// Sample6_5、Sample6_11 ************************************** start
-  VkFormatProperties formatProps;                                         // 指定格式纹理的格式属性
-  vk::vkGetPhysicalDeviceFormatProperties(gpu, VK_FORMAT_R8G8B8A8_UNORM, &formatProps); // 获取指定格式纹理的格式属性
-  assert(formatProps.optimalTilingFeatures & VK_FORMAT_FEATURE_BLIT_SRC_BIT); // 检查是否支持生成mipmap所需的BLIT类型的源和目标
-  assert(formatProps.optimalTilingFeatures & VK_FORMAT_FEATURE_BLIT_DST_BIT);
+//  VkFormatProperties formatProps;                                         // 指定格式纹理的格式属性
+//  vk::vkGetPhysicalDeviceFormatProperties(gpu, VK_FORMAT_R8G8B8A8_UNORM, &formatProps); // 获取指定格式纹理的格式属性
+//  assert(formatProps.optimalTilingFeatures & VK_FORMAT_FEATURE_BLIT_SRC_BIT); // 检查是否支持生成mipmap所需的BLIT类型的源和目标
+//  assert(formatProps.optimalTilingFeatures & VK_FORMAT_FEATURE_BLIT_DST_BIT);
   /// Sample6_5、Sample6_11 **************************************** end
 
   for (int i = 0; i < texNames.size(); ++i) {                             // 遍历纹理文件名称列表
@@ -634,16 +635,16 @@ void TextureManager::initTextures(VkDevice &device,
 //    imageSampler[texNames[i]] = i % 2;                                    // Sample6_4
     TexDataObject *ctdo = FileUtil::loadCommonTexData(texNames[i]); // 加载纹理文件数据
 //    TexDataObject *ctdo = FileUtil::load_RGBA8_ETC2_EAC_TexData(texNames[i]); // Sample6_7-加载ETC2压缩格式纹理文件数据
-//    LOGI("%s: width=%d height=%d", texNames[i].c_str(), ctdo->width, ctdo->height); // 打印纹理数据信息
-//    init_SPEC_2D_Textures(                                                // 加载2D纹理
-//        texNames[i], device, gpu, memoryroperties, cmdBuffer, queueGraphics, VK_FORMAT_R8G8B8A8_UNORM, ctdo);
+    LOGI("%s: width=%d height=%d", texNames[i].c_str(), ctdo->width, ctdo->height); // 打印纹理数据信息
+    init_SPEC_2D_Textures(                                                // 加载2D纹理
+        texNames[i], device, gpu, memoryroperties, cmdBuffer, queueGraphics, VK_FORMAT_R8G8B8A8_UNORM, ctdo);
 //    init_SPEC_2D_Textures(                                                // Sample6_7-加载ETC2压缩格式2D纹理
 //        texNames[i], device, gpu, memoryroperties, cmdBuffer, queueGraphics, VK_FORMAT_ETC2_R8G8B8A8_UNORM_BLOCK, ctdo);
-    int levels = floor(log2(max(ctdo->width, ctdo->height))) + 1;         // Sample6_5、Sample6_11-计算mipmap层次数
-    LOGI("%s: width=%d height=%d lod=%d", texNames[i].c_str(), ctdo->width, ctdo->height, levels); // Sample6_5、6_11
-    init_SPEC_Textures_ForMipMap(texNames[i], device, gpu,                // Sample6_5、Sample6_11-加载2D纹理并生成MipMap
-                                 memoryroperties, cmdBuffer, queueGraphics, VK_FORMAT_R8G8B8A8_UNORM, ctdo, levels,
-                                 i);                                       // Sample6_11
+//    int levels = floor(log2(max(ctdo->width, ctdo->height))) + 1;         // Sample6_5、Sample6_11-计算mipmap层次数
+//    LOGI("%s: width=%d height=%d lod=%d", texNames[i].c_str(), ctdo->width, ctdo->height, levels); // Sample6_5、6_11
+//    init_SPEC_Textures_ForMipMap(texNames[i], device, gpu,                // Sample6_5、Sample6_11-加载2D纹理并生成MipMap
+//                                 memoryroperties, cmdBuffer, queueGraphics, VK_FORMAT_R8G8B8A8_UNORM, ctdo, levels,
+//                                 i);                                       // Sample6_11
 
     /// Sample6_9 ************************************************** start
 //    ThreeDTexDataObject *ctdo = FileUtil::load3DTexData(texNames[i]);

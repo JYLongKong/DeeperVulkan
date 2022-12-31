@@ -148,6 +148,8 @@ DrawableObjectCommon *LoadUtil::loadFromFile(
 //  vector<float> alnResult;                                                // Sample7_2-存放结果法向量数据
   vector<int> alFaceIndex;                                                // Sample7_3-存放三角形面顶点编号
   map<int, set<Normal *>> hmn;                                            // Sample7_3-存放各顶点法向量
+  vector<float> alt;                                                      // Sample7_4-存放原始纹理坐标数据
+  vector<float> altResult;                                                // Sample7_4-存放结果纹理坐标数据
 
   string resultStr = FileUtil::loadAssetStr(fname);                 // 将obj文件内容加载为字符串
   vector<string> lines;                                                   // 存放obj文件各行字符串的列表
@@ -165,6 +167,9 @@ DrawableObjectCommon *LoadUtil::loadFromFile(
       alv.push_back(parseFloat(splitStrs[1].c_str()));              // 将顶点坐标存入原始顶点坐标列表
       alv.push_back(parseFloat(splitStrs[2].c_str()));
       alv.push_back(parseFloat(splitStrs[3].c_str()));
+    } else if (splitStrs[0] == "vt") {                                    // Sample7_4-若此行为vt开头则为纹理坐标行
+      alt.push_back(parseFloat(splitStrs[1].c_str()));              // Sample7_4-将纹理S坐标存入原始纹理坐标列表
+      alt.push_back(1 - parseFloat(splitStrs[2].c_str()));          // Sample7_4-将纹理T坐标存入原始纹理坐标列表
     } else if (splitStrs[0] == "f") {                                     // 若此行为f开头则为面数据行
       int index[3];                                                       // 存放当前面三个顶点编号的数组
       string delimsF = "/";                                               // 用于切分每个顶点数据子串的分隔符
@@ -178,6 +183,9 @@ DrawableObjectCommon *LoadUtil::loadFromFile(
       alvResult.push_back(x0);                                             // 将第一个顶点的x,y,z坐标存入结果顶点坐标列表
       alvResult.push_back(y0);
       alvResult.push_back(z0);
+      int indexTex = parseInt(splitStrsF[1].c_str()) - 1;           // Sample7_4-获取三角形面第1个顶点的纹理坐标编号
+      altResult.push_back(alt[indexTex * 2]);                             // Sample7_4-将第1个顶点的纹理S坐标存入结果纹理坐标列表
+      altResult.push_back(alt[indexTex * 2 + 1]);                         // Sample7_4-将第1个顶点的纹理T坐标存入结果纹理坐标列表
 
       splitStrsF.clear();
       splitString(splitStrs[2].c_str(), delimsF, splitStrsF);    // 切分第二个顶点的数据
@@ -188,6 +196,9 @@ DrawableObjectCommon *LoadUtil::loadFromFile(
       alvResult.push_back(x1);                                            // 将第二个顶点的x,y,z坐标存入结果顶点坐标列表
       alvResult.push_back(y1);
       alvResult.push_back(z1);
+      indexTex = parseInt(splitStrsF[1].c_str()) - 1;               // Sample7_4-获取三角形面第2个顶点的纹理坐标编号
+      altResult.push_back(alt[indexTex * 2]);                             // Sample7_4-将第2个顶点的纹理S坐标存入结果纹理坐标列表
+      altResult.push_back(alt[indexTex * 2 + 1]);                         // Sample7_4-将第2个顶点的纹理T坐标存入结果纹理坐标列表
 
       splitStrsF.clear();
       splitString(splitStrs[3].c_str(), delimsF, splitStrsF);    // 切分第三个顶点的数据
@@ -198,6 +209,10 @@ DrawableObjectCommon *LoadUtil::loadFromFile(
       alvResult.push_back(x2);                                            // 将第三个顶点的x,y,z坐标存入结果顶点坐标列表
       alvResult.push_back(y2);
       alvResult.push_back(z2);
+      indexTex = parseInt(splitStrsF[1].c_str()) - 1;               // Sample7_4-获取三角形面第3个顶点的纹理坐标编号
+      altResult.push_back(alt[indexTex * 2]);                             // Sample7_4-将第3个顶点的纹理S坐标存入结果纹理坐标列表
+      altResult.push_back(alt[indexTex * 2 + 1]);                         // Sample7_4-将第3个顶点的纹理T坐标存入结果纹理坐标列表
+
 
       /// Sample7_2-法向量
       float vxa = x1 - x0;                                                // 求三角形中第一个点到第二个点的向量
@@ -233,8 +248,10 @@ DrawableObjectCommon *LoadUtil::loadFromFile(
   int vCount = (int) alvResult.size() / 3;
 //  int dataByteCount = vCount * 3 * sizeof(float);
 //  float *vdataIn = new float[vCount * 3];
-  int dataByteCount = vCount * 6 * sizeof(float);                         // Sample7_2
-  float *vdataIn = new float[vCount * 6];                                 // Sample7_2
+//  int dataByteCount = vCount * 6 * sizeof(float);                         // Sample7_2
+//  float *vdataIn = new float[vCount * 6];                                 // Sample7_2
+  int dataByteCount = vCount * 8 * sizeof(float);                         // Sample7_4
+  float *vdataIn = new float[vCount * 8];                                 // Sample7_4
   set<Normal *> setNTemp;                                                 // Sample7_3-存放一个顶点法向量集合的辅助变量
   float *nTemp;                                                           // Sample7_3-指向存放向量三分量数据数组的指针
   int indexTemp = 0;
@@ -247,6 +264,10 @@ DrawableObjectCommon *LoadUtil::loadFromFile(
 //    vdataIn[indexTemp++] = alnResult[i * 3];
 //    vdataIn[indexTemp++] = alnResult[i * 3 + 1];
 //    vdataIn[indexTemp++] = alnResult[i * 3 + 2];
+
+    /// Sample7_4-将纹理ST坐标转存到顶点数据数组中
+    vdataIn[indexTemp++] = altResult[i * 2];
+    vdataIn[indexTemp++] = altResult[i * 2 + 1];
 
     /// Sample7_3
     setNTemp = (hmn[alFaceIndex.at(i)]);                                  // 获取当前顶点的法向量集合

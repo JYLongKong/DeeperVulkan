@@ -17,8 +17,10 @@ layout (push_constant) uniform constantVals {
 } myConstantVals;
 
 layout (location = 0) in vec3 pos;
-layout (location = 1) in vec3 inNormal;
-layout (location = 0) out vec4 outLightQD;
+layout (location = 1) in vec2 inTexCoor;    // Sample7_4-新增纹理
+layout (location = 2) in vec3 inNormal; // Sample7_4-调整索引
+layout (location = 0) out vec2 outTexCoor;  // Sample7_4-新增纹理
+layout (location = 1) out vec4 outLightQD;  // Sample7_4-调整索引
 
 out gl_PerVertex {
     vec4 gl_Position;
@@ -66,4 +68,5 @@ void main() {
     pos
     );
     gl_Position = myConstantVals.mvp * vec4(pos, 1.0);
+    outTexCoor = inTexCoor; // Sample7_4
 }

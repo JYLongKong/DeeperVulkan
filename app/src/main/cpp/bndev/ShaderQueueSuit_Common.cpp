@@ -104,8 +104,8 @@ void ShaderQueueSuit_Common::destroy_uniform_buffer(VkDevice &device) {
 void ShaderQueueSuit_Common::create_pipeline_layout(VkDevice &device) {
   NUM_DESCRIPTOR_SETS = 1;                                                // 设置描述集数量
 
-  VkDescriptorSetLayoutBinding layout_bindings[1];                        // 描述集布局绑定数组
-//  VkDescriptorSetLayoutBinding layout_bindings[2];                        // Sample6_1
+//  VkDescriptorSetLayoutBinding layout_bindings[1];                        // 描述集布局绑定数组
+  VkDescriptorSetLayoutBinding layout_bindings[2];                        // Sample6_1、Sample7_4
   layout_bindings[0].binding = 0;                                         // 此绑定的绑定点编号(需要与着色器中给定的对应绑定点编号一致)
   layout_bindings[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;  // 描述类型(此绑定对应类型为一致变量缓冲)
   layout_bindings[0].descriptorCount = 1;                                 // 描述数量
@@ -113,19 +113,19 @@ void ShaderQueueSuit_Common::create_pipeline_layout(VkDevice &device) {
 //  layout_bindings[0].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;           // Sample5_1、5_9、6_1-目标着色器阶段(此绑定对应的是片元着色器)
   layout_bindings[0].pImmutableSamplers = nullptr;
 
-  /// Sample6_1 ************************************************** start
-//  layout_bindings[1].binding = 1;                                         // 此绑定的绑定点编号为1
-//  layout_bindings[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER; // 此描述集布局绑定的对应的类型为纹理采样器
-//  layout_bindings[1].descriptorCount = 1;                                 // 描述数量
-//  layout_bindings[1].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;           // 目标着色器阶段
-//  layout_bindings[1].pImmutableSamplers = nullptr;
-  /// Sample6_1 **************************************************** end
+  /// Sample6_1、Sample7_4 *************************************** start
+  layout_bindings[1].binding = 1;                                         // 此绑定的绑定点编号为1
+  layout_bindings[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER; // 此描述集布局绑定的对应的类型为纹理采样器
+  layout_bindings[1].descriptorCount = 1;                                 // 描述数量
+  layout_bindings[1].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;           // 目标着色器阶段
+  layout_bindings[1].pImmutableSamplers = nullptr;
+  /// Sample6_1、Sample7_4 ***************************************** end
 
   VkDescriptorSetLayoutCreateInfo descriptor_layout = {};                 // 构建描述集布局创建信息结构体实例
   descriptor_layout.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
   descriptor_layout.pNext = nullptr;
-  descriptor_layout.bindingCount = 1;                                     // 描述集布局绑定的数量
-//  descriptor_layout.bindingCount = 2;                                     // Sample6_1
+//  descriptor_layout.bindingCount = 1;                                     // 描述集布局绑定的数量
+  descriptor_layout.bindingCount = 2;                                     // Sample6_1、Sample7_4
   descriptor_layout.pBindings = layout_bindings;                          // 描述集布局绑定数组
 
   descLayouts.resize(NUM_DESCRIPTOR_SETS);                                // 调整描述集布局列表尺寸
@@ -182,44 +182,44 @@ void ShaderQueueSuit_Common::destroy_pipeline_layout(VkDevice &device) {
  * 初始化描述集
  */
 void ShaderQueueSuit_Common::init_descriptor_set(VkDevice &device) {
-  VkDescriptorPoolSize type_count[1];                                     // 描述集池尺寸实例数组
-  type_count[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;                 // 描述类型(一致变量缓冲)
-  type_count[0].descriptorCount = 1;                                      // 描述数量
+//  VkDescriptorPoolSize type_count[1];                                     // 描述集池尺寸实例数组
+//  type_count[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;                 // 描述类型(一致变量缓冲)
+//  type_count[0].descriptorCount = 1;                                      // 描述数量
 
-  /// Sample6_1 ************************************************** start
-//  VkDescriptorPoolSize type_count[2];                                     // 描述集池尺寸实例数组
-//  type_count[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;                 // 第1个描述类型
-//  type_count[0].descriptorCount = TextureManager::texNames.size();        // 第1个描述数量
-//  type_count[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;         // 第2个描述类型
-//  type_count[1].descriptorCount = TextureManager::texNames.size();        // 第2个描述数量
-  /// Sample6_1 **************************************************** end
+  /// Sample6_1、Sample7_4 *************************************** start
+  VkDescriptorPoolSize type_count[2];                                     // 描述集池尺寸实例数组
+  type_count[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;                 // 第1个描述类型
+  type_count[0].descriptorCount = TextureManager::texNames.size();        // 第1个描述数量
+  type_count[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;         // 第2个描述类型
+  type_count[1].descriptorCount = TextureManager::texNames.size();        // 第2个描述数量
+  /// Sample6_1、Sample7_4 ***************************************** end
 
   VkDescriptorPoolCreateInfo descriptor_pool = {};                        // 构建描述集池创建信息结构体实例
   descriptor_pool.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
   descriptor_pool.pNext = nullptr;
-  descriptor_pool.maxSets = 1;                                            // 描述集最大数量
-  descriptor_pool.poolSizeCount = 1;                                      // 描述集池尺寸实例数量
-//  descriptor_pool.maxSets = TextureManager::texNames.size();              // Sample6_1
-//  descriptor_pool.poolSizeCount = 2;                                      // Sample6_1
+//  descriptor_pool.maxSets = 1;                                            // 描述集最大数量
+//  descriptor_pool.poolSizeCount = 1;                                      // 描述集池尺寸实例数量
+  descriptor_pool.maxSets = TextureManager::texNames.size();              // Sample6_1、Sample7_4
+  descriptor_pool.poolSizeCount = 2;                                      // Sample6_1、Sample7_4
   descriptor_pool.pPoolSizes = type_count;                                // 描述集池尺寸实例数组
   VkResult result = vk::vkCreateDescriptorPool(device, &descriptor_pool, nullptr, &descPool); // 创建描述集池
   assert(result == VK_SUCCESS);                                           // 检查描述集池创建是否成功
 
   std::vector<VkDescriptorSetLayout> layouts;                             // 描述集布局列表
-  layouts.push_back(descLayouts[0]);                                      // 向列表中添加指定描述集布局
-//  for (int i = 0; i < TextureManager::texNames.size(); ++i) {             // Sample6_1-遍历所有纹理
-//    layouts.push_back(descLayouts[0]);                                    // Sample6_1-向列表中添加指定描述集布局
-//  }
+//  layouts.push_back(descLayouts[0]);                                      // 向列表中添加指定描述集布局
+  for (int i = 0; i < TextureManager::texNames.size(); ++i) {             // Sample6_1、Sample7_4-遍历所有纹理
+    layouts.push_back(descLayouts[0]);                                    // Sample6_1、Sample7_4-向列表中添加指定描述集布局
+  }
 
   VkDescriptorSetAllocateInfo alloc_info[1];                              // 构建描述集分配信息结构体实例数组
   alloc_info[0].sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
   alloc_info[0].pNext = nullptr;
   alloc_info[0].descriptorPool = descPool;                                // 指定描述集池
-  alloc_info[0].descriptorSetCount = 1;                                   // 描述集数量
-//  alloc_info[0].descriptorSetCount = TextureManager::texNames.size();     // Sample6_1
+//  alloc_info[0].descriptorSetCount = 1;                                   // 描述集数量
+  alloc_info[0].descriptorSetCount = TextureManager::texNames.size();     // Sample6_1、Sample7_4
   alloc_info[0].pSetLayouts = layouts.data();                             // 描述集布局列表
-  descSet.resize(1);                                                   // 调整描述集列表尺寸
-//  descSet.resize(TextureManager::texNames.size());                        // Sample6_1
+//  descSet.resize(1);                                                   // 调整描述集列表尺寸
+  descSet.resize(TextureManager::texNames.size());                        // Sample6_1、Sample7_4
   result = vk::vkAllocateDescriptorSets(device, alloc_info, descSet.data()); // 分配指定数量的描述集
   assert(result == VK_SUCCESS);                                           // 检查描述集分配是否成功
 
@@ -232,13 +232,13 @@ void ShaderQueueSuit_Common::init_descriptor_set(VkDevice &device) {
   writes[0].dstArrayElement = 0;                                          // 目标数组起始元素
   writes[0].dstBinding = 0;                                               // 目标绑定编号(与着色器中绑定编号对应)
 
-  /// Sample6_1
-//  writes[1] = {};
-//  writes[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-//  writes[1].dstBinding = 1;
-//  writes[1].descriptorCount = 1;
-//  writes[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;   // 描述类型(采样用纹理)
-//  writes[1].dstArrayElement = 0;
+  /// Sample6_1、Sample7_4
+  writes[1] = {};
+  writes[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+  writes[1].dstBinding = 1;
+  writes[1].descriptorCount = 1;
+  writes[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;   // 描述类型(采样用纹理)
+  writes[1].dstArrayElement = 0;
 }
 
 /**
@@ -338,8 +338,9 @@ void ShaderQueueSuit_Common::initVertexAttributeInfo() {
 //  vertexBinding.stride = sizeof(float) * 3;                               // Sample5_1-球
 //  vertexBinding.stride = sizeof(float) * 6;                               // Sample5_3-顶点+法向共6个分量
 //  vertexBinding.stride = sizeof(float) * 5;                               // Sample6_1、6_7、6_10-顶点+纹理共5个分量
-  vertexBinding.stride = sizeof(float) * 6;                               // Sample6_6、7_2
+//  vertexBinding.stride = sizeof(float) * 6;                               // Sample6_6、7_2
 //  vertexBinding.stride = sizeof(float) * 3;                               // Sample6_8、7_1
+  vertexBinding.stride = sizeof(float) * 8;                               // Sample7_4-顶点+纹理+法向
 
   vertexAttribs[0].binding = 0;                                           // 第1个顶点输入属性的绑定点
   vertexAttribs[0].location = 0;                                          // 第1个顶点输入属性的位置索引
@@ -353,10 +354,10 @@ void ShaderQueueSuit_Common::initVertexAttributeInfo() {
 //  vertexAttribs[1].offset = 12;                                           // 第2个顶点输入属性的偏移量
 
   /// Sample5_3、6_6、7_2 ***************************************** start
-  vertexAttribs[1].binding = 0;                                           // 法向量输入属性的绑定点
-  vertexAttribs[1].location = 1;                                          // 法向量输入属性的位置索引
-  vertexAttribs[1].format = VK_FORMAT_R32G32B32_SFLOAT;                   // 法向量输入属性的数据格式
-  vertexAttribs[1].offset = 12;                                           // 法向量输入属性的偏移量
+//  vertexAttribs[1].binding = 0;                                           // 法向量输入属性的绑定点
+//  vertexAttribs[1].location = 1;                                          // 法向量输入属性的位置索引
+//  vertexAttribs[1].format = VK_FORMAT_R32G32B32_SFLOAT;                   // 法向量输入属性的数据格式
+//  vertexAttribs[1].offset = 12;                                           // 法向量输入属性的偏移量
   /// Sample5_3、6_6、7_2 ******************************************* end
 
   /// Sample6_1、Sample6_7、Sample6_10 **************************** start
@@ -365,6 +366,17 @@ void ShaderQueueSuit_Common::initVertexAttributeInfo() {
 //  vertexAttribs[1].format = VK_FORMAT_R32G32_SFLOAT;
 //  vertexAttribs[1].offset = 12;
   /// Sample6_1、Sample6_7、Sample6_10 ****************************** end
+
+  /// Sample7_4 *************************************************** start
+  vertexAttribs[1].binding = 0;
+  vertexAttribs[1].location = 1;
+  vertexAttribs[1].format = VK_FORMAT_R32G32_SFLOAT;
+  vertexAttribs[1].offset = 12;
+  vertexAttribs[2].binding = 0;
+  vertexAttribs[2].location = 2;
+  vertexAttribs[2].format = VK_FORMAT_R32G32B32_SFLOAT;
+  vertexAttribs[2].offset = 20;
+  /// Sample7_4 ***************************************************** end
 }
 
 /**
@@ -400,8 +412,9 @@ void ShaderQueueSuit_Common::create_pipe_line(VkDevice &device, VkRenderPass &re
   vi.flags = 0;
   vi.vertexBindingDescriptionCount = 1;                                   // 顶点输入绑定描述数量
   vi.pVertexBindingDescriptions = &vertexBinding;                         // 顶点输入绑定描述列表
-  vi.vertexAttributeDescriptionCount = 2;                                 // 顶点输入属性描述数量
+//  vi.vertexAttributeDescriptionCount = 2;                                 // 顶点输入属性描述数量
 //  vi.vertexAttributeDescriptionCount = 1;                                 // Sample5_1、6_8、7_1
+  vi.vertexAttributeDescriptionCount = 3;                                 // Sample7_4
   vi.pVertexAttributeDescriptions = vertexAttribs;                        // 顶点输入属性描述列表
 
   VkPipelineInputAssemblyStateCreateInfo ia;                              // 管线图元组装状态创建信息
