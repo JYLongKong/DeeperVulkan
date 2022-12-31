@@ -145,9 +145,10 @@ DrawableObjectCommon *LoadUtil::loadFromFile(
   DrawableObjectCommon *lo;
   vector<float> alv;                                                      // 存放原始顶点坐标数据
   vector<float> alvResult;                                                // 存放结果顶点坐标数据
-//  vector<float> alnResult;                                                // Sample7_2-存放结果法向量数据
-  vector<int> alFaceIndex;                                                // Sample7_3-存放三角形面顶点编号
-  map<int, set<Normal *>> hmn;                                            // Sample7_3-存放各顶点法向量
+  vector<float> aln;                                                      // Sample7_5-存放原始法向量数据
+  vector<float> alnResult;                                                // Sample7_2、Sample7_5-存放结果法向量数据
+//  vector<int> alFaceIndex;                                                // Sample7_3-存放三角形面顶点编号
+//  map<int, set<Normal *>> hmn;                                            // Sample7_3-存放各顶点法向量
   vector<float> alt;                                                      // Sample7_4-存放原始纹理坐标数据
   vector<float> altResult;                                                // Sample7_4-存放结果纹理坐标数据
 
@@ -170,6 +171,10 @@ DrawableObjectCommon *LoadUtil::loadFromFile(
     } else if (splitStrs[0] == "vt") {                                    // Sample7_4-若此行为vt开头则为纹理坐标行
       alt.push_back(parseFloat(splitStrs[1].c_str()));              // Sample7_4-将纹理S坐标存入原始纹理坐标列表
       alt.push_back(1 - parseFloat(splitStrs[2].c_str()));          // Sample7_4-将纹理T坐标存入原始纹理坐标列表
+    } else if (splitStrs[0] == "vn") {                                    // Sample7_5-若此行为vn开头则为法向量数据行
+      aln.push_back(parseFloat(splitStrs[1].c_str()));              // Sample7_5-将法向量X分量存入原始法向量列表
+      aln.push_back(parseFloat(splitStrs[2].c_str()));              // Sample7_5-将法向量Y分量存入原始法向量列表
+      aln.push_back(parseFloat(splitStrs[3].c_str()));              // Sample7_5-将法向量Z分量存入原始法向量列表
     } else if (splitStrs[0] == "f") {                                     // 若此行为f开头则为面数据行
       int index[3];                                                       // 存放当前面三个顶点编号的数组
       string delimsF = "/";                                               // 用于切分每个顶点数据子串的分隔符
@@ -186,6 +191,10 @@ DrawableObjectCommon *LoadUtil::loadFromFile(
       int indexTex = parseInt(splitStrsF[1].c_str()) - 1;           // Sample7_4-获取三角形面第1个顶点的纹理坐标编号
       altResult.push_back(alt[indexTex * 2]);                             // Sample7_4-将第1个顶点的纹理S坐标存入结果纹理坐标列表
       altResult.push_back(alt[indexTex * 2 + 1]);                         // Sample7_4-将第1个顶点的纹理T坐标存入结果纹理坐标列表
+      int indexN = parseInt(splitStrsF[2].c_str()) - 1;             // Sample7_5-获取三角形面第1个顶点的法向量编号
+      alnResult.push_back(aln[3 * indexN]);                               // Sample7_5-将第1个顶点法向量的x分量存入结果法向量列表
+      alnResult.push_back(aln[3 * indexN + 1]);                           // Sample7_5-将第1个顶点法向量的y分量存入结果法向量列表
+      alnResult.push_back(aln[3 * indexN + 2]);                           // Sample7_5-将第1个顶点法向量的z分量存入结果法向量列表
 
       splitStrsF.clear();
       splitString(splitStrs[2].c_str(), delimsF, splitStrsF);    // 切分第二个顶点的数据
@@ -199,6 +208,10 @@ DrawableObjectCommon *LoadUtil::loadFromFile(
       indexTex = parseInt(splitStrsF[1].c_str()) - 1;               // Sample7_4-获取三角形面第2个顶点的纹理坐标编号
       altResult.push_back(alt[indexTex * 2]);                             // Sample7_4-将第2个顶点的纹理S坐标存入结果纹理坐标列表
       altResult.push_back(alt[indexTex * 2 + 1]);                         // Sample7_4-将第2个顶点的纹理T坐标存入结果纹理坐标列表
+      indexN = parseInt(splitStrsF[2].c_str()) - 1;                 // Sample7_5-获取三角形面第2个顶点的法向量编号
+      alnResult.push_back(aln[3 * indexN]);                               // Sample7_5-将第2个顶点法向量的x分量存入结果法向量列表
+      alnResult.push_back(aln[3 * indexN + 1]);                           // Sample7_5-将第2个顶点法向量的y分量存入结果法向量列表
+      alnResult.push_back(aln[3 * indexN + 2]);                           // Sample7_5-将第2个顶点法向量的z分量存入结果法向量列表
 
       splitStrsF.clear();
       splitString(splitStrs[3].c_str(), delimsF, splitStrsF);    // 切分第三个顶点的数据
@@ -212,34 +225,37 @@ DrawableObjectCommon *LoadUtil::loadFromFile(
       indexTex = parseInt(splitStrsF[1].c_str()) - 1;               // Sample7_4-获取三角形面第3个顶点的纹理坐标编号
       altResult.push_back(alt[indexTex * 2]);                             // Sample7_4-将第3个顶点的纹理S坐标存入结果纹理坐标列表
       altResult.push_back(alt[indexTex * 2 + 1]);                         // Sample7_4-将第3个顶点的纹理T坐标存入结果纹理坐标列表
-
+      indexN = parseInt(splitStrsF[2].c_str()) - 1;                 // Sample7_5-获取三角形面第3个顶点的法向量编号
+      alnResult.push_back(aln[3 * indexN]);                               // Sample7_5-将第3个顶点法向量的x分量存入结果法向量列表
+      alnResult.push_back(aln[3 * indexN + 1]);                           // Sample7_5-将第3个顶点法向量的y分量存入结果法向量列表
+      alnResult.push_back(aln[3 * indexN + 2]);                           // Sample7_5-将第3个顶点法向量的z分量存入结果法向量列表
 
       /// Sample7_2-法向量
-      float vxa = x1 - x0;                                                // 求三角形中第一个点到第二个点的向量
-      float vya = y1 - y0;
-      float vza = z1 - z0;
-      float vxb = x2 - x0;                                                // 求三角形中第一个点到第三个点的向量
-      float vyb = y2 - y0;
-      float vzb = z2 - z0;
-      float *vNormal = vectorNormal(getCrossProduct(vxa, vya, vza, vxb, vyb, vzb)); // 通过计算两个向量的叉积计算出此三角形面的法向量
-//      for (int i = 0; i < 3; ++i) {                                       // 将计算出的法向量分量添加到结果法向量列表中
-//        alnResult.push_back(vNormal[0]);
-//        alnResult.push_back(vNormal[1]);
-//        alnResult.push_back(vNormal[2]);
-//      }
+//      float vxa = x1 - x0;                                                // 求三角形中第一个点到第二个点的向量
+//      float vya = y1 - y0;
+//      float vza = z1 - z0;
+//      float vxb = x2 - x0;                                                // 求三角形中第一个点到第三个点的向量
+//      float vyb = y2 - y0;
+//      float vzb = z2 - z0;
+//      float *vNormal = vectorNormal(getCrossProduct(vxa, vya, vza, vxb, vyb, vzb)); // 通过计算两个向量的叉积计算出此三角形面的法向量
+////      for (int i = 0; i < 3; ++i) {                                       // 将计算出的法向量分量添加到结果法向量列表中
+////        alnResult.push_back(vNormal[0]);
+////        alnResult.push_back(vNormal[1]);
+////        alnResult.push_back(vNormal[2]);
+////      }
 
       /// Sample7_3-平均法向量
-      alFaceIndex.push_back(index[0]);                                    // 记录三角形面三个顶点的编号
-      alFaceIndex.push_back(index[1]);
-      alFaceIndex.push_back(index[2]);
-      for (int tempIndex: index) {                                        // 将此三角形面的法向量记录到此面3个顶点各自的法向量集合中
-        set<Normal *> setN = hmn[tempIndex];                              // 由顶点编号获取对应的法向量集合
-        Normal *normal = new Normal(vNormal[0], vNormal[1], vNormal[2]); // 创建法向量对象
-        if (!Normal::exist(normal, setN)) {                            // 判断当前法向量是否不在当前点的法向量集合中
-          setN.insert(normal);                                            // 若不在则将该法向量添加到当前点的法向量集合中
-        }
-        hmn[tempIndex] = setN;                                            // 更新map中当前点的法向量集合
-      }
+//      alFaceIndex.push_back(index[0]);                                    // 记录三角形面三个顶点的编号
+//      alFaceIndex.push_back(index[1]);
+//      alFaceIndex.push_back(index[2]);
+//      for (int tempIndex: index) {                                        // 将此三角形面的法向量记录到此面3个顶点各自的法向量集合中
+//        set<Normal *> setN = hmn[tempIndex];                              // 由顶点编号获取对应的法向量集合
+//        Normal *normal = new Normal(vNormal[0], vNormal[1], vNormal[2]); // 创建法向量对象
+//        if (!Normal::exist(normal, setN)) {                            // 判断当前法向量是否不在当前点的法向量集合中
+//          setN.insert(normal);                                            // 若不在则将该法向量添加到当前点的法向量集合中
+//        }
+//        hmn[tempIndex] = setN;                                            // 更新map中当前点的法向量集合
+//      }
 
     }
     splitStrs.clear();
@@ -252,29 +268,34 @@ DrawableObjectCommon *LoadUtil::loadFromFile(
 //  float *vdataIn = new float[vCount * 6];                                 // Sample7_2
   int dataByteCount = vCount * 8 * sizeof(float);                         // Sample7_4
   float *vdataIn = new float[vCount * 8];                                 // Sample7_4
-  set<Normal *> setNTemp;                                                 // Sample7_3-存放一个顶点法向量集合的辅助变量
-  float *nTemp;                                                           // Sample7_3-指向存放向量三分量数据数组的指针
+//  set<Normal *> setNTemp;                                                 // Sample7_3-存放一个顶点法向量集合的辅助变量
+//  float *nTemp;                                                           // Sample7_3-指向存放向量三分量数据数组的指针
   int indexTemp = 0;
   for (int i = 0; i < vCount; i++) {
     vdataIn[indexTemp++] = alvResult[i * 3];
     vdataIn[indexTemp++] = alvResult[i * 3 + 1];
     vdataIn[indexTemp++] = alvResult[i * 3 + 2];
 
-    /// Sample7_2
-//    vdataIn[indexTemp++] = alnResult[i * 3];
-//    vdataIn[indexTemp++] = alnResult[i * 3 + 1];
-//    vdataIn[indexTemp++] = alnResult[i * 3 + 2];
-
     /// Sample7_4-将纹理ST坐标转存到顶点数据数组中
     vdataIn[indexTemp++] = altResult[i * 2];
     vdataIn[indexTemp++] = altResult[i * 2 + 1];
 
-    /// Sample7_3
-    setNTemp = (hmn[alFaceIndex.at(i)]);                                  // 获取当前顶点的法向量集合
-    nTemp = Normal::getAverage(setNTemp);                              // 求出此顶点的平均法向量
-    vdataIn[indexTemp++] = nTemp[0];                                      // 将平均法向量的三个分量转存到顶点数据数组中
-    vdataIn[indexTemp++] = nTemp[1];
-    vdataIn[indexTemp++] = nTemp[2];
+    /// Sample7_2-计算面法向量
+//    vdataIn[indexTemp++] = alnResult[i * 3];
+//    vdataIn[indexTemp++] = alnResult[i * 3 + 1];
+//    vdataIn[indexTemp++] = alnResult[i * 3 + 2];
+
+    /// Sample7_3-计算平均法向量
+//    setNTemp = (hmn[alFaceIndex.at(i)]);                                  // 获取当前顶点的法向量集合
+//    nTemp = Normal::getAverage(setNTemp);                              // 求出此顶点的平均法向量
+//    vdataIn[indexTemp++] = nTemp[0];                                      // 将平均法向量的三个分量转存到顶点数据数组中
+//    vdataIn[indexTemp++] = nTemp[1];
+//    vdataIn[indexTemp++] = nTemp[2];
+
+    /// Sample7_5-直接读取法向量
+    vdataIn[indexTemp++] = alnResult[i * 3];
+    vdataIn[indexTemp++] = alnResult[i * 3 + 1];
+    vdataIn[indexTemp++] = alnResult[i * 3 + 2];
   }
 
   lo = new DrawableObjectCommon(vdataIn, dataByteCount, vCount, device, memoryProperties);
