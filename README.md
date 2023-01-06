@@ -42,7 +42,7 @@ vertexBinding.stride = sizeof(float) * 8;                               // Sampl
 ## Main process
 
 | Step | Function | Description | 描述 |
-| - | - | - |
+| - | - | - | - |
 | 1 | init_vulkan_instance() | Create vulkan instance | 创建Vulkan实例 |
 | 2 | enumerate_vulkan_phy_devices() | Get physical device list |  获取物理设备列表 |
 | 3 | create_vulkan_devices() | Create logical device | 创建逻辑设备 |
