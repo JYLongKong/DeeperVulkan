@@ -131,13 +131,13 @@ ninja: Entering directory `E:\projects\Android\DeeperVulkan\app\.cxx\Debug\5l3u1
 ninja: error: 'D:/Android/SDK/ndk/21.4.7075529/sources/third_party/shaderc/libs/c++_static/arm64-v8a/libshaderc.a', needed by '../../../../build/intermediates/cxx/Debug/5l3u162n/obj/arm64-v8a/libbn-vulkan-lib.so', missing and no known rule to make it
 ```
 
-Under the directory ```ndk/21.4.7075529/sources/third_party/shaderc``` run command:
+Under the directory ```ndk/21.4.7075529/sources/third_party/shaderc``` run the command:
 
 ```shell
 $ ../../../ndk-build NDK_PROJECT_PATH=. APP_BUILD_SCRIPT=Android.mk APP_ABI=all APP_PLATFORM=android-21 APP_STL=c++_static -j8 clean libshaderc_combined
 ```
 
-If you encounter the following error when running command.
+If you encounter the following error when running the command.
 
 ```
 ndk/21.4.7075529/build/gmsl/__gmsl:512: *** non-numeric second argument to 'wordlist' function: 'android=24'.  Stop.
@@ -149,7 +149,7 @@ Then edit ```ndk/21.4.7075529/build/gmsl/__gmsl``` line 512 to:
 int_encode = $(__gmsl_tr1)$(wordlist 1,$(words $1),$(__gmsl_input_int))
 ```
 
-And try to run command again.
+And try to run the command again.
 
 ## Reference
 
