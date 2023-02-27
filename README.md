@@ -118,6 +118,7 @@ vertexBinding.stride = sizeof(float) * 8;                               // Sampl
 | Sample7_3 | Calculate average normal | 计算平均法向量 |
 | Sample7_4 | Load texture coordinates | 加载纹理坐标 |
 | Sample7_5 | Load vertex normals | 加载顶点法向量 |
+| Sample7_6 | Double-sided lighting | 双面光照 |
 
 ## Problem
 
