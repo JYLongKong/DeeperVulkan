@@ -952,8 +952,12 @@ void MyVulkanManager::createDrawableObject() {
   /// Sample7_1 **************************************************** end
 
   /// Sample7_4 ************************************************** start
-  objForDraw = LoadUtil::loadFromFile("model/ch_t.obj", device, memoryroperties);
+//  objForDraw = LoadUtil::loadFromFile("model/ch_t.obj", device, memoryroperties);
   /// Sample7_4 **************************************************** end
+
+  /// Sample7_6 ************************************************** start
+  objForDraw = LoadUtil::loadFromFile("model/ch_no_t.obj", device, memoryroperties);
+  /// Sample7_6 **************************************************** end
 }
 
 /**
@@ -1226,16 +1230,16 @@ void MyVulkanManager::flushUniformBuffer() {
  * 更新绘制用描述集
  */
 void MyVulkanManager::flushTexToDesSet() {
-//  sqsCL->writes[0].dstSet = sqsCL->descSet[0];                            // 更新描述集对应的写入属性
-//  vk::vkUpdateDescriptorSets(device, 1, sqsCL->writes, 0, nullptr);       // 更新描述集
+  sqsCL->writes[0].dstSet = sqsCL->descSet[0];                            // 更新描述集对应的写入属性
+  vk::vkUpdateDescriptorSets(device, 1, sqsCL->writes, 0, nullptr);       // 更新描述集
 
   /// Sample6_1、6_7、7_4 将纹理等数据与描述集关联******************** start
-  for (int i = 0; i < TextureManager::texNames.size(); ++i) {             // 遍历所有纹理
-    sqsCL->writes[0].dstSet = sqsCL->descSet[i];                          // 更新描述集对应的写入属性0(一致变量)
-    sqsCL->writes[1].dstSet = sqsCL->descSet[i];                          // 更新描述集对应的写入属性1(纹理)
-    sqsCL->writes[1].pImageInfo = &(TextureManager::texImageInfoList[TextureManager::texNames[i]]); // 写入属性1对应的纹理图像信息
-    vk::vkUpdateDescriptorSets(device, 2, sqsCL->writes, 0, nullptr);     // 更新描述集
-  }
+//  for (int i = 0; i < TextureManager::texNames.size(); ++i) {             // 遍历所有纹理
+//    sqsCL->writes[0].dstSet = sqsCL->descSet[i];                          // 更新描述集对应的写入属性0(一致变量)
+//    sqsCL->writes[1].dstSet = sqsCL->descSet[i];                          // 更新描述集对应的写入属性1(纹理)
+//    sqsCL->writes[1].pImageInfo = &(TextureManager::texImageInfoList[TextureManager::texNames[i]]); // 写入属性1对应的纹理图像信息
+//    vk::vkUpdateDescriptorSets(device, 2, sqsCL->writes, 0, nullptr);     // 更新描述集
+//  }
   /// Sample6_1、6_7、7_4 ****************************************** end
 
   /// Sample6_6 ************************************************** start
@@ -1680,8 +1684,8 @@ void MyVulkanManager::drawObject() {
 
     /// Sample7_1、Sample7_4 **************************************** start
     MatrixState3D::pushMatrix();
-//    MatrixState3D::translate(0, -2.0f, -25.0f);
-    MatrixState3D::translate(0, -5.0f, -70.0f);                   // Sample7_4
+    MatrixState3D::translate(0, -2.0f, -25.0f);
+//    MatrixState3D::translate(0, -5.0f, -70.0f);                   // Sample7_4
     MatrixState3D::rotate(yAngle, 0, 1, 0);
     MatrixState3D::rotate(xAngle, 1, 0, 0);
     objForDraw->drawSelf(cmdBuffer, sqsCL->pipelineLayout, sqsCL->pipeline, &(sqsCL->descSet[0]));

@@ -16,8 +16,8 @@ class ShaderQueueSuit_Common {
   std::vector<VkDescriptorSetLayout> descLayouts;     // 描述集布局列表
   VkPipelineShaderStageCreateInfo shaderStages[2];    // 着色器阶段数组
   VkVertexInputBindingDescription vertexBinding;      // 管线的顶点输入数据绑定描述
-//  VkVertexInputAttributeDescription vertexAttribs[2]; // 管线的顶点输入属性描述
-  VkVertexInputAttributeDescription vertexAttribs[3]; // Sample7_4
+  VkVertexInputAttributeDescription vertexAttribs[2]; // 管线的顶点输入属性描述
+//  VkVertexInputAttributeDescription vertexAttribs[3]; // Sample7_4
   VkPipelineCache pipelineCache;                      // 管线缓冲
   VkDevice *devicePointer;                            // 逻辑设备指针
   VkDescriptorPool descPool;                          // 描述池
